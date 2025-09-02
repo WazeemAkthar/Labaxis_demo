@@ -1,0 +1,104 @@
+[
+  {
+    "code": "FBC",
+    "name": "Full Blood Count",
+    "defaultPrice": 25.0,
+    "estimatedCost": 8.0,
+    "unit": "per test",
+    "referenceRange": {
+      "WBC": "4.0-11.0 x10³/μL",
+      "RBC": "4.5-5.5 x10⁶/μL",
+      "Hemoglobin": "12.0-16.0 g/dL",
+      "Hematocrit": "36-46%",
+      "Platelets": "150-450 x10³/μL"
+    },
+    "category": "Hematology"
+  },
+  {
+    "code": "CRP",
+    "name": "C-Reactive Protein",
+    "defaultPrice": 15.0,
+    "estimatedCost": 5.0,
+    "unit": "per test",
+    "referenceRange": {
+      "CRP": "<3.0 mg/L"
+    },
+    "category": "Biochemistry"
+  },
+  {
+    "code": "LIPID",
+    "name": "Lipid Profile",
+    "defaultPrice": 35.0,
+    "estimatedCost": 12.0,
+    "unit": "per test",
+    "referenceRange": {
+      "Total Cholesterol": "<200 mg/dL",
+      "HDL Cholesterol": ">40 mg/dL (M), >50 mg/dL (F)",
+      "LDL Cholesterol": "<100 mg/dL",
+      "Triglycerides": "<150 mg/dL"
+    },
+    "category": "Biochemistry"
+  },
+  {
+    "code": "GLUCOSE",
+    "name": "Fasting Glucose",
+    "defaultPrice": 12.0,
+    "estimatedCost": 4.0,
+    "unit": "per test",
+    "referenceRange": {
+      "Glucose": "70-100 mg/dL"
+    },
+    "category": "Biochemistry"
+  },
+  {
+    "code": "URINE",
+    "name": "Urinalysis",
+    "defaultPrice": 20.0,
+    "estimatedCost": 6.0,
+    "unit": "per test",
+    "referenceRange": {
+      "Protein": "Negative",
+      "Glucose": "Negative",
+      "Blood": "Negative",
+      "Leukocytes": "Negative",
+      "Specific Gravity": "1.003-1.030"
+    },
+    "category": "Urinalysis"
+  },
+  {
+    "code": "TSH",
+    "name": "Thyroid Stimulating Hormone",
+    "defaultPrice": 30.0,
+    "estimatedCost": 10.0,
+    "unit": "per test",
+    "referenceRange": {
+      "TSH": "0.4-4.0 mIU/L"
+    },
+    "category": "Endocrinology"
+  },
+  {
+    "code": "HBA1C",
+    "name": "Hemoglobin A1c",
+    "defaultPrice": 28.0,
+    "estimatedCost": 9.0,
+    "unit": "per test",
+    "referenceRange": {
+      "HbA1c": "<5.7% (Normal), 5.7-6.4% (Prediabetes), ≥6.5% (Diabetes)"
+    },
+    "category": "Biochemistry"
+  },
+  {
+    "code": "LIVER",
+    "name": "Liver Function Tests",
+    "defaultPrice": 40.0,
+    "estimatedCost": 15.0,
+    "unit": "per test",
+    "referenceRange": {
+      "ALT": "7-56 U/L",
+      "AST": "10-40 U/L",
+      "Bilirubin Total": "0.3-1.2 mg/dL",
+      "Albumin": "3.5-5.0 g/dL"
+    },
+    "category": "Biochemistry"
+  }
+]
