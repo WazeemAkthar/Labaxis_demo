@@ -29,7 +29,7 @@ export default function NewInvoicePage() {
   useEffect(() => {
     const authStatus = localStorage.getItem("lablite_auth")
     if (authStatus !== "authenticated") {
-      window.location.href = "/"
+      router.push("/")
       return
     }
     setIsAuthenticated(true)
@@ -103,18 +103,15 @@ export default function NewInvoicePage() {
         patientName: `${selectedPatient.firstName} ${selectedPatient.lastName}`,
         lineItems,
         subtotal,
-        taxRate: 0,
-        taxAmount: 0,
         discountPercent: discountPercent / 100,
         discountAmount,
         grandTotal,
-        status: "Unpaid",
       })
 
       console.log("[v0] Invoice created successfully:", invoice)
       console.log("[v0] Attempting to navigate to:", `/invoices/${invoice.id}`)
 
-      window.location.href = `/invoices/${invoice.id}`
+      router.push(`/invoices/${invoice.id}`)
     } catch (error) {
       console.error("[v0] Error saving invoice:", error)
       alert("Error creating invoice. Please try again.")
@@ -135,11 +132,11 @@ export default function NewInvoicePage() {
     <DashboardLayout>
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <Link href="/invoices">
-            <Button variant="outline" size="icon">
+          <Button asChild variant="outline" size="icon">
+            <Link href="/invoices">
               <ArrowLeft className="h-4 w-4" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
           <div>
             <h1 className="text-3xl font-bold">Create New Invoice</h1>
             <p className="text-muted-foreground">Generate a test invoice for a patient</p>
@@ -346,11 +343,11 @@ export default function NewInvoicePage() {
               <Save className="h-4 w-4 mr-2" />
               {saving ? "Creating..." : "Create Invoice"}
             </Button>
-            <Link href="/invoices">
-              <Button type="button" variant="outline">
+            <Button asChild type="button" variant="outline">
+              <Link href="/invoices">
                 Cancel
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </form>
       </div>

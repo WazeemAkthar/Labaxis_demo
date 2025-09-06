@@ -5,9 +5,9 @@ import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.app',
+  title: 'Azza Medical Laboratory Services',
+  description: 'Unique Place for all Diagnostic needs - Laboratory Information Management System',
+  generator: 'Azza Medical Laboratory Services',
 }
 
 export default function RootLayout({

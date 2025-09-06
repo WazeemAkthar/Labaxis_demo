@@ -36,12 +36,9 @@ export interface Invoice {
   patientName: string
   lineItems: InvoiceLineItem[]
   subtotal: number
-  taxRate: number
-  taxAmount: number
   discountPercent: number
   discountAmount: number
   grandTotal: number
-  status: "Paid" | "Unpaid" | "Partial"
   createdAt: string
 }
 
@@ -204,8 +201,8 @@ export class DataManager {
       {
         code: "FBC",
         name: "Full Blood Count",
-        defaultPrice: 25.0,
-        estimatedCost: 8.0,
+        defaultPrice: 800.0,
+        estimatedCost: 250.0,
         unit: "per test",
         referenceRange: {
           WBC: "4.0-11.0 x10³/μL",
@@ -213,14 +210,30 @@ export class DataManager {
           Hemoglobin: "12.0-16.0 g/dL",
           Hematocrit: "36-46%",
           Platelets: "150-450 x10³/μL",
+          Neutrophils: "40-60%",
+          Lymphocytes: "20-40%",
+          Monocytes: "2-8%",
+          Eosinophils: "1-4%",
+          Basophils: "0.5-1%",
+        },
+        category: "Hematology",
+      },
+      {
+        code: "ESR",
+        name: "Erythrocyte Sedimentation Rate",
+        defaultPrice: 300.0,
+        estimatedCost: 100.0,
+        unit: "per test",
+        referenceRange: {
+          ESR: "0-15 mm/hr (M), 0-20 mm/hr (F)",
         },
         category: "Hematology",
       },
       {
         code: "CRP",
         name: "C-Reactive Protein",
-        defaultPrice: 15.0,
-        estimatedCost: 5.0,
+        defaultPrice: 650.0,
+        estimatedCost: 200.0,
         unit: "per test",
         referenceRange: {
           CRP: "<3.0 mg/L",
@@ -230,8 +243,8 @@ export class DataManager {
       {
         code: "LIPID",
         name: "Lipid Profile",
-        defaultPrice: 35.0,
-        estimatedCost: 12.0,
+        defaultPrice: 1200.0,
+        estimatedCost: 400.0,
         unit: "per test",
         referenceRange: {
           "Total Cholesterol": "<200 mg/dL",
@@ -244,8 +257,8 @@ export class DataManager {
       {
         code: "GLUCOSE",
         name: "Fasting Glucose",
-        defaultPrice: 12.0,
-        estimatedCost: 4.0,
+        defaultPrice: 200.0,
+        estimatedCost: 60.0,
         unit: "per test",
         referenceRange: {
           Glucose: "70-100 mg/dL",
@@ -255,8 +268,8 @@ export class DataManager {
       {
         code: "URINE",
         name: "Urinalysis",
-        defaultPrice: 20.0,
-        estimatedCost: 6.0,
+        defaultPrice: 300.0,
+        estimatedCost: 100.0,
         unit: "per test",
         referenceRange: {
           Protein: "Negative",
@@ -270,8 +283,8 @@ export class DataManager {
       {
         code: "TSH",
         name: "Thyroid Stimulating Hormone",
-        defaultPrice: 30.0,
-        estimatedCost: 10.0,
+        defaultPrice: 1500.0,
+        estimatedCost: 500.0,
         unit: "per test",
         referenceRange: {
           TSH: "0.4-4.0 mIU/L",
@@ -281,8 +294,8 @@ export class DataManager {
       {
         code: "HBA1C",
         name: "Hemoglobin A1c",
-        defaultPrice: 28.0,
-        estimatedCost: 9.0,
+        defaultPrice: 2400.0,
+        estimatedCost: 800.0,
         unit: "per test",
         referenceRange: {
           HbA1c: "<5.7% (Normal), 5.7-6.4% (Prediabetes), ≥6.5% (Diabetes)",
@@ -292,8 +305,8 @@ export class DataManager {
       {
         code: "LIVER",
         name: "Liver Function Tests",
-        defaultPrice: 40.0,
-        estimatedCost: 15.0,
+        defaultPrice: 1800.0,
+        estimatedCost: 600.0,
         unit: "per test",
         referenceRange: {
           ALT: "7-56 U/L",
@@ -362,24 +375,21 @@ export class DataManager {
             testCode: "FBC",
             testName: "Full Blood Count",
             quantity: 1,
-            unitPrice: 25.0,
-            total: 25.0,
+            unitPrice: 800.0,
+            total: 800.0,
           },
           {
             testCode: "LIPID",
             testName: "Lipid Profile",
             quantity: 1,
-            unitPrice: 35.0,
-            total: 35.0,
+            unitPrice: 1200.0,
+            total: 1200.0,
           },
         ],
-        subtotal: 60.0,
-        taxRate: 10,
-        taxAmount: 6.0,
+        subtotal: 2000.0,
         discountPercent: 0,
         discountAmount: 0,
-        grandTotal: 66.0,
-        status: "Paid",
+        grandTotal: 2000.0,
         createdAt: "2024-12-01T10:30:00.000Z",
       },
       {
@@ -391,24 +401,21 @@ export class DataManager {
             testCode: "GLUCOSE",
             testName: "Fasting Glucose",
             quantity: 1,
-            unitPrice: 12.0,
-            total: 12.0,
+            unitPrice: 200.0,
+            total: 200.0,
           },
           {
             testCode: "HBA1C",
             testName: "Hemoglobin A1c",
             quantity: 1,
-            unitPrice: 28.0,
-            total: 28.0,
+            unitPrice: 2400.0,
+            total: 2400.0,
           },
         ],
-        subtotal: 40.0,
-        taxRate: 10,
-        taxAmount: 4.0,
+        subtotal: 2600.0,
         discountPercent: 5,
-        discountAmount: 2.0,
-        grandTotal: 42.0,
-        status: "Unpaid",
+        discountAmount: 130.0,
+        grandTotal: 2470.0,
         createdAt: "2024-12-01T12:00:00.000Z",
       },
     ]

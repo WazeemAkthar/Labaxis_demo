@@ -1,11 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, DollarSign, FileText, TrendingUp, TrendingDown, BarChart3 } from "lucide-react"
+import { DollarSign, FileText, TrendingUp, TrendingDown, BarChart3 } from "lucide-react"
 import { DataManager, type Invoice } from "@/lib/data-manager"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
 
@@ -26,6 +27,7 @@ interface IncomeByTestType {
 }
 
 export default function FinancePage() {
+  const router = useRouter()
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [filteredInvoices, setFilteredInvoices] = useState<Invoice[]>([])
   const [dateFilter, setDateFilter] = useState<DateFilter>("month")
@@ -35,7 +37,7 @@ export default function FinancePage() {
   useEffect(() => {
     const authStatus = localStorage.getItem("lablite_auth")
     if (authStatus !== "authenticated") {
-      window.location.href = "/"
+      router.push("/")
       return
     }
     setIsAuthenticated(true)
@@ -83,9 +85,6 @@ export default function FinancePage() {
   const totalInvoices = filteredInvoices.length
   const totalIncome = filteredInvoices.reduce((sum, inv) => sum + inv.grandTotal, 0)
   const averageTicket = totalInvoices > 0 ? totalIncome / totalInvoices : 0
-  const paidInvoices = filteredInvoices.filter((inv) => inv.status === "Paid")
-  const unpaidInvoices = filteredInvoices.filter((inv) => inv.status === "Unpaid")
-  const partialInvoices = filteredInvoices.filter((inv) => inv.status === "Partial")
 
   // Calculate profitability
   const dataManager = DataManager.getInstance()
@@ -202,7 +201,7 @@ export default function FinancePage() {
             <CardContent>
               <div className="text-2xl font-bold">{totalInvoices}</div>
               <p className="text-xs text-muted-foreground">
-                {paidInvoices.length} paid, {unpaidInvoices.length} unpaid
+                Total invoices generated
               </p>
             </CardContent>
           </Card>
@@ -213,9 +212,9 @@ export default function FinancePage() {
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${totalIncome.toFixed(2)}</div>
+              <div className="text-2xl font-bold">LKR {totalIncome.toFixed(2)}</div>
               <p className="text-xs text-muted-foreground">
-                ${paidInvoices.reduce((sum, inv) => sum + inv.grandTotal, 0).toFixed(2)} collected
+                Total revenue from all invoices
               </p>
             </CardContent>
           </Card>
@@ -226,7 +225,7 @@ export default function FinancePage() {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${averageTicket.toFixed(2)}</div>
+              <div className="text-2xl font-bold">LKR {averageTicket.toFixed(2)}</div>
               <p className="text-xs text-muted-foreground">Per invoice</p>
             </CardContent>
           </Card>
@@ -238,7 +237,7 @@ export default function FinancePage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{profitMargin.toFixed(1)}%</div>
-              <p className="text-xs text-muted-foreground">${totalProfit.toFixed(2)} profit</p>
+              <p className="text-xs text-muted-foreground">LKR {totalProfit.toFixed(2)} profit</p>
             </CardContent>
           </Card>
         </div>
@@ -251,7 +250,7 @@ export default function FinancePage() {
               <TrendingDown className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${totalCost.toFixed(2)}</div>
+              <div className="text-2xl font-bold">LKR {totalCost.toFixed(2)}</div>
               <p className="text-xs text-muted-foreground">Estimated operational costs</p>
             </CardContent>
           </Card>
@@ -262,23 +261,11 @@ export default function FinancePage() {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">${totalProfit.toFixed(2)}</div>
+              <div className="text-2xl font-bold text-green-600">LKR {totalProfit.toFixed(2)}</div>
               <p className="text-xs text-muted-foreground">Revenue minus costs</p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Outstanding</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-orange-600">
-                ${unpaidInvoices.reduce((sum, inv) => sum + inv.grandTotal, 0).toFixed(2)}
-              </div>
-              <p className="text-xs text-muted-foreground">{unpaidInvoices.length} unpaid invoices</p>
-            </CardContent>
-          </Card>
         </div>
 
         {/* Charts */}
@@ -295,7 +282,7 @@ export default function FinancePage() {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="date" />
                     <YAxis />
-                    <Tooltip formatter={(value) => [`$${Number(value).toFixed(2)}`, "Income"]} />
+                    <Tooltip formatter={(value) => [`LKR ${Number(value).toFixed(2)}`, "Income"]} />
                     <Bar dataKey="income" fill="#0088FE" />
                   </BarChart>
                 </ResponsiveContainer>
@@ -317,16 +304,16 @@ export default function FinancePage() {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ testType, percent }) => `${testType} ${(percent * 100).toFixed(0)}%`}
+                      label={({ testType, percent }) => `${testType} ${((percent || 0) * 100).toFixed(0)}%`}
                       outerRadius={80}
                       fill="#8884d8"
                       dataKey="income"
                     >
-                      {incomeByTestType.map((entry, index) => (
+                      {incomeByTestType.map((_, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(value) => [`$${Number(value).toFixed(2)}`, "Income"]} />
+                    <Tooltip formatter={(value) => [`LKR ${Number(value).toFixed(2)}`, "Income"]} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
@@ -408,44 +395,6 @@ export default function FinancePage() {
           </CardContent>
         </Card>
 
-        {/* Outstanding Payments */}
-        {unpaidInvoices.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                Outstanding Payments
-                <Badge variant="outline">{unpaidInvoices.length}</Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="grid grid-cols-12 gap-4 text-sm font-medium text-muted-foreground border-b pb-2">
-                  <div className="col-span-3">Invoice ID</div>
-                  <div className="col-span-4">Patient</div>
-                  <div className="col-span-2">Date</div>
-                  <div className="col-span-2">Amount</div>
-                  <div className="col-span-1">Days</div>
-                </div>
-                {unpaidInvoices.map((invoice) => {
-                  const daysPast = Math.floor(
-                    (new Date().getTime() - new Date(invoice.createdAt).getTime()) / (1000 * 60 * 60 * 24),
-                  )
-                  return (
-                    <div key={invoice.id} className="grid grid-cols-12 gap-4 text-sm py-2 hover:bg-muted/50 rounded">
-                      <div className="col-span-3 font-medium">{invoice.id}</div>
-                      <div className="col-span-4">{invoice.patientName}</div>
-                      <div className="col-span-2">{new Date(invoice.createdAt).toLocaleDateString()}</div>
-                      <div className="col-span-2 font-medium text-orange-600">${invoice.grandTotal.toFixed(2)}</div>
-                      <div className="col-span-1">
-                        <Badge variant={daysPast > 30 ? "destructive" : "secondary"}>{daysPast}d</Badge>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        )}
       </div>
     </DashboardLayout>
   )

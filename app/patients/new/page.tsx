@@ -21,12 +21,10 @@ export default function NewPatientPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    fullName: "",
     age: "",
     gender: "",
     phone: "",
-    email: "",
     doctorName: "",
     notes: "",
   })
@@ -34,7 +32,7 @@ export default function NewPatientPage() {
   useEffect(() => {
     const authStatus = localStorage.getItem("lablite_auth")
     if (authStatus !== "authenticated") {
-      window.location.href = "/"
+      router.push("/")
       return
     }
     setIsAuthenticated(true)
@@ -54,24 +52,28 @@ export default function NewPatientPage() {
       const dataManager = DataManager.getInstance()
       console.log("[v0] DataManager instance obtained")
 
+      const nameParts = formData.fullName.trim().split(' ')
+      const firstName = nameParts[0] || ''
+      const lastName = nameParts.slice(1).join(' ') || ''
+      
       const patient = dataManager.addPatient({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
+        firstName,
+        lastName,
         age: Number.parseInt(formData.age),
         gender: formData.gender as "Male" | "Female" | "Other",
         phone: formData.phone,
-        email: formData.email,
+        email: '',
         doctorName: formData.doctorName,
         notes: formData.notes,
       })
 
       console.log("[v0] Patient created successfully:", patient)
 
-      alert(`Patient ${patient.firstName} ${patient.lastName} has been successfully registered with ID: ${patient.id}`)
+      alert(`Patient ${formData.fullName} has been successfully registered with ID: ${patient.id}`)
 
       // Small delay to ensure data is saved before navigation
       setTimeout(() => {
-        window.location.href = "/patients"
+        router.push("/patients")
       }, 100)
     } catch (error) {
       console.error("[v0] Error saving patient:", error)
@@ -83,13 +85,10 @@ export default function NewPatientPage() {
 
   const isFormValid = () => {
     return (
-      formData.firstName.trim() &&
-      formData.lastName.trim() &&
+      formData.fullName.trim() &&
       formData.age &&
       formData.gender &&
-      formData.phone.trim() &&
-      formData.email.trim() &&
-      formData.doctorName.trim()
+      formData.phone.trim()
     )
   }
 
@@ -105,11 +104,11 @@ export default function NewPatientPage() {
     <DashboardLayout>
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <Link href="/patients">
-            <Button variant="outline" size="icon">
+          <Button asChild variant="outline" size="icon">
+            <Link href="/patients">
               <ArrowLeft className="h-4 w-4" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
           <div>
             <h1 className="text-3xl font-bold">Add New Patient</h1>
             <p className="text-muted-foreground">Register a new patient in the system</p>
@@ -127,24 +126,14 @@ export default function NewPatientPage() {
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Personal Information */}
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name *</Label>
+                  <Label htmlFor="fullName">Full Name *</Label>
                   <Input
-                    id="firstName"
-                    value={formData.firstName}
-                    onChange={(e) => handleInputChange("firstName", e.target.value)}
-                    placeholder="Enter first name"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name *</Label>
-                  <Input
-                    id="lastName"
-                    value={formData.lastName}
-                    onChange={(e) => handleInputChange("lastName", e.target.value)}
-                    placeholder="Enter last name"
+                    id="fullName"
+                    value={formData.fullName}
+                    onChange={(e) => handleInputChange("fullName", e.target.value)}
+                    placeholder="Enter full name"
                     required
                   />
                 </div>
@@ -180,40 +169,26 @@ export default function NewPatientPage() {
               </div>
 
               {/* Contact Information */}
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number *</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => handleInputChange("phone", e.target.value)}
-                    placeholder="Enter phone number"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email Address *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    placeholder="Enter email address"
-                    required
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number *</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange("phone", e.target.value)}
+                  placeholder="Enter phone number"
+                  required
+                />
               </div>
 
               {/* Medical Information */}
               <div className="space-y-2">
-                <Label htmlFor="doctorName">Referring Doctor *</Label>
+                <Label htmlFor="doctorName">Referring Doctor</Label>
                 <Input
                   id="doctorName"
                   value={formData.doctorName}
                   onChange={(e) => handleInputChange("doctorName", e.target.value)}
-                  placeholder="Enter doctor's name"
-                  required
+                  placeholder="Enter doctor's name (optional)"
                 />
               </div>
 
@@ -234,11 +209,11 @@ export default function NewPatientPage() {
                   <Save className="h-4 w-4 mr-2" />
                   {saving ? "Saving..." : "Save Patient"}
                 </Button>
-                <Link href="/patients">
-                  <Button type="button" variant="outline">
+                <Button asChild type="button" variant="outline">
+                  <Link href="/patients">
                     Cancel
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </div>
             </CardContent>
           </Card>

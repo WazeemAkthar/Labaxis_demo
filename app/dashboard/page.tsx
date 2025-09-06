@@ -64,7 +64,7 @@ export default function DashboardPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome to LabLite LIMS - Your Laboratory Management System</p>
+          <p className="text-muted-foreground">Welcome to Azza Medical Laboratory Services</p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -96,7 +96,7 @@ export default function DashboardPage() {
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${stats.monthlyRevenue.toFixed(2)}</div>
+              <div className="text-2xl font-bold">LKR {stats.monthlyRevenue.toFixed(2)}</div>
               <p className="text-xs text-muted-foreground">This month's income</p>
             </CardContent>
           </Card>

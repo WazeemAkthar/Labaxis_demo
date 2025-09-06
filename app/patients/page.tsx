@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,6 +12,7 @@ import { DataManager, type Patient } from "@/lib/data-manager"
 import Link from "next/link"
 
 export default function PatientsPage() {
+  const router = useRouter()
   const [patients, setPatients] = useState<Patient[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [filteredPatients, setFilteredPatients] = useState<Patient[]>([])
@@ -20,7 +22,7 @@ export default function PatientsPage() {
   useEffect(() => {
     const authStatus = localStorage.getItem("lablite_auth")
     if (authStatus !== "authenticated") {
-      window.location.href = "/"
+      router.push("/")
       return
     }
     setIsAuthenticated(true)
@@ -61,12 +63,12 @@ export default function PatientsPage() {
             <h1 className="text-3xl font-bold">Patients</h1>
             <p className="text-muted-foreground">Manage patient records and information</p>
           </div>
-          <Link href="/patients/new">
-            <Button>
+          <Button asChild>
+            <Link href="/patients/new">
               <Plus className="h-4 w-4 mr-2" />
               Add Patient
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
 
         {/* Search and filters */}
@@ -99,12 +101,12 @@ export default function PatientsPage() {
                 <p className="text-muted-foreground mb-4">
                   {searchTerm ? "No patients match your search criteria." : "Get started by adding your first patient."}
                 </p>
-                <Link href="/patients/new">
-                  <Button>
+                <Button asChild>
+                  <Link href="/patients/new">
                     <Plus className="h-4 w-4 mr-2" />
                     Add Patient
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </CardContent>
             </Card>
           ) : (
@@ -142,9 +144,9 @@ export default function PatientsPage() {
                         </div>
                         <div className="mt-1">Dr. {patient.doctorName}</div>
                       </div>
-                      <Link href={`/patients/${patient.id}`}>
-                        <Button variant="outline">View Details</Button>
-                      </Link>
+                      <Button asChild variant="outline">
+                        <Link href={`/patients/${patient.id}`}>View Details</Link>
+                      </Button>
                     </div>
                   </div>
                 </CardContent>

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,6 +12,7 @@ import { DataManager, type Invoice } from "@/lib/data-manager"
 import Link from "next/link"
 
 export default function InvoicesPage() {
+  const router = useRouter()
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [filteredInvoices, setFilteredInvoices] = useState<Invoice[]>([])
@@ -20,7 +22,7 @@ export default function InvoicesPage() {
   useEffect(() => {
     const authStatus = localStorage.getItem("lablite_auth")
     if (authStatus !== "authenticated") {
-      window.location.href = "/"
+      router.push("/")
       return
     }
     setIsAuthenticated(true)
@@ -53,8 +55,6 @@ export default function InvoicesPage() {
   }
 
   const totalRevenue = filteredInvoices.reduce((sum, inv) => sum + inv.grandTotal, 0)
-  const paidInvoices = filteredInvoices.filter((inv) => inv.status === "Paid")
-  const unpaidInvoices = filteredInvoices.filter((inv) => inv.status === "Unpaid")
 
   return (
     <DashboardLayout>
@@ -64,16 +64,16 @@ export default function InvoicesPage() {
             <h1 className="text-3xl font-bold">Invoices</h1>
             <p className="text-muted-foreground">Manage test invoices and billing</p>
           </div>
-          <Link href="/invoices/new">
-            <Button>
+          <Button asChild>
+            <Link href="/invoices/new">
               <Plus className="h-4 w-4 mr-2" />
               Create Invoice
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
 
         {/* Summary Cards */}
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Invoices</CardTitle>
@@ -81,6 +81,7 @@ export default function InvoicesPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{filteredInvoices.length}</div>
+              <p className="text-xs text-muted-foreground">Generated invoices</p>
             </CardContent>
           </Card>
 
@@ -90,33 +91,8 @@ export default function InvoicesPage() {
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${totalRevenue.toFixed(2)}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Paid</CardTitle>
-              <Badge variant="default" className="h-4 w-4 rounded-full p-0"></Badge>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{paidInvoices.length}</div>
-              <p className="text-xs text-muted-foreground">
-                ${paidInvoices.reduce((sum, inv) => sum + inv.grandTotal, 0).toFixed(2)}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Outstanding</CardTitle>
-              <Badge variant="secondary" className="h-4 w-4 rounded-full p-0"></Badge>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{unpaidInvoices.length}</div>
-              <p className="text-xs text-muted-foreground">
-                ${unpaidInvoices.reduce((sum, inv) => sum + inv.grandTotal, 0).toFixed(2)}
-              </p>
+              <div className="text-2xl font-bold">LKR {totalRevenue.toFixed(2)}</div>
+              <p className="text-xs text-muted-foreground">Total invoice amount</p>
             </CardContent>
           </Card>
         </div>
@@ -153,12 +129,12 @@ export default function InvoicesPage() {
                     ? "No invoices match your search criteria."
                     : "Get started by creating your first invoice."}
                 </p>
-                <Link href="/invoices/new">
-                  <Button>
+                <Button asChild>
+                  <Link href="/invoices/new">
                     <Plus className="h-4 w-4 mr-2" />
                     Create Invoice
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </CardContent>
             </Card>
           ) : (
@@ -187,22 +163,14 @@ export default function InvoicesPage() {
                     </div>
                     <div className="flex items-center gap-4">
                       <div className="text-right">
-                        <div className="text-2xl font-bold">${invoice.grandTotal.toFixed(2)}</div>
-                        <Badge
-                          variant={
-                            invoice.status === "Paid"
-                              ? "default"
-                              : invoice.status === "Partial"
-                                ? "secondary"
-                                : "outline"
-                          }
-                        >
-                          {invoice.status}
-                        </Badge>
+                        <div className="text-2xl font-bold">LKR {invoice.grandTotal.toFixed(2)}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {invoice.lineItems.length} {invoice.lineItems.length === 1 ? 'test' : 'tests'}
+                        </div>
                       </div>
-                      <Link href={`/invoices/${invoice.id}`}>
-                        <Button variant="outline">View Details</Button>
-                      </Link>
+                      <Button asChild variant="outline">
+                        <Link href={`/invoices/${invoice.id}`}>View Details</Link>
+                      </Button>
                     </div>
                   </div>
                 </CardContent>

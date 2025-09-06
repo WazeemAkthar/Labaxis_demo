@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,6 +13,7 @@ import Link from "next/link"
 
 export default function PatientDetailsPage() {
   const params = useParams()
+  const router = useRouter()
   const patientId = params.id as string
 
   const [patient, setPatient] = useState<Patient | null>(null)
@@ -24,7 +25,7 @@ export default function PatientDetailsPage() {
   useEffect(() => {
     const authStatus = localStorage.getItem("lablite_auth")
     if (authStatus !== "authenticated") {
-      window.location.href = "/"
+      router.push("/")
       return
     }
     setIsAuthenticated(true)
@@ -35,7 +36,7 @@ export default function PatientDetailsPage() {
 
     if (!patientData) {
       // Patient not found, redirect to patients list
-      window.location.href = "/patients"
+      router.push("/patients")
       return
     }
 
@@ -66,9 +67,9 @@ export default function PatientDetailsPage() {
       <DashboardLayout>
         <div className="text-center py-12">
           <h1 className="text-2xl font-bold mb-4">Patient Not Found</h1>
-          <Link href="/patients">
-            <Button>Back to Patients</Button>
-          </Link>
+          <Button asChild>
+            <Link href="/patients">Back to Patients</Link>
+          </Button>
         </div>
       </DashboardLayout>
     )
@@ -79,11 +80,11 @@ export default function PatientDetailsPage() {
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
-          <Link href="/patients">
-            <Button variant="outline" size="icon">
+          <Button asChild variant="outline" size="icon">
+            <Link href="/patients">
               <ArrowLeft className="h-4 w-4" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
           <div className="flex-1">
             <h1 className="text-3xl font-bold">
               {patient.firstName} {patient.lastName}

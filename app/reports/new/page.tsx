@@ -16,6 +16,13 @@ import { ArrowLeft, Save, User, FileText, TestTube } from "lucide-react"
 import { DataManager, type Patient, type Invoice, type ReportResult } from "@/lib/data-manager"
 import Link from "next/link"
 
+// Helper function to extract unit from reference range
+function getUnitFromRange(range: string): string {
+  // Extract unit from ranges like "4.0-11.0 x10³/μL" or "12.0-16.0 g/dL"
+  const unitMatch = range.match(/[\s\d\.\-]+(.+)$/)
+  return unitMatch ? unitMatch[1].trim() : ""
+}
+
 export default function NewReportPage() {
   const router = useRouter()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -32,7 +39,7 @@ export default function NewReportPage() {
   useEffect(() => {
     const authStatus = localStorage.getItem("lablite_auth")
     if (authStatus !== "authenticated") {
-      window.location.href = "/"
+      router.push("/")
       return
     }
     setIsAuthenticated(true)
@@ -71,18 +78,35 @@ export default function NewReportPage() {
       const dataManager = DataManager.getInstance()
       const testCatalog = dataManager.getTestCatalog()
 
-      const initialResults: ReportResult[] = invoice.lineItems.map((item) => {
+      const initialResults: ReportResult[] = []
+      
+      invoice.lineItems.forEach((item) => {
         const test = testCatalog.find((t) => t.code === item.testCode)
         const referenceRanges = test?.referenceRange || {}
-        const firstRange = Object.entries(referenceRanges)[0]
 
-        return {
-          testCode: item.testCode,
-          testName: item.testName,
-          value: "",
-          unit: firstRange ? firstRange[0] : "",
-          referenceRange: firstRange ? firstRange[1] : "",
-          comments: "",
+        // For multi-component tests like FBC, create separate result entries for each component
+        if (Object.keys(referenceRanges).length > 1) {
+          Object.entries(referenceRanges).forEach(([component, range]) => {
+            initialResults.push({
+              testCode: item.testCode,
+              testName: `${item.testName} - ${component}`,
+              value: "",
+              unit: getUnitFromRange(range),
+              referenceRange: range,
+              comments: "",
+            })
+          })
+        } else {
+          // For single-component tests, create one result entry
+          const firstRange = Object.entries(referenceRanges)[0]
+          initialResults.push({
+            testCode: item.testCode,
+            testName: item.testName,
+            value: "",
+            unit: firstRange ? firstRange[0] : "",
+            referenceRange: firstRange ? firstRange[1] : "",
+            comments: "",
+          })
         }
       })
 
@@ -90,8 +114,8 @@ export default function NewReportPage() {
     }
   }
 
-  const updateResult = (testCode: string, field: keyof ReportResult, value: string) => {
-    setResults(results.map((result) => (result.testCode === testCode ? { ...result, [field]: value } : result)))
+  const updateResult = (testName: string, field: keyof ReportResult, value: string) => {
+    setResults(results.map((result) => (result.testName === testName ? { ...result, [field]: value } : result)))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -138,11 +162,11 @@ export default function NewReportPage() {
     <DashboardLayout>
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <Link href="/reports">
-            <Button variant="outline" size="icon">
+          <Button asChild variant="outline" size="icon">
+            <Link href="/reports">
               <ArrowLeft className="h-4 w-4" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
           <div>
             <h1 className="text-3xl font-bold">Generate New Report</h1>
             <p className="text-muted-foreground">Create a laboratory test report with results</p>
@@ -190,7 +214,7 @@ export default function NewReportPage() {
                     <SelectContent>
                       {patientInvoices.map((invoice) => (
                         <SelectItem key={invoice.id} value={invoice.id}>
-                          {invoice.id} - ${invoice.grandTotal.toFixed(2)} ({invoice.lineItems.length} tests)
+                          {invoice.id} - LKR {invoice.grandTotal.toFixed(2)} ({invoice.lineItems.length} tests)
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -236,8 +260,8 @@ export default function NewReportPage() {
                 <CardDescription>Input the results for each test</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                {results.map((result) => (
-                  <div key={result.testCode} className="p-4 border rounded-lg space-y-4">
+                {results.map((result, index) => (
+                  <div key={`${result.testCode}-${index}`} className="p-4 border rounded-lg space-y-4">
                     <div className="flex items-center gap-2 mb-3">
                       <Badge variant="outline">{result.testCode}</Badge>
                       <span className="font-medium">{result.testName}</span>
@@ -245,42 +269,42 @@ export default function NewReportPage() {
 
                     <div className="grid gap-4 md:grid-cols-3">
                       <div className="space-y-2">
-                        <Label htmlFor={`value-${result.testCode}`}>Result Value *</Label>
+                        <Label htmlFor={`value-${result.testCode}-${index}`}>Result Value *</Label>
                         <Input
-                          id={`value-${result.testCode}`}
+                          id={`value-${result.testCode}-${index}`}
                           value={result.value}
-                          onChange={(e) => updateResult(result.testCode, "value", e.target.value)}
+                          onChange={(e) => updateResult(result.testName, "value", e.target.value)}
                           placeholder="Enter result value"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor={`unit-${result.testCode}`}>Unit</Label>
+                        <Label htmlFor={`unit-${result.testCode}-${index}`}>Unit</Label>
                         <Input
-                          id={`unit-${result.testCode}`}
+                          id={`unit-${result.testCode}-${index}`}
                           value={result.unit}
-                          onChange={(e) => updateResult(result.testCode, "unit", e.target.value)}
+                          onChange={(e) => updateResult(result.testName, "unit", e.target.value)}
                           placeholder="e.g., mg/dL, %"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor={`range-${result.testCode}`}>Reference Range</Label>
+                        <Label htmlFor={`range-${result.testCode}-${index}`}>Reference Range</Label>
                         <Input
-                          id={`range-${result.testCode}`}
+                          id={`range-${result.testCode}-${index}`}
                           value={result.referenceRange}
-                          onChange={(e) => updateResult(result.testCode, "referenceRange", e.target.value)}
+                          onChange={(e) => updateResult(result.testName, "referenceRange", e.target.value)}
                           placeholder="e.g., 70-100 mg/dL"
                         />
                       </div>
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor={`comments-${result.testCode}`}>Comments (Optional)</Label>
+                      <Label htmlFor={`comments-${result.testCode}-${index}`}>Comments (Optional)</Label>
                       <Textarea
-                        id={`comments-${result.testCode}`}
+                        id={`comments-${result.testCode}-${index}`}
                         value={result.comments || ""}
-                        onChange={(e) => updateResult(result.testCode, "comments", e.target.value)}
+                        onChange={(e) => updateResult(result.testName, "comments", e.target.value)}
                         placeholder="Any additional comments about this result"
                         rows={2}
                       />
@@ -333,11 +357,11 @@ export default function NewReportPage() {
               <Save className="h-4 w-4 mr-2" />
               {saving ? "Generating..." : "Generate Report"}
             </Button>
-            <Link href="/reports">
-              <Button type="button" variant="outline">
+            <Button asChild type="button" variant="outline">
+              <Link href="/reports">
                 Cancel
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </form>
       </div>

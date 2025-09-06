@@ -1,18 +1,20 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { ArrowLeft, Download, Printer as Print, Share, Mail, MessageCircle, Edit } from "lucide-react"
+import { ArrowLeft, Download, Printer as Print, Edit } from "lucide-react"
 import { DataManager, type Report } from "@/lib/data-manager"
+import { generateReportPDF } from "@/lib/pdf-generator"
 import Link from "next/link"
 
 export default function ReportDetailsPage() {
   const params = useParams()
+  const router = useRouter()
   const reportId = params.id as string
 
   const [report, setReport] = useState<Report | null>(null)
@@ -22,7 +24,7 @@ export default function ReportDetailsPage() {
   useEffect(() => {
     const authStatus = localStorage.getItem("lablite_auth")
     if (authStatus !== "authenticated") {
-      window.location.href = "/"
+      router.push("/")
       return
     }
     setIsAuthenticated(true)
@@ -34,7 +36,7 @@ export default function ReportDetailsPage() {
 
     if (!reportData) {
       // Report not found, redirect to reports list
-      window.location.href = "/reports"
+      router.push("/reports")
       return
     }
 
@@ -47,36 +49,26 @@ export default function ReportDetailsPage() {
   }
 
   const handleDownloadPDF = async () => {
-    // This would generate and download the PDF
-    // For now, we'll show an alert
-    alert("PDF generation would be implemented here using @react-pdf/renderer")
-  }
-
-  const handleShareEmail = () => {
     if (!report) return
-    const subject = `Laboratory Report ${report.id} - LabLite Laboratory`
-    const body = `Dear ${report.patientName},
-
-Please find attached your laboratory test report.
-
-Report ID: ${report.id}
-Invoice ID: ${report.invoiceId}
-Tests Completed: ${report.results.length}
-Reviewed by: ${report.reviewedBy}
-
-Best regards,
-LabLite Laboratory Team
-
-(PDF attached)`
-
-    window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`)
+    
+    try {
+      // Get patient data for the PDF
+      const dataManager = DataManager.getInstance()
+      const patient = dataManager.getPatientById(report.patientId)
+      
+      if (!patient) {
+        alert("Patient information not found")
+        return
+      }
+      
+      // Generate and download PDF
+      await generateReportPDF(report, patient)
+    } catch (error) {
+      console.error("Error generating PDF:", error)
+      alert("Error generating PDF. Please try again.")
+    }
   }
 
-  const handleShareWhatsApp = () => {
-    if (!report) return
-    const message = `Hello ${report.patientName}, your laboratory test report ${report.id} is ready. ${report.results.length} tests completed. (PDF attached)`
-    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`)
-  }
 
   if (loading || !isAuthenticated) {
     return (
@@ -91,9 +83,9 @@ LabLite Laboratory Team
       <DashboardLayout>
         <div className="text-center py-12">
           <h1 className="text-2xl font-bold mb-4">Report Not Found</h1>
-          <Link href="/reports">
-            <Button>Back to Reports</Button>
-          </Link>
+          <Button asChild>
+            <Link href="/reports">Back to Reports</Link>
+          </Button>
         </div>
       </DashboardLayout>
     )
@@ -104,11 +96,11 @@ LabLite Laboratory Team
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
-          <Link href="/reports">
-            <Button variant="outline" size="icon">
+          <Button asChild variant="outline" size="icon">
+            <Link href="/reports">
               <ArrowLeft className="h-4 w-4" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
           <div className="flex-1">
             <h1 className="text-3xl font-bold">Report {report.id}</h1>
             <p className="text-muted-foreground">Generated on {new Date(report.createdAt).toLocaleDateString()}</p>
@@ -134,12 +126,11 @@ LabLite Laboratory Team
           <CardHeader className="pb-6">
             <div className="flex items-start justify-between">
               <div>
-                <CardTitle className="text-2xl mb-2">LabLite Laboratory</CardTitle>
+                <CardTitle className="text-2xl mb-2">Azza Medical Laboratory Services</CardTitle>
                 <div className="text-sm text-muted-foreground space-y-1">
-                  <div>123 Medical Center Drive</div>
-                  <div>Healthcare City, HC 12345</div>
-                  <div>Phone: +1 (555) 123-4567</div>
-                  <div>Email: info@lablite.com</div>
+                  <div>Unique Place for all Diagnostic needs</div>
+                  <div>Phone: 0752537178, 0776452417, 0753274455</div>
+                  <div>Email: azzaarafath@gmail.com</div>
                 </div>
               </div>
               <div className="text-right">
@@ -245,32 +236,6 @@ LabLite Laboratory Team
           </CardContent>
         </Card>
 
-        {/* Action Buttons */}
-        <Card className="print:hidden">
-          <CardHeader>
-            <CardTitle>Share Report</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-4">
-              <Button onClick={handleShareEmail} variant="outline">
-                <Mail className="h-4 w-4 mr-2" />
-                Email
-              </Button>
-              <Button onClick={handleShareWhatsApp} variant="outline">
-                <MessageCircle className="h-4 w-4 mr-2" />
-                WhatsApp
-              </Button>
-              <Button variant="outline">
-                <Share className="h-4 w-4 mr-2" />
-                More Options
-              </Button>
-            </div>
-            <p className="text-sm text-muted-foreground mt-2">
-              Share links will open with pre-filled message and "(PDF attached)" note. Actual PDF attachment would be
-              implemented in production.
-            </p>
-          </CardContent>
-        </Card>
       </div>
     </DashboardLayout>
   )

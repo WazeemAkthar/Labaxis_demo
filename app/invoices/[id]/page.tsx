@@ -1,18 +1,20 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { ArrowLeft, Download, Printer as Print, Share, Mail, MessageCircle, Edit } from "lucide-react"
+import { ArrowLeft, Download, Printer as Print, Edit } from "lucide-react"
 import { DataManager, type Invoice } from "@/lib/data-manager"
+import { generateInvoicePDF } from "@/lib/pdf-generator"
 import Link from "next/link"
 
 export default function InvoiceDetailsPage() {
   const params = useParams()
+  const router = useRouter()
   const invoiceId = params.id as string
 
   const [invoice, setInvoice] = useState<Invoice | null>(null)
@@ -22,7 +24,7 @@ export default function InvoiceDetailsPage() {
   useEffect(() => {
     const authStatus = localStorage.getItem("lablite_auth")
     if (authStatus !== "authenticated") {
-      window.location.href = "/"
+      router.push("/")
       return
     }
     setIsAuthenticated(true)
@@ -34,7 +36,7 @@ export default function InvoiceDetailsPage() {
 
     if (!invoiceData) {
       // Invoice not found, redirect to invoices list
-      window.location.href = "/invoices"
+      router.push("/invoices")
       return
     }
 
@@ -47,35 +49,26 @@ export default function InvoiceDetailsPage() {
   }
 
   const handleDownloadPDF = async () => {
-    // This would generate and download the PDF
-    // For now, we'll show an alert
-    alert("PDF generation would be implemented here using @react-pdf/renderer")
-  }
-
-  const handleShareEmail = () => {
     if (!invoice) return
-    const subject = `Invoice ${invoice.id} - LabLite Laboratory`
-    const body = `Dear ${invoice.patientName},
-
-Please find attached your laboratory test invoice.
-
-Invoice ID: ${invoice.id}
-Total Amount: $${invoice.grandTotal.toFixed(2)}
-Status: ${invoice.status}
-
-Best regards,
-LabLite Laboratory Team
-
-(PDF attached)`
-
-    window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`)
+    
+    try {
+      // Get patient data for the PDF
+      const dataManager = DataManager.getInstance()
+      const patient = dataManager.getPatientById(invoice.patientId)
+      
+      if (!patient) {
+        alert("Patient information not found")
+        return
+      }
+      
+      // Generate and download PDF
+      await generateInvoicePDF(invoice, patient)
+    } catch (error) {
+      console.error("Error generating PDF:", error)
+      alert("Error generating PDF. Please try again.")
+    }
   }
 
-  const handleShareWhatsApp = () => {
-    if (!invoice) return
-    const message = `Hello ${invoice.patientName}, your laboratory test invoice ${invoice.id} for $${invoice.grandTotal.toFixed(2)} is ready. (PDF attached)`
-    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`)
-  }
 
   if (loading || !isAuthenticated) {
     return (
@@ -90,9 +83,9 @@ LabLite Laboratory Team
       <DashboardLayout>
         <div className="text-center py-12">
           <h1 className="text-2xl font-bold mb-4">Invoice Not Found</h1>
-          <Link href="/invoices">
-            <Button>Back to Invoices</Button>
-          </Link>
+          <Button asChild>
+            <Link href="/invoices">Back to Invoices</Link>
+          </Button>
         </div>
       </DashboardLayout>
     )
@@ -103,11 +96,11 @@ LabLite Laboratory Team
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
-          <Link href="/invoices">
-            <Button variant="outline" size="icon">
+          <Button asChild variant="outline" size="icon">
+            <Link href="/invoices">
               <ArrowLeft className="h-4 w-4" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
           <div className="flex-1">
             <h1 className="text-3xl font-bold">Invoice {invoice.id}</h1>
             <p className="text-muted-foreground">Created on {new Date(invoice.createdAt).toLocaleDateString()}</p>
@@ -133,23 +126,17 @@ LabLite Laboratory Team
           <CardHeader className="pb-6">
             <div className="flex items-start justify-between">
               <div>
-                <CardTitle className="text-2xl mb-2">LabLite Laboratory</CardTitle>
+                <CardTitle className="text-2xl mb-2">Azza Medical Laboratory Services</CardTitle>
                 <div className="text-sm text-muted-foreground space-y-1">
-                  <div>123 Medical Center Drive</div>
-                  <div>Healthcare City, HC 12345</div>
-                  <div>Phone: +1 (555) 123-4567</div>
-                  <div>Email: info@lablite.com</div>
+                  <div>Unique Place for all Diagnostic needs</div>
+                  <div>Phone: 0752537178, 0776452417, 0753274455</div>
+                  <div>Email: azzaarafath@gmail.com</div>
                 </div>
               </div>
               <div className="text-right">
-                <Badge
-                  variant={
-                    invoice.status === "Paid" ? "default" : invoice.status === "Partial" ? "secondary" : "outline"
-                  }
-                  className="text-lg px-4 py-2"
-                >
-                  {invoice.status}
-                </Badge>
+                <div className="text-sm text-muted-foreground">
+                  {invoice.lineItems.length} {invoice.lineItems.length === 1 ? 'test' : 'tests'}
+                </div>
               </div>
             </div>
           </CardHeader>
@@ -175,7 +162,7 @@ LabLite Laboratory Team
                     {new Date(invoice.createdAt).toLocaleDateString()}
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Status:</span> {invoice.status}
+                    <span className="text-muted-foreground">Tests:</span> {invoice.lineItems.length}
                   </div>
                 </div>
               </div>
@@ -201,8 +188,8 @@ LabLite Laboratory Team
                     </div>
                     <div className="col-span-5">{item.testName}</div>
                     <div className="col-span-1 text-center">{item.quantity}</div>
-                    <div className="col-span-2 text-right">${item.unitPrice.toFixed(2)}</div>
-                    <div className="col-span-2 text-right font-medium">${item.total.toFixed(2)}</div>
+                    <div className="col-span-2 text-right">LKR {item.unitPrice.toFixed(2)}</div>
+                    <div className="col-span-2 text-right font-medium">LKR {item.total.toFixed(2)}</div>
                   </div>
                 ))}
               </div>
@@ -215,60 +202,30 @@ LabLite Laboratory Team
               <div className="w-full max-w-sm space-y-2">
                 <div className="flex justify-between">
                   <span>Subtotal:</span>
-                  <span>${invoice.subtotal.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Tax ({(invoice.taxRate * 100).toFixed(1)}%):</span>
-                  <span>${invoice.taxAmount.toFixed(2)}</span>
+                  <span>LKR {invoice.subtotal.toFixed(2)}</span>
                 </div>
                 {invoice.discountAmount > 0 && (
                   <div className="flex justify-between text-green-600">
                     <span>Discount ({(invoice.discountPercent * 100).toFixed(1)}%):</span>
-                    <span>-${invoice.discountAmount.toFixed(2)}</span>
+                    <span>-LKR {invoice.discountAmount.toFixed(2)}</span>
                   </div>
                 )}
                 <Separator />
                 <div className="flex justify-between text-lg font-bold">
                   <span>Grand Total:</span>
-                  <span>${invoice.grandTotal.toFixed(2)}</span>
+                  <span>LKR {invoice.grandTotal.toFixed(2)}</span>
                 </div>
               </div>
             </div>
 
             {/* Footer */}
             <div className="pt-6 border-t text-center text-sm text-muted-foreground">
-              <p>Thank you for choosing LabLite Laboratory for your healthcare needs.</p>
+              <p>Thank you for choosing Azza Medical Laboratory Services for your healthcare needs.</p>
               <p className="mt-2">For questions about this invoice, please contact us at info@lablite.com</p>
             </div>
           </CardContent>
         </Card>
 
-        {/* Action Buttons */}
-        <Card className="print:hidden">
-          <CardHeader>
-            <CardTitle>Share Invoice</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-4">
-              <Button onClick={handleShareEmail} variant="outline">
-                <Mail className="h-4 w-4 mr-2" />
-                Email
-              </Button>
-              <Button onClick={handleShareWhatsApp} variant="outline">
-                <MessageCircle className="h-4 w-4 mr-2" />
-                WhatsApp
-              </Button>
-              <Button variant="outline">
-                <Share className="h-4 w-4 mr-2" />
-                More Options
-              </Button>
-            </div>
-            <p className="text-sm text-muted-foreground mt-2">
-              Share links will open with pre-filled message and "(PDF attached)" note. Actual PDF attachment would be
-              implemented in production.
-            </p>
-          </CardContent>
-        </Card>
       </div>
     </DashboardLayout>
   )

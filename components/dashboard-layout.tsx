@@ -3,8 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter, type AppRouterInstance } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { FlaskConical, Users, FileText, Activity, DollarSign, Menu, LogOut, Home, Settings } from "lucide-react"
@@ -25,11 +24,12 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname()
+  const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const handleSignOut = () => {
     localStorage.removeItem("lablite_auth")
-    window.location.href = "/"
+    router.push("/")
   }
 
   return (
@@ -42,13 +42,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="w-64 p-0">
-          <SidebarContent pathname={pathname} onSignOut={handleSignOut} />
+          <SidebarContent pathname={pathname} router={router} onSignOut={handleSignOut} />
         </SheetContent>
       </Sheet>
 
       {/* Desktop sidebar */}
       <div className="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col">
-        <SidebarContent pathname={pathname} onSignOut={handleSignOut} />
+        <SidebarContent pathname={pathname} router={router} onSignOut={handleSignOut} />
       </div>
 
       {/* Main content */}
@@ -59,15 +59,15 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   )
 }
 
-function SidebarContent({ pathname, onSignOut }: { pathname: string; onSignOut: () => void }) {
+function SidebarContent({ pathname, router, onSignOut }: { pathname: string; router: AppRouterInstance; onSignOut: () => void }) {
   return (
     <div className="flex flex-col h-full bg-card border-r">
       {/* Logo */}
       <div className="flex items-center gap-2 p-6 border-b">
         <FlaskConical className="h-8 w-8 text-primary" />
         <div>
-          <h1 className="text-xl font-bold">LabLite</h1>
-          <p className="text-sm text-muted-foreground">LIMS</p>
+          <h1 className="text-lg font-bold leading-tight">Azza Medical Laboratory Services</h1>
+          <p className="text-xs text-muted-foreground">Unique Place for all Diagnostic needs</p>
         </div>
       </div>
 
@@ -75,12 +75,16 @@ function SidebarContent({ pathname, onSignOut }: { pathname: string; onSignOut: 
       <nav className="flex-1 p-4 space-y-2">
         {navigation.map((item) => {
           const Icon = item.icon
+          const handleClick = (e: React.MouseEvent) => {
+            e.preventDefault()
+            router.push(item.href)
+          }
           return (
-            <Link
+            <button
               key={item.name}
-              href={item.href}
+              onClick={handleClick}
               className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left",
                 pathname === item.href
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted",
@@ -88,10 +92,20 @@ function SidebarContent({ pathname, onSignOut }: { pathname: string; onSignOut: 
             >
               <Icon className="h-4 w-4" />
               {item.name}
-            </Link>
+            </button>
           )
         })}
       </nav>
+
+      {/* Contact Info */}
+      <div className="p-4 border-t space-y-2">
+        <div className="text-xs text-muted-foreground">
+          <p className="font-medium">Contact Us</p>
+          <p>azzaarafath@gmail.com</p>
+          <p>0752537178 | 0776452417</p>
+          <p>0753274455</p>
+        </div>
+      </div>
 
       {/* Sign out */}
       <div className="p-4 border-t">

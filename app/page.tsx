@@ -66,7 +66,7 @@ export default function LoginPage() {
         setTimeout(() => {
           console.log("[v0] Redirecting to dashboard...")
           setIsAuthenticated(true)
-          window.location.href = "/dashboard"
+          router.push("/dashboard")
         }, 100)
       } catch (error) {
         console.error("[v0] Storage error:", error)
@@ -101,8 +101,8 @@ export default function LoginPage() {
           <div className="flex justify-center mb-4">
             <FlaskConical className="h-12 w-12 text-primary" />
           </div>
-          <CardTitle className="text-2xl font-bold">LabLite LIMS</CardTitle>
-          <CardDescription>Laboratory Information Management System</CardDescription>
+          <CardTitle className="text-2xl font-bold">Azza Medical Laboratory Services</CardTitle>
+          <CardDescription>Unique Place for all Diagnostic needs</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignIn} className="space-y-4">
