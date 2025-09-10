@@ -69,6 +69,131 @@ export default function ReportDetailsPage() {
     }
   }
 
+  const renderTestResults = (results: any[]) => {
+    // Group results by test type
+    const groupedResults = results.reduce((groups, result) => {
+      const testCode = result.testCode
+      if (!groups[testCode]) {
+        groups[testCode] = []
+      }
+      groups[testCode].push(result)
+      return groups
+    }, {} as Record<string, any[]>)
+
+    return (
+      <div className="space-y-6">
+        {Object.entries(groupedResults).map(([testCode, testResults]) => {
+          if (testCode === 'FBC') {
+            return renderFBCResults(testResults)
+          } else {
+            return renderRegularTestResults(testCode, testResults)
+          }
+        })}
+      </div>
+    )
+  }
+
+  const renderFBCResults = (fbcResults: any[]) => {
+    return (
+      <div key="FBC" className="border rounded-lg p-6">
+        <div className="flex items-center gap-2 mb-6">
+          <Badge variant="outline" className="text-lg px-3 py-1">FBC</Badge>
+          <span className="font-semibold text-lg">Full Blood Count</span>
+        </div>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b">
+                <th className="text-left py-2 font-semibold">Parameter</th>
+                <th className="text-right py-2 font-semibold">Result</th>
+                <th className="text-right py-2 font-semibold">Units</th>
+                <th className="text-right py-2 font-semibold">Reference Range</th>
+                <th className="text-center py-2 font-semibold">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {fbcResults.map((result, index) => {
+                const isNormal = checkIfNormal(result.value, result.referenceRange, result.unit)
+                return (
+                  <tr key={index} className="border-b border-gray-100">
+                    <td className="py-2 font-medium">{result.testName}</td>
+                    <td className="text-right py-2 font-semibold">{result.value}</td>
+                    <td className="text-right py-2 text-muted-foreground">{result.unit}</td>
+                    <td className="text-right py-2 text-muted-foreground">{result.referenceRange}</td>
+                    <td className="text-center py-2">
+                      <Badge variant={isNormal ? "default" : "destructive"} className="text-xs">
+                        {isNormal ? "Normal" : "Abnormal"}
+                      </Badge>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    )
+  }
+
+  const renderRegularTestResults = (testCode: string, testResults: any[]) => {
+    return (
+      <div key={testCode}>
+        {testResults.map((result, index) => (
+          <div key={`${testCode}-${index}`} className="p-4 border rounded-lg">
+            <div className="flex items-center gap-2 mb-3">
+              <Badge variant="outline">{result.testCode}</Badge>
+              <span className="font-medium">{result.testName}</span>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-3 mb-3">
+              <div>
+                <span className="text-sm text-muted-foreground">Result:</span>
+                <div className="font-semibold text-lg">
+                  {result.value} {result.unit}
+                </div>
+              </div>
+              <div>
+                <span className="text-sm text-muted-foreground">Reference Range:</span>
+                <div className="font-medium">{result.referenceRange}</div>
+              </div>
+              <div>
+                <span className="text-sm text-muted-foreground">Status:</span>
+                <div>
+                  <Badge variant="secondary">Normal</Badge>
+                </div>
+              </div>
+            </div>
+
+            {result.comments && (
+              <div>
+                <span className="text-sm text-muted-foreground">Comments:</span>
+                <p className="text-sm mt-1">{result.comments}</p>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  const checkIfNormal = (value: string, referenceRange: string, unit: string) => {
+    // Simple normal range checker - you can enhance this logic
+    if (!value || !referenceRange) return true
+    
+    const numValue = parseFloat(value)
+    if (isNaN(numValue)) return true
+    
+    // Extract range like "12.0-16.0" or "4.0-11.0"
+    const rangeMatch = referenceRange.match(/(\d+\.?\d*)-(\d+\.?\d*)/)
+    if (!rangeMatch) return true
+    
+    const minValue = parseFloat(rangeMatch[1])
+    const maxValue = parseFloat(rangeMatch[2])
+    
+    return numValue >= minValue && numValue <= maxValue
+  }
+
 
   if (loading || !isAuthenticated) {
     return (
@@ -93,9 +218,20 @@ export default function ReportDetailsPage() {
 
   return (
     <DashboardLayout>
+      <style jsx global>{`
+        @media print {
+          body { font-size: 12px; }
+          .no-print { display: none !important; }
+          .print-break { page-break-after: always; }
+          @page { 
+            margin: 1in; 
+            size: A4;
+          }
+        }
+      `}</style>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 no-print">
           <Button asChild variant="outline" size="icon">
             <Link href="/reports">
               <ArrowLeft className="h-4 w-4" />
@@ -122,7 +258,7 @@ export default function ReportDetailsPage() {
         </div>
 
         {/* Report Content */}
-        <Card className="print:shadow-none">
+        <Card className="print:shadow-none max-w-4xl mx-auto print:max-w-none">
           <CardHeader className="pb-6">
             <div className="flex items-start justify-between">
               <div>
@@ -176,42 +312,7 @@ export default function ReportDetailsPage() {
             {/* Test Results */}
             <div>
               <h3 className="font-semibold mb-4">Test Results:</h3>
-              <div className="space-y-4">
-                {report.results.map((result) => (
-                  <div key={result.testCode} className="p-4 border rounded-lg">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Badge variant="outline">{result.testCode}</Badge>
-                      <span className="font-medium">{result.testName}</span>
-                    </div>
-
-                    <div className="grid gap-4 md:grid-cols-3 mb-3">
-                      <div>
-                        <span className="text-sm text-muted-foreground">Result:</span>
-                        <div className="font-semibold text-lg">
-                          {result.value} {result.unit}
-                        </div>
-                      </div>
-                      <div>
-                        <span className="text-sm text-muted-foreground">Reference Range:</span>
-                        <div className="font-medium">{result.referenceRange}</div>
-                      </div>
-                      <div>
-                        <span className="text-sm text-muted-foreground">Status:</span>
-                        <div>
-                          <Badge variant="secondary">Normal</Badge>
-                        </div>
-                      </div>
-                    </div>
-
-                    {result.comments && (
-                      <div>
-                        <span className="text-sm text-muted-foreground">Comments:</span>
-                        <p className="text-sm mt-1">{result.comments}</p>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
+              {renderTestResults(report.results)}
             </div>
 
             {/* Doctor's Remarks */}

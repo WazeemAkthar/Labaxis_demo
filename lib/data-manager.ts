@@ -55,7 +55,7 @@ export interface Report {
   id: string
   patientId: string
   patientName: string
-  invoiceId: string
+  invoiceId: string | null
   results: ReportResult[]
   doctorRemarks?: string
   reviewedBy: string
