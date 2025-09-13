@@ -93,9 +93,97 @@ export default function InvoiceDetailsPage() {
 
   return (
     <DashboardLayout>
+      <style jsx global>{`
+        @media print {
+          body { 
+            font-size: 8px; 
+            font-family: Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+          }
+          .no-print { display: none !important; }
+          .print-break { page-break-after: always; }
+          @page { 
+            margin: 20px; 
+            size: A4;
+          }
+          
+          /* Hide header for print - letterhead will be used */
+          [class*="CardHeader"] {
+            display: none !important;
+          }
+          header {
+            display: none !important;
+          }
+          .print\\:shadow-none > div:first-child {
+            display: none !important;
+          }
+          
+          /* Match PDF section styling */
+          .print\\:shadow-none {
+            box-shadow: none !important;
+            border: none !important;
+          }
+          
+          /* Section styling */
+          .space-y-6 > div {
+            background-color: #f9fafb;
+            padding: 6px;
+            margin-bottom: 8px;
+            border-radius: 2px;
+          }
+          
+          /* Section titles */
+          h3 {
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: #374151;
+          }
+          
+          /* Grid layout for invoice items */
+          .grid.grid-cols-12 {
+            font-size: 7px;
+            padding: 2px 0;
+            border-bottom: 1px solid #e5e7eb;
+          }
+          
+          /* Badge styling */
+          .badge, [class*="badge"] {
+            font-size: 6px !important;
+            padding: 2px 3px !important;
+            background-color: #f3f4f6 !important;
+            border: 1px solid #e5e7eb !important;
+            color: #374151 !important;
+          }
+          
+          /* Labels and values */
+          .text-muted-foreground {
+            color: #6b7280 !important;
+            font-size: 8px !important;
+          }
+          .font-medium, .font-semibold {
+            font-weight: bold !important;
+          }
+          
+          /* Totals section */
+          .max-w-sm {
+            font-size: 8px !important;
+          }
+          
+          /* Footer styling */
+          .border-t.text-center {
+            font-size: 6px !important;
+            color: #9ca3af !important;
+            margin-top: auto !important;
+            padding-top: 8px !important;
+            border-top: 1px solid #e0e0e0 !important;
+          }
+        }
+      `}</style>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 no-print">
           <Button asChild variant="outline" size="icon">
             <Link href="/invoices">
               <ArrowLeft className="h-4 w-4" />

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Document, Page, Text, View, StyleSheet, Font, pdf } from '@react-pdf/renderer'
-import type { Report, Patient } from './data-manager'
+import type { Report, Patient, Invoice } from './data-manager'
 
 // Register fonts (optional - you can use built-in fonts)
 Font.register({
@@ -158,6 +158,46 @@ const styles = StyleSheet.create({
   footerText: {
     fontSize: 6,
     color: '#9ca3af'
+  },
+  // Standard header styles
+  labHeader: {
+    marginBottom: 16,
+    paddingBottom: 12,
+    borderBottom: '2 solid #374151'
+  },
+  labTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 4,
+    color: '#1f2937',
+    textAlign: 'center'
+  },
+  labSubtitle: {
+    fontSize: 10,
+    color: '#6b7280',
+    textAlign: 'center',
+    marginBottom: 2
+  },
+  labContact: {
+    fontSize: 8,
+    color: '#6b7280',
+    textAlign: 'center'
+  },
+  documentBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: '#374151',
+    color: '#ffffff',
+    fontSize: 10,
+    padding: 6,
+    fontWeight: 'bold'
+  },
+  qrText: {
+    fontSize: 6,
+    textAlign: 'center',
+    color: '#666',
+    marginTop: 20
   }
 })
 
@@ -178,6 +218,7 @@ const checkValueStatus = (value: string, referenceRange: string) => {
   if (numValue > maxValue) return 'high'
   return 'normal'
 }
+
 
 // Report PDF Component
 const ReportPDF: React.FC<{ report: Report; patient: Patient }> = ({ report, patient }) => {
@@ -230,6 +271,19 @@ const ReportPDF: React.FC<{ report: Report; patient: Patient }> = ({ report, pat
   return (
     <Document>
       <Page size="A4" style={styles.page}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.title}>Azza Medical Laboratory Services</Text>
+          <Text style={styles.subtitle}>Unique Place for all Diagnostic needs</Text>
+          <Text style={styles.subtitle}>Phone: 0752537178, 0776452417, 0753274455</Text>
+          <Text style={styles.subtitle}>Email: azzaarafath@gmail.com</Text>
+          <View style={{ alignItems: 'flex-end', marginTop: 8 }}>
+            <Text style={{ fontSize: 12, fontWeight: 'bold', backgroundColor: '#374151', color: '#ffffff', padding: 4 }}>
+              Laboratory Report
+            </Text>
+          </View>
+        </View>
+        
         {/* Patient Information */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Patient Information</Text>
@@ -353,6 +407,100 @@ const ReportPDF: React.FC<{ report: Report; patient: Patient }> = ({ report, pat
   )
 }
 
+// Invoice PDF Component
+const InvoicePDF: React.FC<{ invoice: Invoice; patient: Patient }> = ({ invoice, patient }) => {
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.title}>Azza Medical Laboratory Services</Text>
+          <Text style={styles.subtitle}>Unique Place for all Diagnostic needs</Text>
+          <Text style={styles.subtitle}>Phone: 0752537178, 0776452417, 0753274455</Text>
+          <Text style={styles.subtitle}>Email: azzaarafath@gmail.com</Text>
+        </View>
+
+        {/* Patient and Invoice Information */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Bill To & Invoice Details</Text>
+          <View style={styles.row}>
+            <Text style={styles.label}>Invoice ID:</Text>
+            <Text style={styles.value}>{invoice.id}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Patient Name:</Text>
+            <Text style={styles.value}>{patient.firstName} {patient.lastName}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Patient ID:</Text>
+            <Text style={styles.value}>{invoice.patientId}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Date:</Text>
+            <Text style={styles.value}>{new Date(invoice.createdAt).toLocaleDateString()}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Tests:</Text>
+            <Text style={styles.value}>{invoice.lineItems.length}</Text>
+          </View>
+        </View>
+
+        {/* Test Details */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Test Details</Text>
+          <View style={styles.table}>
+            <View style={[styles.tableRow, { backgroundColor: '#f3f4f6' }]}>
+              <Text style={[styles.tableCell, styles.tableHeader, { flex: 1 }]}>Code</Text>
+              <Text style={[styles.tableCell, styles.tableHeader, { flex: 3 }]}>Test Name</Text>
+              <Text style={[styles.tableCell, styles.tableHeader, { flex: 0.8, textAlign: 'center' }]}>Qty</Text>
+              <Text style={[styles.tableCell, styles.tableHeader, { flex: 1.2, textAlign: 'right' }]}>Unit Price</Text>
+              <Text style={[styles.tableCell, styles.tableHeader, { flex: 1.2, textAlign: 'right' }]}>Total</Text>
+            </View>
+            {invoice.lineItems.map((item, index) => (
+              <View key={index} style={styles.tableRow}>
+                <Text style={[styles.tableCell, { flex: 1 }]}>{item.testCode}</Text>
+                <Text style={[styles.tableCell, { flex: 3 }]}>{item.testName}</Text>
+                <Text style={[styles.tableCell, { flex: 0.8, textAlign: 'center' }]}>{item.quantity}</Text>
+                <Text style={[styles.tableCell, { flex: 1.2, textAlign: 'right' }]}>LKR {item.unitPrice.toFixed(2)}</Text>
+                <Text style={[styles.tableCell, { flex: 1.2, textAlign: 'right' }]}>LKR {item.total.toFixed(2)}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        {/* Totals */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Invoice Summary</Text>
+          <View style={styles.row}>
+            <Text style={styles.label}>Subtotal:</Text>
+            <Text style={styles.value}>LKR {invoice.subtotal.toFixed(2)}</Text>
+          </View>
+          {invoice.discountAmount > 0 && (
+            <View style={styles.row}>
+              <Text style={styles.label}>Discount ({(invoice.discountPercent * 100).toFixed(1)}%):</Text>
+              <Text style={styles.value}>-LKR {invoice.discountAmount.toFixed(2)}</Text>
+            </View>
+          )}
+          <View style={[styles.row, { borderTop: '1 solid #d1d5db', paddingTop: 3, marginTop: 3 }]}>
+            <Text style={[styles.label, { fontSize: 10, fontWeight: 'bold' }]}>Grand Total:</Text>
+            <Text style={[styles.value, { fontSize: 10, fontWeight: 'bold' }]}>LKR {invoice.grandTotal.toFixed(2)}</Text>
+          </View>
+        </View>
+
+        {/* Footer */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>
+            Thank you for choosing Azza Medical Laboratory Services for your healthcare needs.
+          </Text>
+          <Text style={styles.footerText}>
+            For questions about this invoice, please contact us at info@lablite.com
+          </Text>
+        </View>
+      </Page>
+    </Document>
+  )
+}
+
 // Export functions
 export const generateReportPDF = async (report: Report, patient: Patient) => {
   const blob = await pdf(<ReportPDF report={report} patient={patient} />).toBlob()
@@ -360,6 +508,16 @@ export const generateReportPDF = async (report: Report, patient: Patient) => {
   const link = document.createElement('a')
   link.href = url
   link.download = `Lab_Report_${report.id}.pdf`
+  link.click()
+  URL.revokeObjectURL(url)
+}
+
+export const generateInvoicePDF = async (invoice: Invoice, patient: Patient) => {
+  const blob = await pdf(<InvoicePDF invoice={invoice} patient={patient} />).toBlob()
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = `Invoice_${invoice.id}.pdf`
   link.click()
   URL.revokeObjectURL(url)
 }

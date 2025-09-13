@@ -18,6 +18,7 @@ export default function ReportDetailsPage() {
   const reportId = params.id as string
 
   const [report, setReport] = useState<Report | null>(null)
+  const [patient, setPatient] = useState<any>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loading, setLoading] = useState(true)
 
@@ -41,6 +42,11 @@ export default function ReportDetailsPage() {
     }
 
     setReport(reportData)
+    
+    // Get patient data
+    const patientData = dataManager.getPatientById(reportData.patientId)
+    setPatient(patientData)
+    
     setLoading(false)
   }, [reportId])
 
@@ -255,43 +261,248 @@ export default function ReportDetailsPage() {
     <DashboardLayout>
       <style jsx global>{`
         @media print {
-          body { font-size: 10px; }
+          body { 
+            font-size: 8px; 
+            font-family: Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+          }
           .no-print { display: none !important; }
           .print-break { page-break-after: always; }
           @page { 
-            margin: 0.7in; 
+            margin: 15px; 
             size: A4;
           }
+          
+          /* Hide header for print - letterhead will be used */
+          [class*="CardHeader"] {
+            display: none !important;
+          }
+          header {
+            display: none !important;
+          }
+          .border-b-2 {
+            display: none !important;
+          }
+          .print\\:shadow-none > div:first-child {
+            display: none !important;
+          }
+          
+          /* Remove main card border and shadow */
+          .print\\:shadow-none {
+            box-shadow: none !important;
+            border: none !important;
+          }
+          
+          /* Remove outer card styling */
+          .max-w-4xl.mx-auto.print\\:max-w-none {
+            border: none !important;
+            box-shadow: none !important;
+          }
+          
+          /* Remove any container borders around patient section */
+          .space-y-6 {
+            border: none !important;
+          }
+          
+          /* Remove card content borders */
+          [class*="CardContent"] {
+            border: none !important;
+          }
+          
+          /* Keep patient info section border as is */
+          .bg-gray-50.p-4.rounded-sm.border {
+            background-color: #f9fafb !important;
+            padding: 6px !important;
+            margin-bottom: 8px !important;
+          }
+          
+          /* Section titles - reduced spacing */
+          h3 {
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 2px;
+            margin-top: 2px;
+            color: #374151;
+          }
+          
+          /* FBC Title - center it with reduced margins */
+          .border.rounded-lg .flex.items-center.gap-2 {
+            justify-content: center !important;
+            margin-bottom: 4px !important;
+            margin-top: 2px !important;
+            width: 100% !important;
+          }
+          
+          /* Hide the FBC badge completely - multiple selectors */
+          .border.rounded-lg .flex.items-center.gap-2 > [class*="Badge"],
+          .border.rounded-lg .flex.items-center.gap-2 > [class*="badge"],
+          .border.rounded-lg .flex.items-center.gap-2 > *:first-child {
+            display: none !important;
+          }
+          
+          /* Style only the Full Blood Count text span (not the badge) */
+          .border.rounded-lg .flex.items-center.gap-2 > span:not([class*="badge"]):not([class*="Badge"]) {
+            font-size: 16px !important;
+            font-weight: 900 !important;
+            text-align: center !important;
+            background-color: #f3f4f6 !important;
+            padding: 6px 12px !important;
+            border-radius: 3px !important;
+            letter-spacing: 0.5px !important;
+          }
+          
+          .border.rounded-lg .flex.items-center.gap-2 > span:not([class*="badge"]):not([class*="Badge"])::after {
+            content: " ( FBC )" !important;
+          }
+          
+          /* Tables - larger fonts for better readability */
           table { 
-            font-size: 8px;
+            font-size: 14px;
             border-collapse: collapse;
             width: 100%;
+            margin-bottom: 2px;
           }
           th, td {
-            padding: 2px 4px;
-            border: 1px solid #ddd;
+            padding: 3px 5px;
+            border: 1px solid #ccc;
+            vertical-align: middle;
           }
           th {
-            background-color: #f5f5f5 !important;
-            font-weight: bold;
+            background-color: #f8f9fa !important;
+            font-weight: bold !important;
+            font-size: 16px !important;
+            text-align: center !important;
+            padding: 4px 5px !important;
           }
-          h1, h2, h3 {
+          td {
             font-size: 14px;
-            margin: 8px 0 4px 0;
           }
-          h4 {
-            font-size: 10px;
-            margin: 6px 0 3px 0;
-            background-color: #f5f5f5;
-            padding: 2px 4px;
+          
+          /* Proper column alignment with consistent large fonts */
+          th:first-child, td:first-child {
+            text-align: left !important;
+            width: 30%;
+            font-size: 14px !important;
           }
-          hr {
-            margin: 6px 0;
-            border: 0.5px solid #ccc;
+          th:nth-child(2), td:nth-child(2) {
+            text-align: center !important;
+            width: 15%;
+            font-weight: bold !important;
+            font-size: 14px !important;
           }
-          .badge {
-            font-size: 6px !important;
-            padding: 1px 3px !important;
+          th:nth-child(3), td:nth-child(3) {
+            text-align: center !important;
+            width: 15%;
+            font-size: 14px !important;
+          }
+          th:nth-child(4), td:nth-child(4) {
+            text-align: center !important;
+            width: 25%;
+            font-size: 14px !important;
+          }
+          th:nth-child(5), td:nth-child(5) {
+            text-align: center !important;
+            width: 15%;
+            font-size: 14px !important;
+          }
+          
+          /* Show section sub-headers with reduced margins */
+          .border.rounded-lg h4 {
+            display: block !important;
+            font-size: 16px !important;
+            font-weight: bold !important;
+            margin: 2px 0 2px 0 !important;
+            color: #374151 !important;
+            background-color: #f3f4f6 !important;
+            padding: 3px 6px !important;
+            border-radius: 2px !important;
+            text-align: center !important;
+          }
+          
+          /* Keep the first table header, hide only the subsequent ones */
+          /* Hide 2nd table header (Differential Count) */
+          .border.rounded-lg .mb-6:nth-child(4) table thead {
+            display: none !important;
+          }
+          
+          /* Hide 3rd table header (Absolute Count) */  
+          .border.rounded-lg .mb-6:nth-child(6) table thead {
+            display: none !important;
+          }
+          
+          /* More specific targeting based on structure after title */
+          .border.rounded-lg .mb-6 + hr + .mb-6 table thead,
+          .border.rounded-lg .mb-6 + hr + .mb-6 + hr + .mb-6 table thead {
+            display: none !important;
+          }
+          
+          /* Hide the "Test Results:" heading */
+          .space-y-6 > div > h3 {
+            display: none !important;
+          }
+          
+          /* Remove separators between sections */
+          .border.rounded-lg hr {
+            display: none !important;
+          }
+          
+          /* Remove spacing between table sections */
+          .border.rounded-lg .mb-6:not(:first-child) {
+            margin-bottom: 0 !important;
+          }
+          
+          /* FBC sections - remove outer border and reduce spacing */
+          .border.rounded-lg {
+            border: none !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            background: transparent !important;
+          }
+          
+          /* Badge styling - larger for better visibility */
+          .badge, [class*="badge"] {
+            font-size: 14px !important;
+            padding: 4px 8px !important;
+            background-color: #f3f4f6 !important;
+            border: 1px solid #e5e7eb !important;
+            color: #374151 !important;
+            border-radius: 3px !important;
+          }
+          
+          /* Status badges - larger and more visible */
+          [class*="bg-red"], [class*="destructive"] {
+            background-color: #ef4444 !important;
+            color: #ffffff !important;
+            font-size: 14px !important;
+            padding: 4px 8px !important;
+            font-weight: bold !important;
+            border-radius: 3px !important;
+          }
+          
+          /* Labels and values */
+          .text-muted-foreground {
+            color: #6b7280 !important;
+            font-size: 8px !important;
+          }
+          .font-medium, .font-semibold {
+            font-weight: bold !important;
+          }
+          
+          /* Separators - minimal spacing */
+          hr, .border-t, .border-b {
+            border-color: #d1d5db !important;
+            margin: 1px 0 !important;
+          }
+          
+          /* Footer styling */
+          .text-center.text-sm.text-muted-foreground {
+            font-size: 8px !important;
+            color: #9ca3af !important;
+            margin-top: 12px !important;
+            padding-top: 8px !important;
+            border-top: 1px solid #e0e0e0 !important;
           }
         }
       `}</style>
@@ -325,10 +536,10 @@ export default function ReportDetailsPage() {
 
         {/* Report Content */}
         <Card className="print:shadow-none max-w-4xl mx-auto print:max-w-none">
-          <CardHeader className="pb-6">
+          <CardHeader className="pb-6 border-b-2 border-gray-300">
             <div className="flex items-start justify-between">
               <div>
-                <CardTitle className="text-2xl mb-2">Azza Medical Laboratory Services</CardTitle>
+                <CardTitle className="text-2xl mb-2 font-bold text-gray-800">Azza Medical Laboratory Services</CardTitle>
                 <div className="text-sm text-muted-foreground space-y-1">
                   <div>Unique Place for all Diagnostic needs</div>
                   <div>Phone: 0752537178, 0776452417, 0753274455</div>
@@ -336,48 +547,63 @@ export default function ReportDetailsPage() {
                 </div>
               </div>
               <div className="text-right">
-                <Badge variant="default" className="text-lg px-4 py-2">
+                <Badge variant="default" className="text-lg px-4 py-2 bg-gray-700 text-white font-bold">
                   Laboratory Report
                 </Badge>
               </div>
             </div>
           </CardHeader>
 
-          <CardContent className="space-y-6">
-            {/* Patient Information */}
-            <div className="grid gap-6 md:grid-cols-2">
-              <div>
-                <h3 className="font-semibold mb-2">Patient Information:</h3>
-                <div className="space-y-1">
-                  <div className="font-medium">{report.patientName}</div>
-                  <div className="text-sm text-muted-foreground">Patient ID: {report.patientId}</div>
+          <CardContent className="space-y-3 p-3">
+            {/* Patient Information - match PDF section styling */}
+            <div className="bg-gray-50 p-4 rounded-sm border">
+              <h3 className="font-bold mb-3 text-gray-700 text-base">Patient Information</h3>
+              <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-8">
+                  <div className="flex">
+                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">Report ID:</span>
+                    <span className="text-sm text-gray-900">{report.id}</span>
+                  </div>
+                  <div className="flex">
+                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">Patient Name:</span>
+                    <span className="text-sm text-gray-900">{report.patientName}</span>
+                  </div>
                 </div>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2">Report Details:</h3>
-                <div className="space-y-1 text-sm">
-                  <div>
-                    <span className="text-muted-foreground">Report ID:</span> {report.id}
+                <div className="grid grid-cols-2 gap-8">
+                  <div className="flex">
+                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">Patient ID:</span>
+                    <span className="text-sm text-gray-900">{report.patientId}</span>
                   </div>
-                  <div>
-                    <span className="text-muted-foreground">Invoice ID:</span> {report.invoiceId}
+                  <div className="flex">
+                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">Age:</span>
+                    <span className="text-sm text-gray-900">{patient?.age} years</span>
                   </div>
-                  <div>
-                    <span className="text-muted-foreground">Date:</span>{" "}
-                    {new Date(report.createdAt).toLocaleDateString()}
+                </div>
+                <div className="grid grid-cols-2 gap-8">
+                  <div className="flex">
+                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">Gender:</span>
+                    <span className="text-sm text-gray-900">{patient?.gender}</span>
                   </div>
-                  <div>
-                    <span className="text-muted-foreground">Reviewed by:</span> {report.reviewedBy}
+                  <div className="flex">
+                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">Phone:</span>
+                    <span className="text-sm text-gray-900">{patient?.phone}</span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-8">
+                  <div className="flex">
+                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">Report Date:</span>
+                    <span className="text-sm text-gray-900">{new Date(report.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex">
+                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">Ref By:</span>
+                    <span className="text-sm text-gray-900">{patient?.doctorName}</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <Separator />
-
             {/* Test Results */}
             <div>
-              <h3 className="font-semibold mb-4">Test Results:</h3>
               {renderTestResults(report.results)}
             </div>
 
@@ -392,13 +618,10 @@ export default function ReportDetailsPage() {
               </>
             )}
 
-            <Separator />
-
             {/* Footer */}
             <div className="text-center text-sm text-muted-foreground space-y-2">
-              <p>This report has been reviewed and approved by {report.reviewedBy}</p>
-              <p>For questions about this report, please contact us at info@lablite.com</p>
               <p className="font-medium">*** End of Report ***</p>
+              <p className="text-xs mt-2">Generated by LabLite LIMS v2.1</p>
             </div>
           </CardContent>
         </Card>
