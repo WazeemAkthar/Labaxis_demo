@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import { usePathname, useRouter, type AppRouterInstance } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { FlaskConical, Users, FileText, Activity, DollarSign, Menu, LogOut, Home, Settings } from "lucide-react"
@@ -59,7 +59,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   )
 }
 
-function SidebarContent({ pathname, router, onSignOut }: { pathname: string; router: AppRouterInstance; onSignOut: () => void }) {
+function SidebarContent({ pathname, router, onSignOut }: { pathname: string; router: ReturnType<typeof useRouter>; onSignOut: () => void }) {
   return (
     <div className="flex flex-col h-full bg-card border-r">
       {/* Logo */}

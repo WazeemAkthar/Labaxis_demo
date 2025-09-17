@@ -49,9 +49,94 @@ export default function ReportDetailsPage() {
     setLoading(false)
   }, [reportId])
 
-  const handlePrint = () => {
-    window.print()
+ const handlePrint = () => {
+  // Get the report content element
+  const reportContent = document.querySelector('.print-content');
+  
+  if (!reportContent) {
+    console.error('Report content not found');
+    return;
   }
+
+  // Create a new window for printing
+  const printWindow = window.open('', '_blank');
+  
+  if (!printWindow) {
+    console.error('Could not open print window');
+    return;
+  }
+
+  // Get the styles from the current document
+  const styles = Array.from(document.styleSheets)
+    .map(styleSheet => {
+      try {
+        return Array.from(styleSheet.cssRules)
+          .map(rule => rule.cssText)
+          .join('');
+      } catch (e) {
+        console.log('Cannot access stylesheet');
+        return '';
+      }
+    })
+    .join('');
+
+  // Write the HTML content to the new window
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Lab Report - ${report?.id ?? ''}</title>
+        <style>
+          ${styles}
+          /* Additional print-specific styles */
+        @media print {
+          body { 
+            font-size: 8px; 
+            font-family: Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+          }
+          @page { 
+            margin: 15px; 
+            size: A4;
+          }
+          
+          /* Your existing print styles here - copy from the <style jsx global> block */
+          /* Hide header for print - letterhead will be used */
+          [class*="CardHeader"] {
+            display: none !important;
+          }
+          header {
+            display: none !important;
+          }
+          .display {
+            display: none !important;
+          }
+          
+          /* Remove main card border and shadow */
+          .print\\:shadow-none {
+            box-shadow: none !important;
+            border: none !important;
+          }
+          
+          /* All your other existing print styles... */
+        }
+      </style>
+    </head>
+    <body>
+      ${reportContent.innerHTML}
+    </body>
+    </html>
+  `);
+  
+  printWindow.document.close();
+  
+  // Wait for content to load, then print
+  printWindow.onload = () => {
+    printWindow.print();
+    printWindow.close();
+  };
+};
 
   const handleDownloadPDF = async () => {
     if (!report) return
@@ -88,10 +173,11 @@ export default function ReportDetailsPage() {
     return (
       <div className="space-y-6">
         {Object.entries(groupedResults).map(([testCode, testResults]) => {
+          const resultsArray = testResults as any[]
           if (testCode === 'FBC') {
-            return renderFBCResults(testResults)
+            return renderFBCResults(resultsArray)
           } else {
-            return renderRegularTestResults(testCode, testResults)
+            return renderRegularTestResults(testCode, resultsArray)
           }
         })}
       </div>
@@ -114,16 +200,16 @@ export default function ReportDetailsPage() {
 
     const renderTable = (results: any[], title?: string) => (
       <div className="mb-6">
-        {title && <h4 className="font-medium text-sm text-muted-foreground mb-3">{title}</h4>}
+        {title && <h4 className="font-semibold text-xl text-left text-muted-foreground mb-3 underline">{title}</h4>}
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b">
-                <th className="text-left py-2 font-semibold">Parameter</th>
-                <th className="text-right py-2 font-semibold">Result</th>
-                <th className="text-right py-2 font-semibold">Units</th>
-                <th className="text-right py-2 font-semibold">Reference Range</th>
-                <th className="text-center py-2 font-semibold">Status</th>
+              <tr className=" border-collapse border-t-2 border-b-2 border-gray-900">
+                <th className="text-left font-semibold">Parameter</th>
+                <th className="text-right font-semibold">Result</th>
+                <th className="text-right font-semibold">Units</th>
+                <th className="text-right font-semibold">Reference Range</th>
+                <th className="text-center font-semibold">Status</th>
               </tr>
             </thead>
             <tbody>
@@ -137,12 +223,12 @@ export default function ReportDetailsPage() {
                 const statusDisplay = getStatusDisplay(status)
                 
                 return (
-                  <tr key={index} className="border-b border-gray-100">
-                    <td className="py-2 font-medium">{result.testName}</td>
-                    <td className="text-right py-2 font-semibold">{result.value}</td>
-                    <td className="text-right py-2 text-muted-foreground">{result.unit}</td>
-                    <td className="text-right py-2 text-muted-foreground">{result.referenceRange}</td>
-                    <td className="text-center py-2">
+                  <tr key={index} className="border-0 font-mono">
+                    <td className="font-medium py-0 font-mono">{result.testName}</td>
+                    <td className="text-right py-0 font-semibold font-mono">{result.value}</td>
+                    <td className="text-right py-0 text-muted-foreground font-mono">{result.unit}</td>
+                    <td className="text-right py-0 text-muted-foreground font-mono">{result.referenceRange}</td>
+                    <td className="text-center py-0 font-mono">
                       {statusDisplay.text && (
                         <Badge variant={statusDisplay.variant} className="text-xs font-bold">
                           {statusDisplay.text}
@@ -238,7 +324,7 @@ export default function ReportDetailsPage() {
   if (loading || !isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary display"></div>
       </div>
     )
   }
@@ -260,7 +346,7 @@ export default function ReportDetailsPage() {
         @media print {
           body { 
             font-size: 8px; 
-            font-family: Helvetica, Arial, sans-serif;
+            // font-family: Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
           }
@@ -278,7 +364,7 @@ export default function ReportDetailsPage() {
           header {
             display: none !important;
           }
-          .border-b-2 {
+          .display {
             display: none !important;
           }
           .print\\:shadow-none > div:first-child {
@@ -361,19 +447,21 @@ export default function ReportDetailsPage() {
             margin-bottom: 2px;
           }
           th, td {
-            padding: 3px 5px;
-            border: 1px solid #ccc;
+            // padding: 3px 5px;
+            // border: 1px solid #ccc;
             vertical-align: middle;
+            
           }
           th {
             background-color: #f8f9fa !important;
             font-weight: bold !important;
             font-size: 16px !important;
             text-align: center !important;
-            padding: 4px 5px !important;
+            padding: 0px !important;
           }
           td {
             font-size: 14px;
+            font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; 
           }
           
           /* Proper column alignment with consistent large fonts */
@@ -412,9 +500,9 @@ export default function ReportDetailsPage() {
             margin: 2px 0 2px 0 !important;
             color: #374151 !important;
             background-color: #f3f4f6 !important;
-            padding: 3px 6px !important;
+            padding: 6px 0px !important;
             border-radius: 2px !important;
-            text-align: center !important;
+            text-align: left !important;
           }
           
           /* Keep the first table header, hide only the subsequent ones */
@@ -482,6 +570,7 @@ export default function ReportDetailsPage() {
           .text-muted-foreground {
             color: #6b7280 !important;
             font-size: 8px !important;
+            text: left !important;
           }
           .font-medium, .font-semibold {
             font-weight: bold !important;
@@ -532,8 +621,8 @@ export default function ReportDetailsPage() {
         </div>
 
         {/* Report Content */}
-        <Card className="print:shadow-none max-w-4xl mx-auto print:max-w-none">
-          <CardHeader className="pb-6 border-b-2 border-gray-300">
+        <Card className="print:shadow-none max-w-4xl mx-auto print:max-w-none print-content">
+          <CardHeader className="pb-6 border-b-2 border-gray-300 display">
             <div className="flex items-start justify-between">
               <div>
                 <CardTitle className="text-2xl mb-2 font-bold text-gray-800">Azza Medical Laboratory Services</CardTitle>
@@ -553,49 +642,51 @@ export default function ReportDetailsPage() {
 
           <CardContent className="space-y-3 p-3">
             {/* Patient Information - match PDF section styling */}
-            <div className="bg-gray-50 p-4 rounded-sm border">
-              <h3 className="font-bold mb-3 text-gray-700 text-base">Patient Information</h3>
-              <div className="space-y-2">
+            <div className="bg-gray-50 p-4">
+              <div className="space-y-2 border-t-2 border-black pt-2">
                 <div className="grid grid-cols-2 gap-8">
                   <div className="flex">
-                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">Report ID:</span>
-                    <span className="text-sm text-gray-900">{report.id}</span>
+                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">Patient Name</span>
+                    <span className="text-sm text-gray-900">:&nbsp;&nbsp;&nbsp;{report.patientName}</span>
                   </div>
                   <div className="flex">
-                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">Patient Name:</span>
-                    <span className="text-sm text-gray-900">{report.patientName}</span>
+                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">Report ID</span>
+                    <span className="text-sm text-gray-900">:&nbsp;&nbsp;&nbsp;{report.id}</span>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-8">
                   <div className="flex">
-                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">Patient ID:</span>
-                    <span className="text-sm text-gray-900">{report.patientId}</span>
+                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">Age</span>
+                    <span className="text-sm text-gray-900">:&nbsp;&nbsp;&nbsp;{patient?.age} years</span>
                   </div>
                   <div className="flex">
-                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">Age:</span>
-                    <span className="text-sm text-gray-900">{patient?.age} years</span>
+                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">Patient ID</span>
+                    <span className="text-sm text-gray-900">:&nbsp;&nbsp;&nbsp;{report.patientId}</span>
                   </div>
+                  
                 </div>
                 <div className="grid grid-cols-2 gap-8">
                   <div className="flex">
-                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">Gender:</span>
-                    <span className="text-sm text-gray-900">{patient?.gender}</span>
+                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">Phone</span>
+                    <span className="text-sm text-gray-900">:&nbsp;&nbsp;&nbsp;{patient?.phone}</span>
                   </div>
                   <div className="flex">
-                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">Phone:</span>
-                    <span className="text-sm text-gray-900">{patient?.phone}</span>
+                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">Gender</span>
+                    <span className="text-sm text-gray-900">:&nbsp;&nbsp;&nbsp;{patient?.gender}</span>
                   </div>
+                  
                 </div>
                 <div className="grid grid-cols-2 gap-8">
                   <div className="flex">
-                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">Report Date:</span>
-                    <span className="text-sm text-gray-900">{new Date(report.createdAt).toLocaleDateString()}</span>
+                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">Report Date</span>
+                    <span className="text-sm text-gray-900">:&nbsp;&nbsp;&nbsp;{new Date(report.createdAt).toLocaleDateString()}</span>
                   </div>
                   <div className="flex">
-                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">Ref By:</span>
-                    <span className="text-sm text-gray-900">{patient?.doctorName}</span>
+                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">Ref By</span>
+                    <span className="text-sm text-gray-900">:&nbsp;&nbsp;&nbsp;{patient?.doctorName}</span>
                   </div>
                 </div>
+                <div className="border-t-2 border-black"></div>
               </div>
             </div>
 
@@ -617,8 +708,7 @@ export default function ReportDetailsPage() {
 
             {/* Footer */}
             <div className="text-center text-sm text-muted-foreground space-y-2">
-              <p className="font-medium">*** End of Report ***</p>
-              <p className="text-xs mt-2">Generated by LabLite LIMS v2.1</p>
+              <p className=" font-normal text-lg text-black">-- End of Report --</p>
             </div>
           </CardContent>
         </Card>

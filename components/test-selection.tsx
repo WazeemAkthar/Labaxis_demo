@@ -80,7 +80,7 @@ export function TestSelectionComponent({ selectedTests, onTestsChange }: TestSel
 
         {/* Test Categories */}
         <div className="space-y-6">
-          {Object.entries(groupedTests).map(([category, tests]: [string, any[]]) => (
+          {Object.entries(groupedTests as Record<string, any[]>).map(([category, tests]) => (
             <div key={category} className="space-y-3">
               <div className="flex items-center gap-2">
                 <Badge variant="secondary">{category}</Badge>
