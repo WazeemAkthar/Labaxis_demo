@@ -1,5 +1,6 @@
 // Data management utilities for localStorage persistence
 export interface Patient {
+  name: string
   id: string
   firstName: string
   lastName: string
@@ -254,6 +255,18 @@ export class DataManager {
         },
         category: "Biochemistry",
       },
+      {
+  code: "FBS",
+  name: "Fasting Blood Sugar",
+  defaultPrice: 300.0,
+  estimatedCost: 100.0,
+  unit: "per test",
+  referenceRange: {
+    FBS: "70–100 mg/dL",
+  },
+  category: "Biochemistry",
+},
+
       {
         code: "GLUCOSE",
         name: "Fasting Glucose",

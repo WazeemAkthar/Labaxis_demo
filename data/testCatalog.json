@@ -91,6 +91,18 @@
     "category": "Urinalysis"
   },
   {
+  "code": "FBS",
+  "name": "Fasting Blood Sugar",
+  "defaultPrice": 300.0,
+  "estimatedCost": 100.0,
+  "unit": "per test",
+  "referenceRange": {
+    "FBS": "70–100 mg/dL"
+  },
+  "category": "Biochemistry"
+},
+
+  {
     "code": "TSH",
     "name": "Thyroid Stimulating Hormone",
     "defaultPrice": 1500.0,
