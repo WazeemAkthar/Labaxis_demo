@@ -115,13 +115,13 @@ export default function NewReportPage() {
         const test = testCatalog.find((t) => t.code === item.testCode);
         const referenceRanges = test?.referenceRange || {};
 
-        // Handle FBC specially - don't create individual result entries
-        if (item.testCode === "FBC") {
-          // FBC will be handled by the specialized component
+        // Handle FBC, LIPID, and PMT specially - don't create individual result entries
+        if (item.testCode === "FBC" || item.testCode === "LIPID" || item.testCode === "PMT") {
+          // These will be handled by specialized components
           return;
         }
 
-        // For multi-component tests (excluding FBC), create separate result entries for each component
+        // For multi-component tests (excluding special ones), create separate result entries for each component
         if (Object.keys(referenceRanges).length > 1) {
           Object.entries(referenceRanges).forEach(([component, range]) => {
             initialResults.push({
@@ -230,13 +230,13 @@ export default function NewReportPage() {
       const test = testCatalog.find((t) => t.code === testCode);
       const referenceRanges = test?.referenceRange || {};
 
-      // Handle FBC specially - don't create individual result entries
-      if (testCode === "FBC") {
-        // FBC will be handled by the specialized component
+      // Handle FBC, LIPID, and PMT specially - don't create individual result entries
+      if (testCode === "FBC" || testCode === "LIPID" || testCode === "PMT") {
+        // These will be handled by specialized components
         return;
       }
 
-      // For multi-component tests (excluding FBC), create separate result entries for each component
+      // For multi-component tests (excluding special ones), create separate result entries for each component
       if (Object.keys(referenceRanges).length > 1) {
         Object.entries(referenceRanges).forEach(([component, range]) => {
           initialResults.push({
@@ -540,12 +540,25 @@ export default function NewReportPage() {
       fbcValues &&
       hasFBC &&
       Object.values(fbcValues).some((v) => v && String(v).trim() !== "");
+    
+    const hasLipidResults =
+      lipidValues &&
+      hasLipidProfileTest &&
+      Object.values(lipidValues).some((v) => v && String(v).trim() !== "");
+
+    const hasPathologyResults =
+      pathologyReport &&
+      hasPathologyTest &&
+      pathologyReport.report &&
+      pathologyReport.report.trim() !== "";
+
     const hasValidSelection =
       selectedInvoice || (useDirectTestSelection && selectedTests.length > 0);
+    
     return (
       selectedPatient &&
       hasValidSelection &&
-      (hasRegularResults || hasFBCResults) &&
+      (hasRegularResults || hasFBCResults || hasLipidResults || hasPathologyResults) &&
       reviewedBy.trim() !== ""
     );
   };
@@ -728,7 +741,7 @@ export default function NewReportPage() {
         </Card>
 
         {/* Test Results */}
-        {(results.length > 0 || hasFBCTest) && (
+        {(results.length > 0 || hasFBCTest || hasLipidProfileTest || hasPathologyTest) && (
           <div className="space-y-6">
             {/* FBC Test - Special Component */}
             {hasFBCTest && (
@@ -857,7 +870,7 @@ export default function NewReportPage() {
         )}
 
         {/* Doctor's Remarks */}
-        {(results.length > 0 || hasFBCTest) && (
+        {(results.length > 0 || hasFBCTest || hasLipidProfileTest || hasPathologyTest) && (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
