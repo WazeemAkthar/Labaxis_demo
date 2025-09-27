@@ -11,6 +11,7 @@ import { DataManager, type Report } from "@/lib/data-manager";
 import { generateReportPDF } from "@/lib/pdf-generator";
 import Link from "next/link";
 import ReportQRCode from "@/components/ReportQRCode";
+import TestAdditionalDetails from "@/components/TestAdditionalDetails"; 
 
 export default function ReportDetailsPage() {
   const params = useParams();
@@ -176,9 +177,20 @@ export default function ReportDetailsPage() {
         {Object.entries(groupedResults).map(([testCode, testResults]) => {
           const resultsArray = testResults as any[];
           if (testCode === "FBC") {
-            return renderFBCResults(resultsArray);
+            return (
+              <div key={testCode}>
+                {renderFBCResults(resultsArray)}
+                {/* FBC doesn't get additional details as it has its own specialized format */}
+              </div>
+            );
           } else {
-            return renderRegularTestResults(testCode, resultsArray);
+            return (
+              <div key={testCode}>
+                {renderRegularTestResults(testCode, resultsArray)}
+                {/* Add the TestAdditionalDetails component for non-FBC tests */}
+                <TestAdditionalDetails testCode={testCode} />
+              </div>
+            );
           }
         })}
       </div>
@@ -834,7 +846,7 @@ export default function ReportDetailsPage() {
               </div>
 
               {/* QR Code for download */}
-              <div className="flex-shrink-0">
+              {/* <div className="flex-shrink-0">
                 <ReportQRCode
                   reportId={report.id}
                   patientName={report.patientName}
@@ -842,7 +854,7 @@ export default function ReportDetailsPage() {
                   showLabel={true}
                   className="print:block"
                 />
-              </div>
+              </div> */}
             </div>
           </CardContent>
         </Card>
