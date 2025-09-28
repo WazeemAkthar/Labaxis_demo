@@ -317,6 +317,72 @@ export class DataManager {
         },
         category: "Biochemistry",
       },
+      {
+    code: "RBS",
+    name: "Random Blood Sugar",
+    defaultPrice: 200.0,
+    estimatedCost: 60.0,
+    unit: "mg/dL",
+    referenceRange: {
+      "Glucose": "70-140"
+    },
+    category: "Biochemistry"
+  },
+  {
+    "code": "SGOT",
+    "name": "Aspartate Aminotransferase (SGOT/AST)",
+    "defaultPrice": 400.0,
+    "estimatedCost": 120.0,
+    "unit": "U/L",
+    "referenceRange": {
+      "AST": "10-40 U/L"
+    },
+    "category": "Biochemistry"
+  },
+  {
+    "code": "SGPT",
+    "name": "Alanine Aminotransferase (SGPT/ALT)",
+    "defaultPrice": 400.0,
+    "estimatedCost": 120.0,
+    "unit": "U/L",
+    "referenceRange": {
+      "ALT": "7-56 U/L"
+    },
+    "category": "Biochemistry"
+  },
+  {
+    "code": "SCR",
+    "name": "Serum Creatinine",
+    "defaultPrice": 350.0,
+    "estimatedCost": 100.0,
+    "unit": "mg/dL",
+    "referenceRange": {
+      "Creatinine": "0.6-1.2 mg/dL"
+    },
+    "category": "Biochemistry"
+  },
+  {
+    "code": "SBU",
+    "name": "Serum Blood Urea",
+    "defaultPrice": 350.0,
+    "estimatedCost": 100.0,
+    "unit": "mg/dL",
+    "referenceRange": {
+      "Urea": "10-50 mg/dL"
+    },
+    "category": "Biochemistry"
+  },
+  {
+    "code": "HIV",
+    "name": "Blood for HIV 1 & 2",
+    "defaultPrice": 1000.0,
+    "estimatedCost": 300.0,
+    "unit": "per test",
+    "referenceRange": {
+      "HIV 1 & 2": "Negative"
+    },
+    "category": "Immunology"
+  }
     ];
   }
 

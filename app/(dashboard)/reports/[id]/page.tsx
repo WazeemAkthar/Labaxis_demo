@@ -329,7 +329,7 @@ export default function ReportDetailsPage() {
   const testName = testConfig ? testConfig.name : testCode
     return (
       <div key={testCode}>
-        <h1 className="font-semibold text-xl text-center text-muted-foreground mb-3 border-black border-b-2">
+        <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
           {testName} ({testCode})
         </h1>
         <table className="w-full border-collapse">
