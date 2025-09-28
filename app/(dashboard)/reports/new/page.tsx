@@ -38,9 +38,31 @@ import { LipidProfileReportCard } from "@/components/lipid-profile-report-card";
 
 // Helper function to extract unit from reference range
 function getUnitFromRange(range: string): string {
-  // Extract unit from ranges like "4.0-11.0 x10³/μL" or "12.0-16.0 g/dL"
-  const unitMatch = range.match(/[\s\d\.\-]+(.+)$/);
+  // Extract unit from ranges like "4.0-11.0 x10³/μL" or "12.0-16.0 g/dL" or "< 8 IU/ml"
+  const unitMatch = range.match(/[\s\d\.\-<>=]+(.+)$/);
   return unitMatch ? unitMatch[1].trim() : "";
+}
+
+function getDefaultReferenceRange(testCode: string, componentName: string, dataManager: any): string {
+  const test = dataManager.getTestByCode(testCode);
+  if (!test || !test.referenceRange) return "";
+  
+  // For components like "Total Cholesterol" from "Lipid Profile - Total Cholesterol"
+  const cleanComponentName = componentName.replace(/.*\s-\s/, '');
+  
+  return test.referenceRange[componentName] || 
+         test.referenceRange[cleanComponentName] || 
+         "";
+}
+
+function getDefaultUnit(testCode: string, componentName: string, dataManager: any): string {
+  const defaultRange = getDefaultReferenceRange(testCode, componentName, dataManager);
+  if (!defaultRange) {
+    // Fallback to test's general unit if no specific range found
+    const test = dataManager.getTestByCode(testCode);
+    return test?.unit || "";
+  }
+  return getUnitFromRange(defaultRange);
 }
 
 export default function NewReportPage() {
@@ -99,57 +121,57 @@ export default function NewReportPage() {
     setFbcValues(null);
   };
 
-  const handleInvoiceChange = (invoiceId: string) => {
-    const invoice = invoices.find((inv) => inv.id === invoiceId);
-    setSelectedInvoice(invoice || null);
-    setFbcValues(null);
+ const handleInvoiceChange = (invoiceId: string) => {
+  const invoice = invoices.find((inv) => inv.id === invoiceId);
+  setSelectedInvoice(invoice || null);
+  setFbcValues(null);
 
-    if (invoice) {
-      // Initialize results from invoice line items
-      const dataManager = DataManager.getInstance();
-      const testCatalog = dataManager.getTestCatalog();
+  if (invoice) {
+    // Initialize results from invoice line items
+    const dataManager = DataManager.getInstance();
+    const testCatalog = dataManager.getTestCatalog();
 
-      const initialResults: ReportResult[] = [];
+    const initialResults: ReportResult[] = [];
 
-      invoice.lineItems.forEach((item) => {
-        const test = testCatalog.find((t) => t.code === item.testCode);
-        const referenceRanges = test?.referenceRange || {};
+    invoice.lineItems.forEach((item) => {
+      const test = testCatalog.find((t) => t.code === item.testCode);
+      const referenceRanges = test?.referenceRange || {};
 
-        // Handle FBC, LIPID, and PMT specially - don't create individual result entries
-        if (item.testCode === "FBC" || item.testCode === "LIPID" || item.testCode === "PMT") {
-          // These will be handled by specialized components
-          return;
-        }
+      // Handle FBC, LIPID, and PMT specially - don't create individual result entries
+      if (item.testCode === "FBC" || item.testCode === "LIPID" || item.testCode === "PMT") {
+        // These will be handled by specialized components
+        return;
+      }
 
-        // For multi-component tests (excluding special ones), create separate result entries for each component
-        if (Object.keys(referenceRanges).length > 1) {
-          Object.entries(referenceRanges).forEach(([component, range]) => {
-            initialResults.push({
-              testCode: item.testCode,
-              testName: `${item.testName} - ${component}`,
-              value: "",
-              unit: getUnitFromRange(range),
-              referenceRange: range,
-              comments: "",
-            });
-          });
-        } else {
-          // For single-component tests, create one result entry
-          const firstRange = Object.entries(referenceRanges)[0];
+      // For multi-component tests (excluding special ones), create separate result entries for each component
+      if (Object.keys(referenceRanges).length > 1) {
+        Object.entries(referenceRanges).forEach(([component, range]) => {
           initialResults.push({
             testCode: item.testCode,
-            testName: item.testName,
+            testName: `${item.testName} - ${component}`,
             value: "",
-            unit: firstRange ? firstRange[0] : "",
-            referenceRange: firstRange ? firstRange[1] : "",
+            unit: getUnitFromRange(range), // Use the extracted unit from reference range
+            referenceRange: range, // Use the actual reference range from catalog
             comments: "",
           });
-        }
-      });
+        });
+      } else {
+        // For single-component tests, create one result entry
+        const firstRange = Object.entries(referenceRanges)[0];
+        initialResults.push({
+          testCode: item.testCode,
+          testName: item.testName,
+          value: "",
+          unit: firstRange ? getUnitFromRange(firstRange[1]) : (test?.unit || ""),
+          referenceRange: firstRange ? firstRange[1] : "",
+          comments: "",
+        });
+      }
+    });
 
-      setResults(initialResults);
-    }
-  };
+    setResults(initialResults);
+  }
+};
 
   const updateResult = (
     testName: string,
@@ -211,59 +233,59 @@ export default function NewReportPage() {
     setFbcValues(null);
   };
 
-  const handleTestSelection = (testCodes: string[]) => {
-    // Prevent infinite loops by checking if the selection has actually changed
-    if (
-      JSON.stringify(testCodes.sort()) === JSON.stringify(selectedTests.sort())
-    ) {
+ const handleTestSelection = (testCodes: string[]) => {
+  // Prevent infinite loops by checking if the selection has actually changed
+  if (
+    JSON.stringify(testCodes.sort()) === JSON.stringify(selectedTests.sort())
+  ) {
+    return;
+  }
+
+  setSelectedTests(testCodes);
+
+  // Initialize results from selected tests
+  const dataManager = DataManager.getInstance();
+  const testCatalog = dataManager.getTestCatalog();
+  const initialResults: ReportResult[] = [];
+
+  testCodes.forEach((testCode) => {
+    const test = testCatalog.find((t) => t.code === testCode);
+    const referenceRanges = test?.referenceRange || {};
+
+    // Handle FBC, LIPID, and PMT specially - don't create individual result entries
+    if (testCode === "FBC" || testCode === "LIPID" || testCode === "PMT") {
+      // These will be handled by specialized components
       return;
     }
 
-    setSelectedTests(testCodes);
-
-    // Initialize results from selected tests
-    const dataManager = DataManager.getInstance();
-    const testCatalog = dataManager.getTestCatalog();
-    const initialResults: ReportResult[] = [];
-
-    testCodes.forEach((testCode) => {
-      const test = testCatalog.find((t) => t.code === testCode);
-      const referenceRanges = test?.referenceRange || {};
-
-      // Handle FBC, LIPID, and PMT specially - don't create individual result entries
-      if (testCode === "FBC" || testCode === "LIPID" || testCode === "PMT") {
-        // These will be handled by specialized components
-        return;
-      }
-
-      // For multi-component tests (excluding special ones), create separate result entries for each component
-      if (Object.keys(referenceRanges).length > 1) {
-        Object.entries(referenceRanges).forEach(([component, range]) => {
-          initialResults.push({
-            testCode: testCode,
-            testName: `${test?.name} - ${component}`,
-            value: "",
-            unit: getUnitFromRange(range),
-            referenceRange: range,
-            comments: "",
-          });
-        });
-      } else {
-        // For single-component tests, create one result entry
-        const firstRange = Object.entries(referenceRanges)[0];
+    // For multi-component tests (excluding special ones), create separate result entries for each component
+    if (Object.keys(referenceRanges).length > 1) {
+      Object.entries(referenceRanges).forEach(([component, range]) => {
         initialResults.push({
           testCode: testCode,
-          testName: test?.name || testCode,
+          testName: `${test?.name} - ${component}`,
           value: "",
-          unit: firstRange ? firstRange[0] : "",
-          referenceRange: firstRange ? firstRange[1] : "",
+          unit: getUnitFromRange(range), // Use the extracted unit from reference range
+          referenceRange: range, // Use the actual reference range from catalog
           comments: "",
         });
-      }
-    });
+      });
+    } else {
+      // For single-component tests, create one result entry
+      const firstRange = Object.entries(referenceRanges)[0];
+      initialResults.push({
+        testCode: testCode,
+        testName: test?.name || testCode,
+        value: "",
+        unit: firstRange ? getUnitFromRange(firstRange[1]) : (test?.unit || ""),
+        referenceRange: firstRange ? firstRange[1] : "",
+        comments: "",
+      });
+    }
+  });
 
-    setResults(initialResults);
-  };
+  setResults(initialResults);
+};
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -836,7 +858,7 @@ export default function NewReportPage() {
                                 e.target.value
                               )
                             }
-                            placeholder={`e.g., ${result.referenceRange}`}
+                            placeholder={`e.g. ${result.referenceRange}`}
                           />
                         </div>
                       </div>
