@@ -39,8 +39,12 @@ import { LipidProfileReportCard } from "@/components/lipid-profile-report-card";
 // Helper function to extract unit from reference range
 function getUnitFromRange(range: string): string {
   // Extract unit from ranges like "4.0-11.0 x10³/μL" or "12.0-16.0 g/dL" or "< 8 IU/ml"
-  const unitMatch = range.match(/[\s\d\.\-<>=]+(.+)$/);
-  return unitMatch ? unitMatch[1].trim() : "";
+  // Pattern: match numbers, spaces, operators (<, >, =, -), then capture everything after
+  const unitMatch = range.match(/^[\s\d\.\-<>=]+\s*(.+?)(?:\s*\(.*\))?$/);
+  if (unitMatch && unitMatch[1]) {
+    return unitMatch[1].trim();
+  }
+  return "";
 }
 
 function getDefaultReferenceRange(testCode: string, componentName: string, dataManager: any): string {
@@ -55,14 +59,33 @@ function getDefaultReferenceRange(testCode: string, componentName: string, dataM
          "";
 }
 
-function getDefaultUnit(testCode: string, componentName: string, dataManager: any): string {
-  const defaultRange = getDefaultReferenceRange(testCode, componentName, dataManager);
-  if (!defaultRange) {
-    // Fallback to test's general unit if no specific range found
-    const test = dataManager.getTestByCode(testCode);
-    return test?.unit || "";
+// Helper function to get unit and reference range from test catalog
+function getTestDetails(testCode: string, componentName: string, dataManager: any) {
+  const test = dataManager.getTestByCode(testCode);
+  
+  if (!test) {
+    return { unit: "", referenceRange: "" };
   }
-  return getUnitFromRange(defaultRange);
+
+  // For single-component tests, use the test's unit directly
+  if (Object.keys(test.referenceRange).length === 1) {
+    const firstRange = Object.entries(test.referenceRange)[0];
+    return {
+      unit: test.unit,
+      referenceRange: firstRange ? firstRange[1] : ""
+    };
+  }
+
+  // For multi-component tests, find the specific component's reference range
+  const cleanComponentName = componentName.replace(/.*\s-\s/, '');
+  const referenceRange = test.referenceRange[componentName] || 
+                         test.referenceRange[cleanComponentName] || 
+                         "";
+
+  return {
+    unit: test.unit,
+    referenceRange: referenceRange
+  };
 }
 
 export default function NewReportPage() {
@@ -121,7 +144,7 @@ export default function NewReportPage() {
     setFbcValues(null);
   };
 
- const handleInvoiceChange = (invoiceId: string) => {
+const handleInvoiceChange = (invoiceId: string) => {
   const invoice = invoices.find((inv) => inv.id === invoiceId);
   setSelectedInvoice(invoice || null);
   setFbcValues(null);
@@ -139,30 +162,29 @@ export default function NewReportPage() {
 
       // Handle FBC, LIPID, and PMT specially - don't create individual result entries
       if (item.testCode === "FBC" || item.testCode === "LIPID" || item.testCode === "PMT") {
-        // These will be handled by specialized components
         return;
       }
 
-      // For multi-component tests (excluding special ones), create separate result entries for each component
+      // For multi-component tests, create separate result entries for each component
       if (Object.keys(referenceRanges).length > 1) {
         Object.entries(referenceRanges).forEach(([component, range]) => {
           initialResults.push({
             testCode: item.testCode,
             testName: `${item.testName} - ${component}`,
             value: "",
-            unit: getUnitFromRange(range), // Use the extracted unit from reference range
-            referenceRange: range, // Use the actual reference range from catalog
+            unit: test?.unit || "", // Use unit from test catalog
+            referenceRange: range, // Use reference range from catalog
             comments: "",
           });
         });
       } else {
-        // For single-component tests, create one result entry
+        // For single-component tests
         const firstRange = Object.entries(referenceRanges)[0];
         initialResults.push({
           testCode: item.testCode,
           testName: item.testName,
           value: "",
-          unit: firstRange ? getUnitFromRange(firstRange[1]) : (test?.unit || ""),
+          unit: test?.unit || "", // Use unit from test catalog
           referenceRange: firstRange ? firstRange[1] : "",
           comments: "",
         });
@@ -233,7 +255,7 @@ export default function NewReportPage() {
     setFbcValues(null);
   };
 
- const handleTestSelection = (testCodes: string[]) => {
+const handleTestSelection = (testCodes: string[]) => {
   // Prevent infinite loops by checking if the selection has actually changed
   if (
     JSON.stringify(testCodes.sort()) === JSON.stringify(selectedTests.sort())
@@ -254,30 +276,29 @@ export default function NewReportPage() {
 
     // Handle FBC, LIPID, and PMT specially - don't create individual result entries
     if (testCode === "FBC" || testCode === "LIPID" || testCode === "PMT") {
-      // These will be handled by specialized components
       return;
     }
 
-    // For multi-component tests (excluding special ones), create separate result entries for each component
+    // For multi-component tests, create separate result entries for each component
     if (Object.keys(referenceRanges).length > 1) {
       Object.entries(referenceRanges).forEach(([component, range]) => {
         initialResults.push({
           testCode: testCode,
           testName: `${test?.name} - ${component}`,
           value: "",
-          unit: getUnitFromRange(range), // Use the extracted unit from reference range
-          referenceRange: range, // Use the actual reference range from catalog
+          unit: test?.unit || "", // Use unit from test catalog
+          referenceRange: range, // Use reference range from catalog
           comments: "",
         });
       });
     } else {
-      // For single-component tests, create one result entry
+      // For single-component tests
       const firstRange = Object.entries(referenceRanges)[0];
       initialResults.push({
         testCode: testCode,
         testName: test?.name || testCode,
         value: "",
-        unit: firstRange ? getUnitFromRange(firstRange[1]) : (test?.unit || ""),
+        unit: test?.unit || "", // Use unit from test catalog
         referenceRange: firstRange ? firstRange[1] : "",
         comments: "",
       });

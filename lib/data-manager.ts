@@ -252,7 +252,7 @@ export class DataManager {
         name: "Hemoglobin A1c",
         defaultPrice: 2400.0,
         estimatedCost: 800.0,
-        unit: "per test",
+        unit: "%",
         referenceRange: {
           HbA1c: "<5.7% (Normal), 5.7-6.4% (Prediabetes), ≥6.5% (Diabetes)",
         },
@@ -382,6 +382,112 @@ export class DataManager {
       "HIV 1 & 2": "Negative"
     },
     "category": "Immunology"
+  },
+  {
+    "code": "VDRL",
+    "name": "Venereal Disease Research Laboratory",
+    "defaultPrice": 600.0,
+    "estimatedCost": 180.0,
+    "unit": "per test",
+    "referenceRange": {
+      "VDRL": "Non-Reactive (Negative)"
+    },
+    "category": "Immunology"
+  },
+  {
+    "code": "UFR",
+    "name": "Urine Full Report",
+    "defaultPrice": 300.0,
+    "estimatedCost": 100.0,
+    "unit": "per test",
+    "referenceRange": {
+      "Colour": "Normal",
+      "Appearance": "Clear",
+      "pH": "Acidic",
+      "Specific Gravity": "1.003-1.030",
+      "Protein (Albumin)": "Negative",
+      "Sugar (Reducing substances)": "Negative",
+      "Urobilinogen": "Normal",
+      "Bile": "Negative",
+      "Acetone/KB": "Negative"
+    },
+    "category": "Urinalysis"
+  },
+  {
+    "code": "OGTT",
+    "name": "Oral Glucose Tolerance Test",
+    "defaultPrice": 400.0,
+    "estimatedCost": 120.0,
+    "unit": "mg/dL",
+    "referenceRange": {
+      "Fasting": "70-99",
+      "After 1 Hour": "<180",
+      "After 2 Hours": "70-140"
+    },
+    "category": "Biochemistry"
+  },
+  {
+    "code": "OGCT",
+    "name": "Oral Glucose Challenging Test",
+    "defaultPrice": 400.0,
+    "estimatedCost": 120.0,
+    "unit": "mg/dL",
+    "referenceRange": {
+      "Fasting": "70-99",
+      "After 1 Hour": "<180",
+      "After 2 Hours": "70-140"
+    },
+    "category": "Biochemistry"
+  },
+  {
+    "code": "PPBS",
+    "name": "Post Prandial Blood Sugar",
+    "defaultPrice": 200.0,
+    "estimatedCost": 60.0,
+    "unit": "mg/dL",
+    "referenceRange": {
+      "Post Prandial": "<140"
+    },
+    "category": "Biochemistry"
+  },
+  {
+    "code": "SE",
+    "name": "Serum Electrolytes",
+    "defaultPrice": 500.0,
+    "estimatedCost": 150.0,
+    "unit": "per test",
+    "referenceRange": {
+      "Serum Sodium": "135.0-155.0 mEq/l",
+      "Serum Potassium": "3.5-5.5 mEq/l",
+      "Serum Chloride": "95.0-110.0 mEq/l"
+    },
+    "category": "Biochemistry"
+  },
+  {
+    "code": "UA",
+    "name": "Blood for Uric Acid",
+    "defaultPrice": 400.0,
+    "estimatedCost": 120.0,
+    "unit": "mg/dL",
+    "referenceRange": {
+      "Uric Acid": "3.4 - 7.2"
+    },
+    "category": "Biochemistry"
+  },
+  {
+    "code": "SFA",
+    "name": "Seminal Fluid Analysis",
+    "defaultPrice": 1000.0,
+    "estimatedCost": 300.0,
+    "unit": "per test",
+    "referenceRange": {
+      "Volume": "1.5-5.0 mL",
+      "Concentration": "15-200 million/mL",
+      "Total Motility": "≥40%",
+      "Progressive Motility": "≥32%",
+      "Morphology": "≥4% normal forms"
+    },
+    "category": "Andrology"
   }
     ];
   }
