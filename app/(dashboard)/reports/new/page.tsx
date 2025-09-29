@@ -111,10 +111,6 @@ export default function NewReportPage() {
     : selectedInvoice?.lineItems.some((item) => item.testCode === "LIPID") ||
       false;
 
-  const hasPathologyTest = useDirectTestSelection
-    ? selectedTests.includes("PMT")
-    : selectedInvoice?.lineItems.some((item) => item.testCode === "PMT") ||
-      false;
 
   useEffect(() => {
     const authStatus = localStorage.getItem("lablite_auth");
@@ -160,8 +156,8 @@ const handleInvoiceChange = (invoiceId: string) => {
       const test = testCatalog.find((t) => t.code === item.testCode);
       const referenceRanges = test?.referenceRange || {};
 
-      // Handle FBC, LIPID, and PMT specially - don't create individual result entries
-      if (item.testCode === "FBC" || item.testCode === "LIPID" || item.testCode === "PMT") {
+      // Handle FBC, LIPID specially - don't create individual result entries
+      if (item.testCode === "FBC" || item.testCode === "LIPID") {
         return;
       }
 
@@ -274,8 +270,8 @@ const handleTestSelection = (testCodes: string[]) => {
     const test = testCatalog.find((t) => t.code === testCode);
     const referenceRanges = test?.referenceRange || {};
 
-    // Handle FBC, LIPID, and PMT specially - don't create individual result entries
-    if (testCode === "FBC" || testCode === "LIPID" || testCode === "PMT") {
+    // Handle FBC, LIPID specially - don't create individual result entries
+    if (testCode === "FBC" || testCode === "LIPID") {
       return;
     }
 
@@ -543,16 +539,6 @@ const handleTestSelection = (testCodes: string[]) => {
         allResults.push(...lipidResults);
       }
 
-      if (pathologyReport && hasPathologyTest) {
-        allResults.push({
-          testCode: "PMT",
-          testName: "Pathology Report",
-          value: pathologyReport.report,
-          unit: "",
-          referenceRange: "",
-          comments: "",
-        });
-      }
 
       if (allResults.length === 0) return;
 
@@ -591,7 +577,6 @@ const handleTestSelection = (testCodes: string[]) => {
 
     const hasPathologyResults =
       pathologyReport &&
-      hasPathologyTest &&
       pathologyReport.report &&
       pathologyReport.report.trim() !== "";
 
@@ -784,15 +769,11 @@ const handleTestSelection = (testCodes: string[]) => {
         </Card>
 
         {/* Test Results */}
-        {(results.length > 0 || hasFBCTest || hasLipidProfileTest || hasPathologyTest) && (
+        {(results.length > 0 || hasFBCTest || hasLipidProfileTest) && (
           <div className="space-y-6">
             {/* FBC Test - Special Component */}
             {hasFBCTest && (
               <FBCReportCard onValuesChange={handleFBCValuesChange} />
-            )}
-
-            {hasPathologyTest && (
-              <PathologyReportCard onValuesChange={setPathologyReport} />
             )}
 
             {hasLipidProfileTest && (
@@ -913,7 +894,7 @@ const handleTestSelection = (testCodes: string[]) => {
         )}
 
         {/* Doctor's Remarks */}
-        {(results.length > 0 || hasFBCTest || hasLipidProfileTest || hasPathologyTest) && (
+        {(results.length > 0 || hasFBCTest || hasLipidProfileTest) && (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">

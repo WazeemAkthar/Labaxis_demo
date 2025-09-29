@@ -161,17 +161,6 @@ export class DataManager {
         category: "Hematology",
       },
       {
-        code: "PMT",
-        name: "Pathologist Microscopy Test",
-        defaultPrice: 1200.0,
-        estimatedCost: 400.0,
-        unit: "per report",
-        referenceRange: {
-          PMT: "N/A",
-        },
-        category: "Pathology",
-      },
-      {
         code: "ESR",
         name: "Erythrocyte Sedimentation Rate",
         defaultPrice: 300.0,
@@ -455,7 +444,7 @@ export class DataManager {
     "name": "Serum Electrolytes",
     "defaultPrice": 500.0,
     "estimatedCost": 150.0,
-    "unit": "per test",
+    "unit": "mEq/l",
     "referenceRange": {
       "Serum Sodium": "135.0-155.0 mEq/l",
       "Serum Potassium": "3.5-5.5 mEq/l",

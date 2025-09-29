@@ -52,17 +52,6 @@
     "category": "Biochemistry"
   },
   {
-    "code": "PMT",
-    "name": "Pathologist Morphology Test",
-    "defaultPrice": 5000,
-    "estimatedCost": 2000,
-    "unit": "per test",
-    "referenceRange": {
-      "Observation": "Report provided by pathologist"
-    },
-    "category": "Special Tests"
-  },
-  {
     "code": "LIPID",
     "name": "Lipid Profile",
     "defaultPrice": 1500.0,
