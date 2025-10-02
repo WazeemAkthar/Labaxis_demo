@@ -165,10 +165,10 @@ export class DataManager {
         name: "Erythrocyte Sedimentation Rate",
         defaultPrice: 300.0,
         estimatedCost: 100.0,
-        unit: "mm/hr",
+        unit: "mm",
         referenceRange: {
-          "1st hour": "0-10",
-          "2nd hour": "0-20",
+          "1st hour": " ",
+          "2nd hour": " ",
         },
         category: "Hematology",
       },
@@ -188,7 +188,7 @@ export class DataManager {
         name: "Lipid Profile",
         defaultPrice: 1500.0,
         estimatedCost: 500.0,
-        unit: "per test",
+        unit: "mg/dL",
         referenceRange: {
           "Total Cholesterol": "150-200 mg/dL",
           "HDL Cholesterol": "40-60 mg/dL",
@@ -206,7 +206,7 @@ export class DataManager {
         estimatedCost: 60.0,
         unit: "mg/dL",
         referenceRange: {
-          Glucose: "60-110",
+          Glucose: "60 - 110",
         },
         category: "Biochemistry",
       },
@@ -230,7 +230,7 @@ export class DataManager {
         name: "Thyroid Stimulating Hormone",
         defaultPrice: 1500.0,
         estimatedCost: 500.0,
-        unit: "per test",
+        unit: "mIU/L",
         referenceRange: {
           TSH: "0.4-4.0 mIU/L",
         },
@@ -307,177 +307,177 @@ export class DataManager {
         category: "Biochemistry",
       },
       {
-    code: "RBS",
-    name: "Random Blood Sugar",
-    defaultPrice: 200.0,
-    estimatedCost: 60.0,
-    unit: "mg/dL",
-    referenceRange: {
-      "Glucose": "70-140"
-    },
-    category: "Biochemistry"
-  },
-  {
-    "code": "SGOT",
-    "name": "Aspartate Aminotransferase (SGOT/AST)",
-    "defaultPrice": 400.0,
-    "estimatedCost": 120.0,
-    "unit": "U/L",
-    "referenceRange": {
-      "AST": "10-40 U/L"
-    },
-    "category": "Biochemistry"
-  },
-  {
-    "code": "SGPT",
-    "name": "Alanine Aminotransferase (SGPT/ALT)",
-    "defaultPrice": 400.0,
-    "estimatedCost": 120.0,
-    "unit": "U/L",
-    "referenceRange": {
-      "ALT": "7-56 U/L"
-    },
-    "category": "Biochemistry"
-  },
-  {
-    "code": "SCR",
-    "name": "Serum Creatinine",
-    "defaultPrice": 350.0,
-    "estimatedCost": 100.0,
-    "unit": "mg/dL",
-    "referenceRange": {
-      "Creatinine": "0.6-1.2 mg/dL"
-    },
-    "category": "Biochemistry"
-  },
-  {
-    "code": "SBU",
-    "name": "Serum Blood Urea",
-    "defaultPrice": 350.0,
-    "estimatedCost": 100.0,
-    "unit": "mg/dL",
-    "referenceRange": {
-      "Urea": "10-50 mg/dL"
-    },
-    "category": "Biochemistry"
-  },
-  {
-    "code": "HIV",
-    "name": "Blood for HIV 1 & 2",
-    "defaultPrice": 1000.0,
-    "estimatedCost": 300.0,
-    "unit": "per test",
-    "referenceRange": {
-      "HIV 1 & 2": "Negative"
-    },
-    "category": "Immunology"
-  },
-  {
-    "code": "VDRL",
-    "name": "Venereal Disease Research Laboratory",
-    "defaultPrice": 600.0,
-    "estimatedCost": 180.0,
-    "unit": "per test",
-    "referenceRange": {
-      "VDRL": "Non-Reactive (Negative)"
-    },
-    "category": "Immunology"
-  },
-  {
-    "code": "UFR",
-    "name": "Urine Full Report",
-    "defaultPrice": 300.0,
-    "estimatedCost": 100.0,
-    "unit": "per test",
-    "referenceRange": {
-      "Colour": "Normal",
-      "Appearance": "Clear",
-      "pH": "Acidic",
-      "Specific Gravity": "1.003-1.030",
-      "Protein (Albumin)": "Negative",
-      "Sugar (Reducing substances)": "Negative",
-      "Urobilinogen": "Normal",
-      "Bile": "Negative",
-      "Acetone/KB": "Negative"
-    },
-    "category": "Urinalysis"
-  },
-  {
-    "code": "OGTT",
-    "name": "Oral Glucose Tolerance Test",
-    "defaultPrice": 400.0,
-    "estimatedCost": 120.0,
-    "unit": "mg/dL",
-    "referenceRange": {
-      "Fasting": "70-99",
-      "After 1 Hour": "<180",
-      "After 2 Hours": "70-140"
-    },
-    "category": "Biochemistry"
-  },
-  {
-    "code": "OGCT",
-    "name": "Oral Glucose Challenging Test",
-    "defaultPrice": 400.0,
-    "estimatedCost": 120.0,
-    "unit": "mg/dL",
-    "referenceRange": {
-      "Fasting": "70-99",
-      "After 1 Hour": "<180",
-      "After 2 Hours": "70-140"
-    },
-    "category": "Biochemistry"
-  },
-  {
-    "code": "PPBS",
-    "name": "Post Prandial Blood Sugar",
-    "defaultPrice": 200.0,
-    "estimatedCost": 60.0,
-    "unit": "mg/dL",
-    "referenceRange": {
-      "Post Prandial": "<140"
-    },
-    "category": "Biochemistry"
-  },
-  {
-    "code": "SE",
-    "name": "Serum Electrolytes",
-    "defaultPrice": 500.0,
-    "estimatedCost": 150.0,
-    "unit": "mEq/l",
-    "referenceRange": {
-      "Serum Sodium": "135.0-155.0 mEq/l",
-      "Serum Potassium": "3.5-5.5 mEq/l",
-      "Serum Chloride": "95.0-110.0 mEq/l"
-    },
-    "category": "Biochemistry"
-  },
-  {
-    "code": "UA",
-    "name": "Blood for Uric Acid",
-    "defaultPrice": 400.0,
-    "estimatedCost": 120.0,
-    "unit": "mg/dL",
-    "referenceRange": {
-      "Uric Acid": "3.4 - 7.2"
-    },
-    "category": "Biochemistry"
-  },
-  {
-    "code": "SFA",
-    "name": "Seminal Fluid Analysis",
-    "defaultPrice": 1000.0,
-    "estimatedCost": 300.0,
-    "unit": "per test",
-    "referenceRange": {
-      "Volume": "1.5-5.0 mL",
-      "Concentration": "15-200 million/mL",
-      "Total Motility": "≥40%",
-      "Progressive Motility": "≥32%",
-      "Morphology": "≥4% normal forms"
-    },
-    "category": "Andrology"
-  }
+        code: "RBS",
+        name: "Random Blood Sugar",
+        defaultPrice: 200.0,
+        estimatedCost: 60.0,
+        unit: "mg/dL",
+        referenceRange: {
+          Glucose: "70-140",
+        },
+        category: "Biochemistry",
+      },
+      {
+        code: "SGOT",
+        name: "Aspartate Aminotransferase (SGOT/AST)",
+        defaultPrice: 400.0,
+        estimatedCost: 120.0,
+        unit: "IU/L",
+        referenceRange: {
+          AST: "< 40",
+        },
+        category: "Biochemistry",
+      },
+      {
+        code: "SGPT",
+        name: "Alanine Aminotransferase (SGPT/ALT)",
+        defaultPrice: 400.0,
+        estimatedCost: 120.0,
+        unit: "IU/L",
+        referenceRange: {
+          ALT: "< 40",
+        },
+        category: "Biochemistry",
+      },
+      {
+        code: "SCR",
+        name: "Serum Creatinine",
+        defaultPrice: 350.0,
+        estimatedCost: 100.0,
+        unit: "mg/dL",
+        referenceRange: {
+          Creatinine: "0.6-1.2 mg/dL",
+        },
+        category: "Biochemistry",
+      },
+      {
+        code: "SBU",
+        name: "Serum Blood Urea",
+        defaultPrice: 350.0,
+        estimatedCost: 100.0,
+        unit: "mg/dL",
+        referenceRange: {
+          Urea: "< 42",
+        },
+        category: "Biochemistry",
+      },
+      {
+        code: "HIV",
+        name: "Blood for HIV 1 & 2",
+        defaultPrice: 1000.0,
+        estimatedCost: 300.0,
+        unit: "per test",
+        referenceRange: {
+          "HIV 1 & 2": "Negative",
+        },
+        category: "Immunology",
+      },
+      {
+        code: "VDRL",
+        name: "Venereal Disease Research Laboratory",
+        defaultPrice: 600.0,
+        estimatedCost: 180.0,
+        unit: "per test",
+        referenceRange: {
+          VDRL: "Non-Reactive (Negative)",
+        },
+        category: "Immunology",
+      },
+      {
+        code: "UFR",
+        name: "Urine Full Report",
+        defaultPrice: 300.0,
+        estimatedCost: 100.0,
+        unit: "per test",
+        referenceRange: {
+          Colour: "Normal",
+          Appearance: "Clear",
+          pH: "Acidic",
+          "Specific Gravity": "1.003-1.030",
+          "Protein (Albumin)": "Negative",
+          "Sugar (Reducing substances)": "Negative",
+          Urobilinogen: "Normal",
+          Bile: "Negative",
+          "Acetone/KB": "Negative",
+        },
+        category: "Urinalysis",
+      },
+      {
+        code: "OGTT",
+        name: "Oral Glucose Tolerance Test",
+        defaultPrice: 400.0,
+        estimatedCost: 120.0,
+        unit: "mg/dL",
+        referenceRange: {
+          Fasting: "70-99",
+          "After 1 Hour": "<180",
+          "After 2 Hours": "70-140",
+        },
+        category: "Biochemistry",
+      },
+      {
+        code: "OGCT",
+        name: "Oral Glucose Challenging Test",
+        defaultPrice: 400.0,
+        estimatedCost: 120.0,
+        unit: "mg/dL",
+        referenceRange: {
+          Fasting: "70-99",
+          "After 1 Hour": "<180",
+          "After 2 Hours": "70-140",
+        },
+        category: "Biochemistry",
+      },
+      {
+        code: "PPBS",
+        name: "Post Prandial Blood Sugar",
+        defaultPrice: 200.0,
+        estimatedCost: 60.0,
+        unit: "mg/dL",
+        referenceRange: {
+          "Post Prandial": "<140",
+        },
+        category: "Biochemistry",
+      },
+      {
+        code: "SE",
+        name: "Serum Electrolytes",
+        defaultPrice: 500.0,
+        estimatedCost: 150.0,
+        unit: "mEq/l",
+        referenceRange: {
+          "Serum Sodium": "135.0 - 145.0 ",
+          "Serum Potassium": "3.5 - 5.5",
+          "Serum Chloride": "95.0 - 110.0",
+        },
+        category: "Biochemistry",
+      },
+      {
+        code: "UA",
+        name: "Blood for Uric Acid",
+        defaultPrice: 400.0,
+        estimatedCost: 120.0,
+        unit: "mg/dL",
+        referenceRange: {
+          "Uric Acid": "3.4 - 7.2",
+        },
+        category: "Biochemistry",
+      },
+      {
+        code: "SFA",
+        name: "Seminal Fluid Analysis",
+        defaultPrice: 1000.0,
+        estimatedCost: 300.0,
+        unit: "per test",
+        referenceRange: {
+          Volume: "1.5-5.0 mL",
+          Concentration: "15-200 million/mL",
+          "Total Motility": "≥40%",
+          "Progressive Motility": "≥32%",
+          Morphology: "≥4% normal forms",
+        },
+        category: "Andrology",
+      },
     ];
   }
 

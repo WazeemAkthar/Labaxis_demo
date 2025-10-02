@@ -188,7 +188,7 @@ export default function ReportDetailsPage() {
               <div key={testCode}>
                 {renderRegularTestResults(testCode, resultsArray)}
                 {/* Add the TestAdditionalDetails component for non-FBC tests */}
-                <div className="mt-4">
+                <div className="mt-[5rem]">
                   <TestAdditionalDetails testCode={testCode} />
                 </div>
               </div>
@@ -330,7 +330,7 @@ export default function ReportDetailsPage() {
     return (
       <div key={testCode}>
         <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
-          {testName} ({testCode})
+          {testName}
         </h1>
         <table className="w-full border-collapse">
           <thead>

@@ -16,110 +16,121 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
       case "lipidprofile":
       case "lipid profile":
         return {
-          title: "Treatment Goals and Risk Categories",
+          title: "Recommended and High-Risk Plasma Lipid Concentrations",
           content: (
             <div className="space-y-4">
+              {/* Info Text */}
               <div>
-                <p className="text-sm mb-3 leading-relaxed">
-                  Abnormalities of lipids are associated with increased risk of
-                  coronary artery disease (CAD) in patients with DM. This risk
-                  can be reduced by intensive treatment of lipid abnormalities.
-                  The usual pattern of lipid abnormalities in type 2 DM is
-                  elevated triglycerides, decreased HDL cholesterol and higher
-                  proportion of small, dense LDL particles. Cholesterol is a
-                  lipid found in all cell membranes and in blood plasma. It is
-                  an essential component of the cell membranes, and is necessary
-                  for synthesis of steroid hormones, and for the formation of
-                  bile acids. Cholesterol is synthesized by the liver and many
-                  other organs, and is also ingested in the diet. Triglycerides
-                  are lipids in which three long-chain fatty acids are attached
-                  to glycerol. They are present in dietary fat and also
-                  synthesized by liver and adipose tissue.
-                </p>
                 <p className="text-sm mb-4 font-medium">
-                  Newer treatment goals and statin initiation thresholds based
-                  on the risk categories proposed by Lipid Association of India
-                  in 2016.
+                  Recommended and high-risk plasma lipid concentrations with
+                  desirable, borderline, and high levels.
                 </p>
               </div>
 
+              {/* Table */}
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-gray-300 text-sm">
                   <thead>
                     <tr className="bg-gray-50">
                       <th className="border border-gray-300 p-2 text-left font-semibold">
-                        Risk Category
+                        Chemistry
                       </th>
                       <th className="border border-gray-300 p-2 text-center font-semibold">
-                        Treatment Goal
+                        Desirable Levels
                       </th>
                       <th className="border border-gray-300 p-2 text-center font-semibold">
-                        Consider Therapy
+                        Borderline Levels
                       </th>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <th className="border border-gray-300 p-1 text-center text-xs"></th>
-                      <th className="border border-gray-300 p-1 text-center text-xs">
-                        <div>LDL Cholesterol</div>
-                        <div>(LDL-C) (Mg/dl)</div>
-                      </th>
-                      <th className="border border-gray-300 p-1 text-center text-xs">
-                        <div>Non-HDL Cholesterol</div>
-                        <div>(Non HDL-C) (Mg/dl)</div>
+                      <th className="border border-gray-300 p-2 text-center font-semibold">
+                        High Levels
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
                       <td className="border border-gray-300 p-2 font-medium">
-                        Extreme Risk Group Category A
+                        Total Cholesterol
                       </td>
                       <td className="border border-gray-300 p-2 text-center">
-                        &lt;50
+                        &lt; 200 mg/dl
                       </td>
                       <td className="border border-gray-300 p-2 text-center">
-                        &lt;80
+                        200 – 235 mg/dl
+                      </td>
+                      <td className="border border-gray-300 p-2 text-center">
+                        &gt; 235 mg/dl
                       </td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2 font-medium">
-                        Extreme Risk Group Category A
+                        HDL Cholesterol
                       </td>
                       <td className="border border-gray-300 p-2 text-center">
-                        <div>Optional Goal:&lt;30</div>
+                        ≥ 45 mg/dl
                       </td>
                       <td className="border border-gray-300 p-2 text-center">
-                        <div>Optional Goal:&lt;60</div>
+                        35 – 45 mg/dl
+                      </td>
+                      <td className="border border-gray-300 p-2 text-center">
+                        &lt; 35 mg/dl
                       </td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2 font-medium">
-                        Very High
+                        Triglycerides
                       </td>
                       <td className="border border-gray-300 p-2 text-center">
-                        &lt;50
+                        &lt; 150 mg/dl
                       </td>
                       <td className="border border-gray-300 p-2 text-center">
-                        &lt;80
+                        150 – 200 mg/dl
+                      </td>
+                      <td className="border border-gray-300 p-2 text-center">
+                        &gt; 200 mg/dl
                       </td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2 font-medium">
-                        High
+                        LDL Cholesterol
                       </td>
                       <td className="border border-gray-300 p-2 text-center">
-                        &lt;70
+                        &lt; 150 mg/dl
                       </td>
                       <td className="border border-gray-300 p-2 text-center">
-                        &lt;100
+                        150 – 190 mg/dl
+                      </td>
+                      <td className="border border-gray-300 p-2 text-center">
+                        &gt; 190 mg/dl
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2 font-medium">
+                        Total Cholesterol / HDL
+                      </td>
+                      <td className="border border-gray-300 p-2 text-center">
+                        &lt; 3.5
+                      </td>
+                      <td className="border border-gray-300 p-2 text-center">
+                        3.5 – 6.0
+                      </td>
+                      <td className="border border-gray-300 p-2 text-center">
+                        &gt; 6.0
                       </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
+
+              {/* Note Section */}
+              <div className="mt-4 p-3 bg-green-50 border-l-4 border-green-400">
+                <p className="text-xs font-medium">
+                  Fully automated Biochemistry Analyzer – <strong>SELECTRA ProM</strong>
+                </p>
+              </div>
             </div>
           ),
         };
+
 
       case "hba1c":
       case "glycated hemoglobin":
@@ -479,60 +490,29 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
           title: "ESR Clinical Information",
           content: (
             <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Raised ESR Section */}
-                <div>
-                  <h5 className="font-bold text-sm mb-3 underline">
-                    Raised ESR can be found in:
-                  </h5>
-                  <ol className="text-xs space-y-1 list-decimal list-inside">
-                    <li>Connective tissue disorders</li>
-                    <li>Infections e.g., TB, acute hepatitis, bacterial</li>
-                    <li>
-                      Hematological disease e.g., multiple myeloma, anemia of
-                      acute or chronic disease, along or combined with iron
-                      deficiency anemia
-                    </li>
-                    <li>Malignancy e.g., lymphoma, breast or colon cancer</li>
-                    <li>Pregnancy</li>
-                    <li>Increasing age and years</li>
-                    <li>Obesity can cause a moderately raised ESR</li>
-                  </ol>
+              {/* Normal ESR Values */}
+              <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <h6 className="font-semibold">Male</h6>
+                    <ul className="list-disc list-inside space-y-1">
+                      <li>Age &lt; 50 : 0 – 15 mm (1st hour)</li>
+                      <li>Age &gt; 50 : 0 – 20 mm (1st hour)</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h6 className="font-semibold">Female</h6>
+                    <ul className="list-disc list-inside space-y-1">
+                      <li>Age &lt; 50 : 0 – 25 mm (1st hour)</li>
+                      <li>Age &gt; 50 : 0 – 30 mm (1st hour)</li>
+                    </ul>
+                  </div>
                 </div>
-
-                {/* Low ESR Section */}
-                <div>
-                  <h5 className="font-bold text-sm mb-3 underline">
-                    Low ESR is found in:
-                  </h5>
-                  <ol className="text-xs space-y-1 list-decimal list-inside">
-                    <li>Heart failure</li>
-                    <li>Cachexia</li>
-                    <li>Hypofibrinogenemia</li>
-                    <li>Sickle cell disease</li>
-                    <li>Conditions featuring abnormal blood cells</li>
-                    <li>Polycythemia vera</li>
-                    <li>Leucocytosis</li>
-                    <li>Hypofibrinogenemia e.g. DIC</li>
-                    <li>Massive hepatic necrosis</li>
-                    <li>High white cell count</li>
-                    <li>Treatment with steroids</li>
-                  </ol>
-                </div>
-              </div>
-
-              {/* Important Note */}
-              <div className="mt-4 p-3 bg-yellow-50 border-l-4 border-yellow-400">
-                <p className="text-xs font-medium">
-                  <strong>NB:</strong> Very high (&gt;100) ESR is found in
-                  autoimmune disease, malignancy, acute post trauma, and serious
-                  infection. A false high ESR can occur if the ambient
-                  temperature is unusually high.
-                </p>
               </div>
             </div>
           ),
         };
+
       case "fbs":
       case "fasting blood sugar":
       case "glucose":
@@ -540,7 +520,7 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
         return {
           title: "Fasting Blood Glucose Guidelines",
           content: (
-            <div className="space-y-4">
+            <div className="space-y-4 mt-5">
               {/* <div>
                 <p className="text-sm mb-3 leading-relaxed">
                   Elevated glucose levels (hyperglycemia) are most often
@@ -809,9 +789,10 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
 
               <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
                 <p className="text-xs">
-                  <strong>For Cardiovascular Risk:</strong> &lt;1.0 mg/l (Low
-                  risk), 1.0-3.0 mg/l (Average risk), &gt;3.0 mg/l (High risk).
-                  CRP rises within 4-6 hours of inflammation onset.
+                  <strong>METHOD: </strong> QUANTITITIVE TURBIDIMETRY
+                </p>
+                <p>
+                  <strong>Fully automated Bio chemistry analyzer </strong> - “SELECTRA ProM“
                 </p>
               </div>
             </div>
@@ -885,15 +866,6 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                     </tr>
                   </tbody>
                 </table>
-              </div>
-
-              <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
-                <p className="text-xs">
-                  <strong>Note:</strong> RF can be positive in other conditions
-                  including Sjögren's syndrome, systemic lupus erythematosus,
-                  chronic infections, and in 5-10% of healthy individuals,
-                  especially elderly.
-                </p>
               </div>
             </div>
           ),
@@ -972,30 +944,7 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                 </table>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <div className="p-3 bg-yellow-50 border-l-4 border-yellow-400">
-                  <h5 className="font-semibold text-xs mb-2">
-                    Associated Conditions:
-                  </h5>
-                  <ul className="text-xs space-y-1 list-disc list-inside">
-                    <li>Rheumatic fever</li>
-                    <li>Post-streptococcal glomerulonephritis</li>
-                    <li>PANDAS syndrome</li>
-                    <li>Scarlet fever</li>
-                  </ul>
-                </div>
-                <div className="p-3 bg-blue-50 border-l-4 border-blue-400">
-                  <h5 className="font-semibold text-xs mb-2">
-                    Clinical Notes:
-                  </h5>
-                  <ul className="text-xs space-y-1 list-disc list-inside">
-                    <li>Peaks 3-6 weeks after infection</li>
-                    <li>Gradually declines over months</li>
-                    <li>Children have higher normal values</li>
-                    <li>Serial testing may be needed</li>
-                  </ul>
-                </div>
-              </div>
+            
             </div>
           ),
         };
@@ -1077,12 +1026,6 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
       title: "Serum Electrolytes Clinical Guidelines",
       content: (
         <div className="space-y-4">
-          <div>
-            <p className="text-sm mb-3 leading-relaxed">
-              Serum Electrolytes measure levels of sodium, potassium, and
-              chloride to assess fluid balance and kidney function.
-            </p>
-          </div>
 
           <div className="overflow-x-auto">
             <table className="w-full border-collapse border border-gray-300 text-sm">
@@ -1123,13 +1066,6 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                 </tr>
               </tbody>
             </table>
-          </div>
-
-          <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
-            <p className="text-xs">
-              <strong>Note:</strong> Results should be interpreted with clinical
-              correlation, especially in renal or cardiac conditions.
-            </p>
           </div>
         </div>
       ),
