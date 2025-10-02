@@ -177,17 +177,13 @@ export default function ReportDetailsPage() {
         {Object.entries(groupedResults).map(([testCode, testResults]) => {
           const resultsArray = testResults as any[];
           if (testCode === "FBC") {
-            return (
-              <div key={testCode}>
-                {renderFBCResults(resultsArray)}
-                {/* FBC doesn't get additional details as it has its own specialized format */}
-              </div>
-            );
+            return <div key={testCode}>{renderFBCResults(resultsArray)}</div>;
+          } else if (testCode === "UFR") {
+            return <div key={testCode}>{renderUFRResults(resultsArray)}</div>;
           } else {
             return (
               <div key={testCode}>
                 {renderRegularTestResults(testCode, resultsArray)}
-                {/* Add the TestAdditionalDetails component for non-FBC tests */}
                 <div className="mt-[5rem]">
                   <TestAdditionalDetails testCode={testCode} />
                 </div>
@@ -321,70 +317,144 @@ export default function ReportDetailsPage() {
     );
   };
 
- const renderRegularTestResults = (testCode: string, testResults: any[]) => {
-  console.log("Rendering regular test results for:", testResults);
+  const renderUFRResults = (ufrResults: any[]) => {
+    const physicalChemical = ufrResults.filter((result) =>
+      [
+        "Colour",
+        "Appearance",
+        "PH",
+        "Specific Gravity",
+        "Protein(Albumin)",
+        "Sugar(Reducing substances)",
+        "Urobilinogen",
+        "Bile",
+        "Acetone/KB",
+      ].includes(result.testName)
+    );
 
-  const dataManager = DataManager.getInstance();
-  const testConfig = dataManager.getTestByCode(testCode);
-  const testName = testConfig ? testConfig.name : testCode;
-  const isESR = testCode === "ESR";
-  
-  return (
-    <div key={testCode}>
-      <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
-        {testName}
-      </h1>
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="border-b">
-            <th className="text-left p-4">Test</th>
-            <th className="text-left p-4">Value</th>
-            <th className="text-left p-4">Units</th>
-            {!isESR && <th className="text-left p-4">Reference Range</th>}
-          </tr>
-        </thead>
-        <tbody>
-          {testResults.map((result, index) => {
-            const isQualitative = testConfig?.isQualitative || false;
-            
-            const displayName = result.testName.includes(' - ') 
-      ? result.testName.split(' - ')[1] 
-      : result.testName;
-            return (
-              <tr key={`${testCode}-${index}`} className="border-b">
-                <td className="p-4">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">{displayName}</span>
-                  </div>
-                </td>
-                <td className="p-4">
-                  <div className="font-semibold text-lg">
-                    {result.value}
-                    {isQualitative && result.comments && (
-                      <span className="ml-2">
-                        ({result.comments})
-                      </span>
-                    )}
-                  </div>
-                </td>
-                <td className="p-4">
-                  <div className="font-semibold text-lg">{result.unit}</div>
-                </td>
-                {!isESR && (
+    const microscopic = ufrResults.filter((result) =>
+      [
+        "Epithelial cells",
+        "Pus cells",
+        "Red cells",
+        "Crystals",
+        "Casts",
+        "Organisms",
+        "Others",
+      ].includes(result.testName)
+    );
+
+    const renderTable = (results: any[], title?: string) => (
+      <div className="mb-6">
+        {title && (
+          <h4 className="font-semibold text-xl text-left text-muted-foreground mb-3 underline">
+            {title}
+          </h4>
+        )}
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-collapse border-t-2 border-b-2 border-gray-900">
+                <th className="text-left font-semibold">Description</th>
+                <th className="text-right font-semibold">Results</th>
+                <th className="text-right font-semibold">Units</th>
+              </tr>
+            </thead>
+            <tbody>
+              {results.map((result, index) => (
+                <tr key={index} className="border-0 font-mono p-0 table-row">
+                  <td className="py-0 font-mono">{result.testName}</td>
+                  <td className="text-right py-0 font-mono">{result.value}</td>
+                  <td className="text-right py-0 font-mono">{result.unit}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+
+    return (
+      <div key="UFR" className="border rounded-lg p-6">
+        <div className="flex items-center gap-2 mb-6">
+          <Badge variant="outline" className="text-lg px-3 py-1">
+            UFR
+          </Badge>
+          <span className="font-semibold text-lg">Urine Full Report</span>
+        </div>
+
+        {physicalChemical.length > 0 && renderTable(physicalChemical)}
+        {physicalChemical.length > 0 && microscopic.length > 0 && (
+          <hr className="my-4 border-gray-200" />
+        )}
+        {microscopic.length > 0 &&
+          renderTable(microscopic, "Centrifuge Deposit")}
+      </div>
+    );
+  };
+
+  const renderRegularTestResults = (testCode: string, testResults: any[]) => {
+    console.log("Rendering regular test results for:", testResults);
+
+    const dataManager = DataManager.getInstance();
+    const testConfig = dataManager.getTestByCode(testCode);
+    const testName = testConfig ? testConfig.name : testCode;
+    const isESR = testCode === "ESR";
+
+    return (
+      <div key={testCode}>
+        <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
+          {testName}
+        </h1>
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="border-b">
+              <th className="text-left p-4">Test</th>
+              <th className="text-left p-4">Value</th>
+              <th className="text-left p-4">Units</th>
+              {!isESR && <th className="text-left p-4">Reference Range</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {testResults.map((result, index) => {
+              const isQualitative = testConfig?.isQualitative || false;
+
+              const displayName = result.testName.includes(" - ")
+                ? result.testName.split(" - ")[1]
+                : result.testName;
+              return (
+                <tr key={`${testCode}-${index}`} className="border-b">
                   <td className="p-4">
-                    <div className="font-semibold text-lg">
-                      {result.referenceRange}
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{displayName}</span>
                     </div>
                   </td>
-                )}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
-  );
-};
+                  <td className="p-4">
+                    <div className="font-semibold text-lg">
+                      {result.value}
+                      {isQualitative && result.comments && (
+                        <span className="ml-2">({result.comments})</span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="p-4">
+                    <div className="font-semibold text-lg">{result.unit}</div>
+                  </td>
+                  {!isESR && (
+                    <td className="p-4">
+                      <div className="font-semibold text-lg">
+                        {result.referenceRange}
+                      </div>
+                    </td>
+                  )}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
   const checkValueStatus = (value: string, referenceRange: string) => {
     // Returns 'normal', 'low', or 'high'
     if (!value || !referenceRange) return "normal";

@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -33,7 +32,7 @@ import {
 import { FBCReportCard } from "@/components/fbc-report-card";
 import { TestSelectionComponent } from "@/components/test-selection";
 import Link from "next/link";
-import { PathologyReportCard } from "@/components/pathology-report-card";
+import { UFRReportCard } from "@/components/ufr-report-card";
 import { LipidProfileReportCard } from "@/components/lipid-profile-report-card";
 
 // Helper function to extract unit from reference range
@@ -47,22 +46,32 @@ function getUnitFromRange(range: string): string {
   return "";
 }
 
-function getDefaultReferenceRange(testCode: string, componentName: string, dataManager: any): string {
+function getDefaultReferenceRange(
+  testCode: string,
+  componentName: string,
+  dataManager: any
+): string {
   const test = dataManager.getTestByCode(testCode);
   if (!test || !test.referenceRange) return "";
-  
+
   // For components like "Total Cholesterol" from "Lipid Profile - Total Cholesterol"
-  const cleanComponentName = componentName.replace(/.*\s-\s/, '');
-  
-  return test.referenceRange[componentName] || 
-         test.referenceRange[cleanComponentName] || 
-         "";
+  const cleanComponentName = componentName.replace(/.*\s-\s/, "");
+
+  return (
+    test.referenceRange[componentName] ||
+    test.referenceRange[cleanComponentName] ||
+    ""
+  );
 }
 
 // Helper function to get unit and reference range from test catalog
-function getTestDetails(testCode: string, componentName: string, dataManager: any) {
+function getTestDetails(
+  testCode: string,
+  componentName: string,
+  dataManager: any
+) {
   const test = dataManager.getTestByCode(testCode);
-  
+
   if (!test) {
     return { unit: "", referenceRange: "" };
   }
@@ -72,19 +81,20 @@ function getTestDetails(testCode: string, componentName: string, dataManager: an
     const firstRange = Object.entries(test.referenceRange)[0];
     return {
       unit: test.unit,
-      referenceRange: firstRange ? firstRange[1] : ""
+      referenceRange: firstRange ? firstRange[1] : "",
     };
   }
 
   // For multi-component tests, find the specific component's reference range
-  const cleanComponentName = componentName.replace(/.*\s-\s/, '');
-  const referenceRange = test.referenceRange[componentName] || 
-                         test.referenceRange[cleanComponentName] || 
-                         "";
+  const cleanComponentName = componentName.replace(/.*\s-\s/, "");
+  const referenceRange =
+    test.referenceRange[componentName] ||
+    test.referenceRange[cleanComponentName] ||
+    "";
 
   return {
     unit: test.unit,
-    referenceRange: referenceRange
+    referenceRange: referenceRange,
   };
 }
 
@@ -105,12 +115,17 @@ export default function NewReportPage() {
   const [reviewedBy, setReviewedBy] = useState("Dr. Lab Director");
   const [pathologyReport, setPathologyReport] = useState<any>(null);
   const [lipidValues, setLipidValues] = useState<any>(null);
+  const [ufrValues, setUfrValues] = useState<any>(null);
+
+  const hasUFRTest = useDirectTestSelection
+    ? selectedTests.includes("UFR")
+    : selectedInvoice?.lineItems.some((item) => item.testCode === "UFR") ||
+      false;
 
   const hasLipidProfileTest = useDirectTestSelection
     ? selectedTests.includes("LIPID")
     : selectedInvoice?.lineItems.some((item) => item.testCode === "LIPID") ||
       false;
-
 
   useEffect(() => {
     const authStatus = localStorage.getItem("lablite_auth");
@@ -140,56 +155,60 @@ export default function NewReportPage() {
     setFbcValues(null);
   };
 
-const handleInvoiceChange = (invoiceId: string) => {
-  const invoice = invoices.find((inv) => inv.id === invoiceId);
-  setSelectedInvoice(invoice || null);
-  setFbcValues(null);
+  const handleInvoiceChange = (invoiceId: string) => {
+    const invoice = invoices.find((inv) => inv.id === invoiceId);
+    setSelectedInvoice(invoice || null);
+    setFbcValues(null);
 
-  if (invoice) {
-    // Initialize results from invoice line items
-    const dataManager = DataManager.getInstance();
-    const testCatalog = dataManager.getTestCatalog();
+    if (invoice) {
+      // Initialize results from invoice line items
+      const dataManager = DataManager.getInstance();
+      const testCatalog = dataManager.getTestCatalog();
 
-    const initialResults: ReportResult[] = [];
+      const initialResults: ReportResult[] = [];
 
-    invoice.lineItems.forEach((item) => {
-      const test = testCatalog.find((t) => t.code === item.testCode);
-      const referenceRanges = test?.referenceRange || {};
+      invoice.lineItems.forEach((item) => {
+        const test = testCatalog.find((t) => t.code === item.testCode);
+        const referenceRanges = test?.referenceRange || {};
 
-      // Handle FBC, LIPID specially - don't create individual result entries
-      if (item.testCode === "FBC" || item.testCode === "LIPID") {
-        return;
-      }
+        // Handle FBC, LIPID specially - don't create individual result entries
+        if (
+          item.testCode === "FBC" ||
+          item.testCode === "LIPID" ||
+          item.testCode === "UFR"
+        ) {
+          return;
+        }
 
-      // For multi-component tests, create separate result entries for each component
-      if (Object.keys(referenceRanges).length > 1) {
-        Object.entries(referenceRanges).forEach(([component, range]) => {
+        // For multi-component tests, create separate result entries for each component
+        if (Object.keys(referenceRanges).length > 1) {
+          Object.entries(referenceRanges).forEach(([component, range]) => {
+            initialResults.push({
+              testCode: item.testCode,
+              testName: `${item.testName} - ${component}`,
+              value: "",
+              unit: test?.unit || "", // Use unit from test catalog
+              referenceRange: range, // Use reference range from catalog
+              comments: "",
+            });
+          });
+        } else {
+          // For single-component tests
+          const firstRange = Object.entries(referenceRanges)[0];
           initialResults.push({
             testCode: item.testCode,
-            testName: `${item.testName} - ${component}`,
+            testName: item.testName,
             value: "",
             unit: test?.unit || "", // Use unit from test catalog
-            referenceRange: range, // Use reference range from catalog
+            referenceRange: firstRange ? firstRange[1] : "",
             comments: "",
           });
-        });
-      } else {
-        // For single-component tests
-        const firstRange = Object.entries(referenceRanges)[0];
-        initialResults.push({
-          testCode: item.testCode,
-          testName: item.testName,
-          value: "",
-          unit: test?.unit || "", // Use unit from test catalog
-          referenceRange: firstRange ? firstRange[1] : "",
-          comments: "",
-        });
-      }
-    });
+        }
+      });
 
-    setResults(initialResults);
-  }
-};
+      setResults(initialResults);
+    }
+  };
 
   const updateResult = (
     testName: string,
@@ -251,58 +270,63 @@ const handleInvoiceChange = (invoiceId: string) => {
     setFbcValues(null);
   };
 
-const handleTestSelection = (testCodes: string[]) => {
-  // Prevent infinite loops by checking if the selection has actually changed
-  if (
-    JSON.stringify(testCodes.sort()) === JSON.stringify(selectedTests.sort())
-  ) {
-    return;
-  }
-
-  setSelectedTests(testCodes);
-
-  // Initialize results from selected tests
-  const dataManager = DataManager.getInstance();
-  const testCatalog = dataManager.getTestCatalog();
-  const initialResults: ReportResult[] = [];
-
-  testCodes.forEach((testCode) => {
-    const test = testCatalog.find((t) => t.code === testCode);
-    const referenceRanges = test?.referenceRange || {};
-
-    // Handle FBC, LIPID specially - don't create individual result entries
-    if (testCode === "FBC" || testCode === "LIPID") {
+  const handleTestSelection = (testCodes: string[]) => {
+    // Prevent infinite loops by checking if the selection has actually changed
+    if (
+      JSON.stringify(testCodes.sort()) === JSON.stringify(selectedTests.sort())
+    ) {
       return;
     }
 
-    // For multi-component tests, create separate result entries for each component
-    if (Object.keys(referenceRanges).length > 1) {
-      Object.entries(referenceRanges).forEach(([component, range]) => {
+    setSelectedTests(testCodes);
+
+    // Initialize results from selected tests
+    const dataManager = DataManager.getInstance();
+    const testCatalog = dataManager.getTestCatalog();
+    const initialResults: ReportResult[] = [];
+
+    testCodes.forEach((testCode) => {
+      const test = testCatalog.find((t) => t.code === testCode);
+      const referenceRanges = test?.referenceRange || {};
+
+      // Handle FBC, LIPID specially - don't create individual result entries
+      if (testCode === "FBC" || testCode === "LIPID" || testCode === "UFR") {
+        return;
+      }
+
+      // For multi-component tests, create separate result entries for each component
+      if (Object.keys(referenceRanges).length > 1) {
+        Object.entries(referenceRanges).forEach(([component, range]) => {
+          initialResults.push({
+            testCode: testCode,
+            testName: `${test?.name} - ${component}`,
+            value: "",
+            unit: test?.unit || "", // Use unit from test catalog
+            referenceRange: range, // Use reference range from catalog
+            comments: "",
+          });
+        });
+      } else {
+        // For single-component tests
+        const firstRange = Object.entries(referenceRanges)[0];
         initialResults.push({
           testCode: testCode,
-          testName: `${test?.name} - ${component}`,
+          testName: test?.name || testCode,
           value: "",
           unit: test?.unit || "", // Use unit from test catalog
-          referenceRange: range, // Use reference range from catalog
+          referenceRange: firstRange ? firstRange[1] : "",
           comments: "",
         });
-      });
-    } else {
-      // For single-component tests
-      const firstRange = Object.entries(referenceRanges)[0];
-      initialResults.push({
-        testCode: testCode,
-        testName: test?.name || testCode,
-        value: "",
-        unit: test?.unit || "", // Use unit from test catalog
-        referenceRange: firstRange ? firstRange[1] : "",
-        comments: "",
-      });
-    }
-  });
+      }
+    });
 
-  setResults(initialResults);
-};
+    setResults(initialResults);
+  };
+
+  const hasUFRResults =
+    ufrValues &&
+    hasUFRTest &&
+    Object.values(ufrValues).some((v) => v && String(v).trim() !== "");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -534,36 +558,170 @@ const handleTestSelection = (testCodes: string[]) => {
             referenceRange: "<5.0",
             comments: "",
           },
-          
-    {
-      testCode: "LIPID",
-      testName: "Total Cholesterol/HDL Ratio",
-      value: lipidValues.tcHdlRatio,
-      unit: "",
-      referenceRange: "3.5-5.0",
-      comments: "",
-    },
-    {
-      testCode: "LIPID",
-      testName: "TG/HDL Ratio",
-      value: lipidValues.tgHdlRatio,
-      unit: "",
-      referenceRange: "<4.0",
-      comments: "",
-    },
-    {
-      testCode: "LIPID",
-      testName: "Non-HDL Cholesterol",
-      value: lipidValues.nonHdl,
-      unit: "mg/dL",
-      referenceRange: "<130",
-      comments: "",
-    },
+
+          {
+            testCode: "LIPID",
+            testName: "Total Cholesterol/HDL Ratio",
+            value: lipidValues.tcHdlRatio,
+            unit: "",
+            referenceRange: "3.5-5.0",
+            comments: "",
+          },
+          {
+            testCode: "LIPID",
+            testName: "TG/HDL Ratio",
+            value: lipidValues.tgHdlRatio,
+            unit: "",
+            referenceRange: "<4.0",
+            comments: "",
+          },
+          {
+            testCode: "LIPID",
+            testName: "Non-HDL Cholesterol",
+            value: lipidValues.nonHdl,
+            unit: "mg/dL",
+            referenceRange: "<130",
+            comments: "",
+          },
         ].filter((r) => r.value && r.value.trim() !== "");
 
         allResults.push(...lipidResults);
       }
 
+      if (ufrValues && hasUFRTest) {
+        const ufrResults = [
+          {
+            testCode: "UFR",
+            testName: "Colour",
+            value: ufrValues.colour,
+            unit: "",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Appearance",
+            value: ufrValues.appearance,
+            unit: "",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "PH",
+            value: ufrValues.ph,
+            unit: "",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Specific Gravity",
+            value: ufrValues.specificGravity,
+            unit: "",
+            referenceRange: "1.010-1.025",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Protein(Albumin)",
+            value: ufrValues.protein,
+            unit: "",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Sugar(Reducing substances)",
+            value: ufrValues.sugar,
+            unit: "",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Urobilinogen",
+            value: ufrValues.urobilinogen,
+            unit: "",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Bile",
+            value: ufrValues.bile,
+            unit: "",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Acetone/KB",
+            value: ufrValues.acetone,
+            unit: "",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Epithelial cells",
+            value: ufrValues.epithelialCells,
+            unit: "/HPF",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Pus cells",
+            value: ufrValues.pusCells,
+            unit: "/HPF",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Red cells",
+            value: ufrValues.redCells,
+            unit: "/HPF",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Crystals",
+            value: ufrValues.crystals,
+            unit: "/HPF",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Casts",
+            value: ufrValues.casts,
+            unit: "/HPF",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Organisms",
+            value: ufrValues.organisms,
+            unit: "/HPF",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Others",
+            value: ufrValues.others,
+            unit: "",
+            referenceRange: "",
+            comments: "",
+          },
+        ].filter((r) => r.value && r.value.trim() !== "");
+
+        allResults.push(...ufrResults);
+      }
 
       if (allResults.length === 0) return;
 
@@ -594,7 +752,7 @@ const handleTestSelection = (testCodes: string[]) => {
       fbcValues &&
       hasFBC &&
       Object.values(fbcValues).some((v) => v && String(v).trim() !== "");
-    
+
     const hasLipidResults =
       lipidValues &&
       hasLipidProfileTest &&
@@ -607,11 +765,15 @@ const handleTestSelection = (testCodes: string[]) => {
 
     const hasValidSelection =
       selectedInvoice || (useDirectTestSelection && selectedTests.length > 0);
-    
+
     return (
       selectedPatient &&
       hasValidSelection &&
-      (hasRegularResults || hasFBCResults || hasLipidResults || hasPathologyResults) &&
+      (hasRegularResults ||
+        hasFBCResults ||
+        hasLipidResults ||
+        hasPathologyResults ||
+        hasUFRResults) &&
       reviewedBy.trim() !== ""
     );
   };
@@ -794,7 +956,10 @@ const handleTestSelection = (testCodes: string[]) => {
         </Card>
 
         {/* Test Results */}
-        {(results.length > 0 || hasFBCTest || hasLipidProfileTest) && (
+        {(results.length > 0 ||
+          hasFBCTest ||
+          hasLipidProfileTest ||
+          hasUFRTest) && (
           <div className="space-y-6">
             {/* FBC Test - Special Component */}
             {hasFBCTest && (
@@ -804,6 +969,8 @@ const handleTestSelection = (testCodes: string[]) => {
             {hasLipidProfileTest && (
               <LipidProfileReportCard onValuesChange={setLipidValues} />
             )}
+
+            {hasUFRTest && <UFRReportCard onValuesChange={setUfrValues} />}
 
             {/* Other Tests */}
             {results.length > 0 && (
@@ -818,95 +985,146 @@ const handleTestSelection = (testCodes: string[]) => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                 {results.map((result, index) => {
-  const dataManager = DataManager.getInstance();
-  const isQualitative = dataManager.getTestByCode(result.testCode)?.isQualitative || false;
-  
-  return (
-    <div key={`${result.testCode}-${result.testName}-${index}`} className="p-4 border rounded-lg space-y-4">
-      <div className="flex items-center gap-2 mb-3">
-        <Badge variant="outline">{result.testCode}</Badge>
-        <span className="font-medium">{result.testName}</span>
-        {isQualitative && (
-          <Badge variant="secondary" className="ml-2">Qualitative</Badge>
-        )}
-      </div>
+                  {results.map((result, index) => {
+                    const dataManager = DataManager.getInstance();
+                    const isQualitative =
+                      dataManager.getTestByCode(result.testCode)
+                        ?.isQualitative || false;
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="space-y-2">
-          <Label htmlFor={`value-${result.testCode}-${result.testName}-${index}`}>
-            Result Value *
-          </Label>
-          <Input
-            id={`value-${result.testCode}-${result.testName}-${index}`}
-            value={result.value}
-            onChange={(e) => updateResult(result.testName, "value", e.target.value)}
-            placeholder="Enter result value"
-          />
-        </div>
+                    return (
+                      <div
+                        key={`${result.testCode}-${result.testName}-${index}`}
+                        className="p-4 border rounded-lg space-y-4"
+                      >
+                        <div className="flex items-center gap-2 mb-3">
+                          <Badge variant="outline">{result.testCode}</Badge>
+                          <span className="font-medium">{result.testName}</span>
+                          {isQualitative && (
+                            <Badge variant="secondary" className="ml-2">
+                              Qualitative
+                            </Badge>
+                          )}
+                        </div>
 
-        {isQualitative && (
-          <div className="space-y-2">
-            <Label htmlFor={`qualitative-${result.testCode}-${result.testName}-${index}`}>
-              Qualitative Result *
-            </Label>
-            <Select
-              value={result.comments || ""}
-              onValueChange={(value) => updateResult(result.testName, "comments", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select result" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Positive">Positive</SelectItem>
-                <SelectItem value="Negative">Negative</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        )}
+                        <div className="grid gap-4 md:grid-cols-3">
+                          <div className="space-y-2">
+                            <Label
+                              htmlFor={`value-${result.testCode}-${result.testName}-${index}`}
+                            >
+                              Result Value *
+                            </Label>
+                            <Input
+                              id={`value-${result.testCode}-${result.testName}-${index}`}
+                              value={result.value}
+                              onChange={(e) =>
+                                updateResult(
+                                  result.testName,
+                                  "value",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Enter result value"
+                            />
+                          </div>
 
-        <div className="space-y-2">
-          <Label htmlFor={`unit-${result.testCode}-${result.testName}-${index}`}>
-            Unit
-          </Label>
-          <Input
-            id={`unit-${result.testCode}-${result.testName}-${index}`}
-            value={result.unit}
-            onChange={(e) => updateResult(result.testName, "unit", e.target.value)}
-            placeholder={`e.g., ${result.unit}`}
-          />
-        </div>
+                          {isQualitative && (
+                            <div className="space-y-2">
+                              <Label
+                                htmlFor={`qualitative-${result.testCode}-${result.testName}-${index}`}
+                              >
+                                Qualitative Result *
+                              </Label>
+                              <Select
+                                value={result.comments || ""}
+                                onValueChange={(value) =>
+                                  updateResult(
+                                    result.testName,
+                                    "comments",
+                                    value
+                                  )
+                                }
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select result" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Positive">
+                                    Positive
+                                  </SelectItem>
+                                  <SelectItem value="Negative">
+                                    Negative
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
 
-        <div className="space-y-2">
-          <Label htmlFor={`range-${result.testCode}-${result.testName}-${index}`}>
-            Reference Range
-          </Label>
-          <Input
-            id={`range-${result.testCode}-${result.testName}-${index}`}
-            value={result.referenceRange}
-            onChange={(e) => updateResult(result.testName, "referenceRange", e.target.value)}
-            placeholder={`e.g. ${result.referenceRange}`}
-          />
-        </div>
-      </div>
+                          <div className="space-y-2">
+                            <Label
+                              htmlFor={`unit-${result.testCode}-${result.testName}-${index}`}
+                            >
+                              Unit
+                            </Label>
+                            <Input
+                              id={`unit-${result.testCode}-${result.testName}-${index}`}
+                              value={result.unit}
+                              onChange={(e) =>
+                                updateResult(
+                                  result.testName,
+                                  "unit",
+                                  e.target.value
+                                )
+                              }
+                              placeholder={`e.g., ${result.unit}`}
+                            />
+                          </div>
 
-      {!isQualitative && (
-        <div className="space-y-2">
-          <Label htmlFor={`comments-${result.testCode}-${result.testName}-${index}`}>
-            Comments (Optional)
-          </Label>
-          <Textarea
-            id={`comments-${result.testCode}-${result.testName}-${index}`}
-            value={result.comments || ""}
-            onChange={(e) => updateResult(result.testName, "comments", e.target.value)}
-            placeholder="Any additional comments about this result"
-            rows={2}
-          />
-        </div>
-      )}
-    </div>
-  );
-})}
+                          <div className="space-y-2">
+                            <Label
+                              htmlFor={`range-${result.testCode}-${result.testName}-${index}`}
+                            >
+                              Reference Range
+                            </Label>
+                            <Input
+                              id={`range-${result.testCode}-${result.testName}-${index}`}
+                              value={result.referenceRange}
+                              onChange={(e) =>
+                                updateResult(
+                                  result.testName,
+                                  "referenceRange",
+                                  e.target.value
+                                )
+                              }
+                              placeholder={`e.g. ${result.referenceRange}`}
+                            />
+                          </div>
+                        </div>
+
+                        {!isQualitative && (
+                          <div className="space-y-2">
+                            <Label
+                              htmlFor={`comments-${result.testCode}-${result.testName}-${index}`}
+                            >
+                              Comments (Optional)
+                            </Label>
+                            <Textarea
+                              id={`comments-${result.testCode}-${result.testName}-${index}`}
+                              value={result.comments || ""}
+                              onChange={(e) =>
+                                updateResult(
+                                  result.testName,
+                                  "comments",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Any additional comments about this result"
+                              rows={2}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </CardContent>
               </Card>
             )}

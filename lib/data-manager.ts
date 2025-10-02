@@ -375,7 +375,7 @@ export class DataManager {
           "HIV 1 & 2": "Negative",
         },
         category: "Immunology",
-        isQualitative: true, 
+        isQualitative: true,
       },
       {
         code: "VDRL",
