@@ -33,12 +33,16 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-teal-50/30 via-emerald-50/30 to-cyan-50/30">
       {/* Mobile sidebar */}
       <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
         <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" className="md:hidden fixed top-4 left-4 z-40">
-            <Menu className="h-6 w-6" />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="md:hidden fixed top-4 left-4 z-40 bg-white shadow-md hover:bg-teal-50"
+          >
+            <Menu className="h-6 w-6 text-teal-600" />
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="w-64 p-0">
@@ -61,13 +65,21 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
 function SidebarContent({ pathname, router, onSignOut }: { pathname: string; router: ReturnType<typeof useRouter>; onSignOut: () => void }) {
   return (
-    <div className="flex flex-col h-full bg-card border-r">
+    <div className="flex flex-col h-full bg-gradient-to-b from-white to-teal-50/30 border-r border-teal-100 shadow-lg">
       {/* Logo */}
-      <div className="flex items-center gap-2 p-6 border-b">
-        <FlaskConical className="h-8 w-8 text-primary" />
+      <div className="flex items-center gap-3 p-6 border-b border-teal-100 bg-white/80 backdrop-blur-sm">
+        <div className="relative">
+          <div className="absolute inset-0 bg-teal-500 rounded-full blur-md opacity-20"></div>
+          <div className="relative bg-gradient-to-br from-teal-500 to-emerald-600 p-2 rounded-full">
+            <FlaskConical className="h-6 w-6 text-white" />
+          </div>
+        </div>
         <div>
-          <h1 className="text-lg font-bold leading-tight">Azza Medical Laboratory Services</h1>
-          <p className="text-xs text-muted-foreground">Unique Place for all Diagnostic needs</p>
+          <div className="text-xs font-semibold text-pink-500 tracking-wide">NEW AZZA</div>
+          <h1 className="text-sm font-bold leading-tight bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
+            Medical Laboratory Services
+          </h1>
+          <p className="text-xs text-teal-600 font-medium">Unique Place for all Diagnostic needs</p>
         </div>
       </div>
 
@@ -84,10 +96,10 @@ function SidebarContent({ pathname, router, onSignOut }: { pathname: string; rou
               key={item.name}
               onClick={handleClick}
               className={cn(
-                "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left",
+                "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all text-left",
                 pathname === item.href
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted",
+                  ? "bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md"
+                  : "text-slate-600 hover:text-teal-700 hover:bg-teal-50",
               )}
             >
               <Icon className="h-4 w-4" />
@@ -98,21 +110,21 @@ function SidebarContent({ pathname, router, onSignOut }: { pathname: string; rou
       </nav>
 
       {/* Contact Info */}
-      <div className="p-4 border-t space-y-2">
-        <div className="text-xs text-muted-foreground">
-          <p className="font-medium">Contact Us</p>
-          <p>azzaarafath@gmail.com</p>
-          <p>0752537178 | 0776452417</p>
-          <p>0753274455</p>
+      <div className="p-4 border-t border-teal-100 space-y-2 bg-gradient-to-br from-teal-50/50 to-emerald-50/50">
+        <div className="text-xs text-slate-600">
+          <p className="font-semibold text-teal-700 mb-1">Contact Us</p>
+          <p className="text-slate-600">azzaarafath@gmail.com</p>
+          <p className="text-slate-600">0752537178 | 0776452417</p>
+          <p className="text-slate-600">0753274455</p>
         </div>
       </div>
 
       {/* Sign out */}
-      <div className="p-4 border-t">
+      <div className="p-4 border-t border-teal-100 bg-white/80">
         <Button
           variant="ghost"
           onClick={onSignOut}
-          className="w-full justify-start gap-3 text-muted-foreground hover:text-foreground"
+          className="w-full justify-start gap-3 text-slate-600 hover:text-teal-700 hover:bg-teal-50 transition-all"
         >
           <LogOut className="h-4 w-4" />
           Sign Out
