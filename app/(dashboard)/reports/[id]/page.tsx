@@ -394,12 +394,13 @@ export default function ReportDetailsPage() {
   };
 
   const renderRegularTestResults = (testCode: string, testResults: any[]) => {
-    console.log("Rendering regular test results for:", testResults);
 
     const dataManager = DataManager.getInstance();
     const testConfig = dataManager.getTestByCode(testCode);
     const testName = testConfig ? testConfig.name : testCode;
     const isESR = testCode === "ESR";
+    const isTSH = testCode === "TSH"; // ADD THIS LINE
+    const hideReferenceRange = isESR || isTSH; // ADD THIS LINE
 
     return (
       <div key={testCode}>
@@ -440,7 +441,7 @@ export default function ReportDetailsPage() {
                   <td className="p-4">
                     <div className="font-semibold text-lg">{result.unit}</div>
                   </td>
-                  {!isESR && (
+                  {!hideReferenceRange &&  (
                     <td className="p-4">
                       <div className="font-semibold text-lg">
                         {result.referenceRange}

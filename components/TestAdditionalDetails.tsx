@@ -124,16 +124,17 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
               {/* Note Section */}
               <div className="mt-4 p-3 bg-green-50 border-l-4 border-green-400">
                 <p className="text-xs font-medium">
-                  Fully automated Biochemistry Analyzer – <strong>SELECTRA ProM</strong>
+                  Fully automated Biochemistry Analyzer –{" "}
+                  <strong>SELECTRA ProM</strong>
                 </p>
               </div>
             </div>
           ),
         };
 
-
       case "hba1c":
       case "glycated hemoglobin":
+      case "glycosylated haemoglobin":
         return {
           title: "HbA1c Interpretation Guidelines",
           content: (
@@ -483,6 +484,7 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
             </div>
           ),
         };
+
       case "esr":
       case "erythrocyte sedimentation rate":
       case "sed rate":
@@ -521,39 +523,23 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
           title: "Fasting Blood Glucose Guidelines",
           content: (
             <div className="space-y-4 mt-5">
-              {/* <div>
-                <p className="text-sm mb-3 leading-relaxed">
-                  Elevated glucose levels (hyperglycemia) are most often
-                  encountered clinically in the setting of diabetes mellitus,
-                  but they may also occur with pancreatic neoplasms,
-                  hyperthyroidism, and adrenocortical dysfunction. Decreased
-                  glucose levels (hypoglycemia) may result from endogenous or
-                  exogenous insulin excess, prolonged starvation, or liver
-                  disease.
-                </p>
-              </div> */}
-
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-gray-300 text-sm">
-                  
                   <tbody>
                     <tr>
                       <td className="border border-gray-300 p-2">60 - 110</td>
-                      
                       <td className="border border-gray-300 p-2 font-medium">
                         Normal
                       </td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">110 - 125</td>
-                      
                       <td className="border border-gray-300 p-2 font-medium">
                         Impaired
                       </td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">=&gt;125</td>
-                      
                       <td className="border border-gray-300 p-2 font-medium">
                         High
                       </td>
@@ -792,12 +778,14 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                   <strong>METHOD: </strong> QUANTITITIVE TURBIDIMETRY
                 </p>
                 <p>
-                  <strong>Fully automated Bio chemistry analyzer </strong> - “SELECTRA ProM“
+                  <strong>Fully automated Bio chemistry analyzer </strong> -
+                  “SELECTRA ProM“
                 </p>
               </div>
             </div>
           ),
         };
+
       case "rf":
       case "rheumatoid factor":
         return {
@@ -943,284 +931,543 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                   </tbody>
                 </table>
               </div>
-
-            
             </div>
           ),
         };
 
-        
-  case "hba1c":
-  case "glycosylated haemoglobin":
-    return {
-      title: "Glycosylated Haemoglobin (HbA1c) Clinical Guidelines",
-      content: (
-        <div className="space-y-4">
-          <div>
-            <p className="text-sm mb-3 leading-relaxed">
-              HbA1c measures the average blood glucose level over the past 2-3
-              months, used to diagnose and monitor diabetes.
-            </p>
-          </div>
+      case "se":
+      case "serum electrolytes":
+        return {
+          title: "Serum Electrolytes Clinical Guidelines",
+          content: (
+            <div className="space-y-4">
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse border border-gray-300 text-sm">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                        Parameter
+                      </th>
+                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                        Normal Range
+                      </th>
+                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                        Clinical Significance
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        Serum Sodium
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        135.0-155.0 mEq/l
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        Outside range may indicate dehydration or hyponatremia
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        Serum Potassium
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        3.5-5.5 mEq/l
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        Abnormal levels may suggest hypokalemia or hyperkalemia
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        Serum Chloride
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        95.0-110.0 mEq/l
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        Deviations may indicate acid-base imbalances
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ),
+        };
 
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse border border-gray-300 text-sm">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="border border-gray-300 p-2 text-left font-semibold">
-                    HbA1c Level (%)
-                  </th>
-                  <th className="border border-gray-300 p-2 text-left font-semibold">
-                    Result
-                  </th>
-                  <th className="border border-gray-300 p-2 text-left font-semibold">
-                    Clinical Significance
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="border border-gray-300 p-2">&lt; 5.7</td>
-                  <td className="border border-gray-300 p-2 font-medium text-green-600">
-                    NORMAL
-                  </td>
-                  <td className="border border-gray-300 p-2">
-                    No diabetes
-                  </td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 p-2">5.7-6.4</td>
-                  <td className="border border-gray-300 p-2 font-medium text-yellow-600">
-                    PREDIABETES
-                  </td>
-                  <td className="border border-gray-300 p-2">
-                    Increased risk of diabetes
-                  </td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 p-2">&gt;= 6.5</td>
-                  <td className="border border-gray-300 p-2 font-medium text-red-600">
-                    DIABETES
-                  </td>
-                  <td className="border border-gray-300 p-2">
-                    Confirms diabetes diagnosis
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+      case "ua":
+      case "blood for uric acid":
+        return {
+          title: "Blood for Uric Acid Clinical Guidelines",
+          content: (
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm mb-3 leading-relaxed">
+                  Blood Uric Acid measures uric acid levels to detect gout or
+                  kidney dysfunction.
+                </p>
+              </div>
 
-          <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
-            <p className="text-xs">
-              <strong>Note:</strong> HbA1c may be affected by conditions like
-              anemia or hemoglobin variants.
-            </p>
-          </div>
-        </div>
-      ),
-    };
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse border border-gray-300 text-sm">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                        Uric Acid Level (mg/dL)
+                      </th>
+                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                        Result
+                      </th>
+                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                        Clinical Significance
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        3.5-7.2 (Male)
+                      </td>
+                      <td className="border border-gray-300 p-2 font-medium text-green-600">
+                        NORMAL
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        No evidence of hyperuricemia
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        2.6-6.0 (Female)
+                      </td>
+                      <td className="border border-gray-300 p-2 font-medium text-green-600">
+                        NORMAL
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        No evidence of hyperuricemia
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        &gt; 7.2 (Male)
+                      </td>
+                      <td className="border border-gray-300 p-2 font-medium text-red-600">
+                        HIGH
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        Risk of gout or kidney stones
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        &gt; 6.0 (Female)
+                      </td>
+                      <td className="border border-gray-300 p-2 font-medium text-red-600">
+                        HIGH
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        Risk of gout or kidney stones
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
 
-  case "se":
-  case "serum electrolytes":
-    return {
-      title: "Serum Electrolytes Clinical Guidelines",
-      content: (
-        <div className="space-y-4">
+              <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
+                <p className="text-xs">
+                  <strong>Note:</strong> Elevated levels may also occur due to
+                  diet, medications, or chemotherapy.
+                </p>
+              </div>
+            </div>
+          ),
+        };
 
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse border border-gray-300 text-sm">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="border border-gray-300 p-2 text-left font-semibold">
-                    Parameter
-                  </th>
-                  <th className="border border-gray-300 p-2 text-left font-semibold">
-                    Normal Range
-                  </th>
-                  <th className="border border-gray-300 p-2 text-left font-semibold">
-                    Clinical Significance
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="border border-gray-300 p-2">Serum Sodium</td>
-                  <td className="border border-gray-300 p-2">135.0-155.0 mEq/l</td>
-                  <td className="border border-gray-300 p-2">
-                    Outside range may indicate dehydration or hyponatremia
-                  </td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 p-2">Serum Potassium</td>
-                  <td className="border border-gray-300 p-2">3.5-5.5 mEq/l</td>
-                  <td className="border border-gray-300 p-2">
-                    Abnormal levels may suggest hypokalemia or hyperkalemia
-                  </td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 p-2">Serum Chloride</td>
-                  <td className="border border-gray-300 p-2">95.0-110.0 mEq/l</td>
-                  <td className="border border-gray-300 p-2">
-                    Deviations may indicate acid-base imbalances
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      ),
-    };
+      case "sfa":
+      case "seminal fluid analysis":
+        return {
+          title: "Seminal Fluid Analysis Clinical Guidelines",
+          content: (
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm mb-3 leading-relaxed">
+                  Seminal Fluid Analysis assesses sperm health and male
+                  fertility.
+                </p>
+              </div>
 
-  case "ua":
-  case "blood for uric acid":
-    return {
-      title: "Blood for Uric Acid Clinical Guidelines",
-      content: (
-        <div className="space-y-4">
-          <div>
-            <p className="text-sm mb-3 leading-relaxed">
-              Blood Uric Acid measures uric acid levels to detect gout or kidney
-              dysfunction.
-            </p>
-          </div>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse border border-gray-300 text-sm">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                        Parameter
+                      </th>
+                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                        Normal Range
+                      </th>
+                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                        Clinical Significance
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="border border-gray-300 p-2">Volume</td>
+                      <td className="border border-gray-300 p-2">1.5-5.0 mL</td>
+                      <td className="border border-gray-300 p-2">
+                        Low volume may indicate obstruction
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        Concentration
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        15-200 million/mL
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        Below range suggests oligospermia
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        Total Motility
+                      </td>
+                      <td className="border border-gray-300 p-2">≥40%</td>
+                      <td className="border border-gray-300 p-2">
+                        Reduced motility may affect fertility
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">Morphology</td>
+                      <td className="border border-gray-300 p-2">
+                        ≥4% normal forms
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        Abnormal forms may indicate infertility
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse border border-gray-300 text-sm">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="border border-gray-300 p-2 text-left font-semibold">
-                    Uric Acid Level (mg/dL)
-                  </th>
-                  <th className="border border-gray-300 p-2 text-left font-semibold">
-                    Result
-                  </th>
-                  <th className="border border-gray-300 p-2 text-left font-semibold">
-                    Clinical Significance
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="border border-gray-300 p-2">3.5-7.2 (Male)</td>
-                  <td className="border border-gray-300 p-2 font-medium text-green-600">
-                    NORMAL
-                  </td>
-                  <td className="border border-gray-300 p-2">
-                    No evidence of hyperuricemia
-                  </td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 p-2">2.6-6.0 (Female)</td>
-                  <td className="border border-gray-300 p-2 font-medium text-green-600">
-                    NORMAL
-                  </td>
-                  <td className="border border-gray-300 p-2">
-                    No evidence of hyperuricemia
-                  </td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 p-2">&gt; 7.2 (Male)</td>
-                  <td className="border border-gray-300 p-2 font-medium text-red-600">
-                    HIGH
-                  </td>
-                  <td className="border border-gray-300 p-2">
-                    Risk of gout or kidney stones
-                  </td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 p-2">&gt; 6.0 (Female)</td>
-                  <td className="border border-gray-300 p-2 font-medium text-red-600">
-                    HIGH
-                  </td>
-                  <td className="border border-gray-300 p-2">
-                    Risk of gout or kidney stones
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+              <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
+                <p className="text-xs">
+                  <strong>Note:</strong> Results should be interpreted with a
+                  repeat test if abnormal, considering lifestyle factors.
+                </p>
+              </div>
+            </div>
+          ),
+        };
 
-          <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
-            <p className="text-xs">
-              <strong>Note:</strong> Elevated levels may also occur due to
-              diet, medications, or chemotherapy.
-            </p>
-          </div>
-        </div>
-      ),
-    };
+      case "fer":
+      case "serum ferritin":
+        return {
+          title: "Serum Ferritin Expected Values",
+          content: (
+            <div className="space-y-4">
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse border border-gray-300 text-sm">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                        Demographic
+                      </th>
+                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                        Ferritin Level (ng/mL)
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="border border-gray-300 p-2">Adult Male</td>
+                      <td className="border border-gray-300 p-2">20 - 400</td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        Adult Female (&lt;50 Years)
+                      </td>
+                      <td className="border border-gray-300 p-2">8 - 140</td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        Adult Female (≥50 Years)
+                      </td>
+                      <td className="border border-gray-300 p-2">20 - 400</td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">Newborn</td>
+                      <td className="border border-gray-300 p-2">25 - 200</td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">1 Month</td>
+                      <td className="border border-gray-300 p-2">200 - 600</td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        2 - 5 Months
+                      </td>
+                      <td className="border border-gray-300 p-2">50 - 200</td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        6 - 15 Months
+                      </td>
+                      <td className="border border-gray-300 p-2">7 - 140</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ),
+        };
 
-  case "sfa":
-  case "seminal fluid analysis":
-    return {
-      title: "Seminal Fluid Analysis Clinical Guidelines",
-      content: (
-        <div className="space-y-4">
-          <div>
-            <p className="text-sm mb-3 leading-relaxed">
-              Seminal Fluid Analysis assesses sperm health and male fertility.
-            </p>
-          </div>
+      case "ft4":
+      case "free thyroxine":
+      case "free t4":
+        return {
+          title: "Free Thyroxine (FT4) Expected Values",
+          content: (
+            <div className="space-y-4">
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse border border-gray-300 text-sm">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                        Demographic
+                      </th>
+                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                        Expected Values (ng/dL)
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="border border-gray-300 p-2">Newborn</td>
+                      <td className="border border-gray-300 p-2">
+                        0.89 - 2.45
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        6 days - 3 months
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        0.89 - 2.40
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        4 - 6 months
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        0.93 - 1.97
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        7 - 11 months
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        0.92 - 1.97
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        1 - 6 years
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        0.93 - 1.79
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        7 - 11 years
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        0.97 - 1.65
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        12 - 20 years
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        0.98 - 1.68
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        Adults (21+ years)
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        0.92 - 1.68
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
+                <p className="text-xs">
+                  <strong>Method:</strong> Electrochemiluminescence Immunoassay
+                  (ECLIA)
+                </p>
+              </div>
+            </div>
+          ),
+        };
 
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse border border-gray-300 text-sm">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="border border-gray-300 p-2 text-left font-semibold">
-                    Parameter
-                  </th>
-                  <th className="border border-gray-300 p-2 text-left font-semibold">
-                    Normal Range
-                  </th>
-                  <th className="border border-gray-300 p-2 text-left font-semibold">
-                    Clinical Significance
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="border border-gray-300 p-2">Volume</td>
-                  <td className="border border-gray-300 p-2">1.5-5.0 mL</td>
-                  <td className="border border-gray-300 p-2">
-                    Low volume may indicate obstruction
-                  </td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 p-2">Concentration</td>
-                  <td className="border border-gray-300 p-2">15-200 million/mL</td>
-                  <td className="border border-gray-300 p-2">
-                    Below range suggests oligospermia
-                  </td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 p-2">Total Motility</td>
-                  <td className="border border-gray-300 p-2">≥40%</td>
-                  <td className="border border-gray-300 p-2">
-                    Reduced motility may affect fertility
-                  </td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 p-2">Morphology</td>
-                  <td className="border border-gray-300 p-2">≥4% normal forms</td>
-                  <td className="border border-gray-300 p-2">
-                    Abnormal forms may indicate infertility
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
-            <p className="text-xs">
-              <strong>Note:</strong> Results should be interpreted with a
-              repeat test if abnormal, considering lifestyle factors.
-            </p>
-          </div>
-        </div>
-      ),
-  
-}
-
+      //  case "hcg":
+      // case "human chorionic gonadotropin":
+      //   return {
+      //     title: "Human Chorionic Gonadotropin (HCG) Expected Values",
+      //     content: (
+      //       <div className="space-y-4">
+      //         <div className="overflow-x-auto">
+      //           <table className="w-full border-collapse border border-gray-300 text-sm">
+      //             <thead>
+      //               <tr className="bg-gray-50">
+      //                 <th className="border border-gray-300 p-2 text-left font-semibold">
+      //                   Demographic
+      //                 </th>
+      //                 <th className="border border-gray-300 p-2 text-left font-semibold">
+      //                   Expected Values (mIU/mL)
+      //                 </th>
+      //               </tr>
+      //             </thead>
+      //             <tbody>
+      //               <tr>
+      //                 <td className="border border-gray-300 p-2">Non-Pregnant Female</td>
+      //                 <td className="border border-gray-300 p-2">&lt; 5.0</td>
+      //               </tr>
+      //               <tr>
+      //                 <td className="border border-gray-300 p-2">Postmenopausal Female</td>
+      //                 <td className="border border-gray-300 p-2">&lt; 9.0</td>
+      //               </tr>
+      //               <tr>
+      //                 <td className="border border-gray-300 p-2">Male</td>
+      //                 <td className="border border-gray-300 p-2">&lt; 2.0</td>
+      //               </tr>
+      //               <tr>
+      //                 <td className="border border-gray-300 p-2">Pregnancy (3-4 weeks)</td>
+      //                 <td className="border border-gray-300 p-2">5 - 426</td>
+      //               </tr>
+      //               <tr>
+      //                 <td className="border border-gray-300 p-2">Pregnancy (5-6 weeks)</td>
+      //                 <td className="border border-gray-300 p-2">18 - 7,340</td>
+      //               </tr>
+      //               <tr>
+      //                 <td className="border border-gray-300 p-2">Pregnancy (7-12 weeks)</td>
+      //                 <td className="border border-gray-300 p-2">1,200 - 90,000</td>
+      //               </tr>
+      //             </tbody>
+      //           </table>
+      //         </div>
+      //         <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
+      //           <p className="text-xs">
+      //             <strong>Method:</strong> Immunoassay
+      //           </p>
+      //         </div>
+      //       </div>
+      //     ),
+      //   };
+      case "ft3":
+      case "free triiodothyronine":
+      case "free t3":
+        return {
+          title: "Free Triiodothyronine (FT3) Expected Values",
+          content: (
+            <div className="space-y-4">
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse border border-gray-300 text-sm">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                        Demographic
+                      </th>
+                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                        Expected Values (pg/mL)
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="border border-gray-300 p-2">Newborn</td>
+                      <td className="border border-gray-300 p-2">
+                        2.8 - 5.2
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        6 days - 3 months
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        2.9 - 5.1
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        4 - 6 months
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        2.9 - 4.7
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        7 - 11 months
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        2.9 - 4.7
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        1 - 6 years
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        2.9 - 4.4
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        7 - 11 years
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        3.0 - 4.2
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        12 - 20 years
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        3.1 - 4.3
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        Adults (21+ years)
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        2.9 - 4.3
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
+                <p className="text-xs">
+                  <strong>Method:</strong> Electrochemiluminescence Immunoassay
+                  (ECLIA)
+                </p>
+              </div>
+            </div>
+          ),
+        };
       default:
         return null;
     }

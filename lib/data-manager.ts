@@ -230,12 +230,12 @@ export class DataManager {
       },
       {
         code: "TSH",
-        name: "Thyroid Stimulating Hormone",
+        name: "Thyroid Stimulating Hormone (3rd Gen)",
         defaultPrice: 1500.0,
         estimatedCost: 500.0,
         unit: "mIU/L",
         referenceRange: {
-          TSH: "0.4-4.0 mIU/L",
+          TSH: " ",
         },
         category: "Endocrinology",
       },
@@ -681,30 +681,40 @@ export class DataManager {
         category: "Renal",
       },
       {
-  code: "RFT",
-  name: "Renal Function Test",
-  defaultPrice: 500.0,
-  estimatedCost: 150.0,
-  unit: "mg/dL or mEq/l or ml/min/1.73m2",
-  referenceRange: {
-    "Serum Creatinine": "0.50 - 1.50",
-    "Estimated GFR": "> 60",
-    "Blood Urea": "10.0 - 45.0",
-    "Serum Sodium": "135.0 - 155.0",
-    "Serum Potassium": "3.5 - 5.5",
-    "Serum Chloride": "95.0 - 110.0",
-  },
-  unitPerTest: {
-    "Serum Creatinine": "mg/dL",
-    "Estimated GFR": "ml/min/1.73m2",
-    "Blood Urea": "mg/dL",
-    "Serum Sodium": "mEq/l",
-    "Serum Potassium": "mEq/l",
-    "Serum Chloride": "mEq/l",
-  },
-  category: "Renal",
-}
-
+        code: "RFT",
+        name: "Renal Function Test",
+        defaultPrice: 500.0,
+        estimatedCost: 150.0,
+        unit: "mg/dL or mEq/l or ml/min/1.73m2",
+        referenceRange: {
+          "Serum Creatinine": "0.50 - 1.50",
+          "Estimated GFR": "> 60",
+          "Blood Urea": "10.0 - 45.0",
+          "Serum Sodium": "135.0 - 155.0",
+          "Serum Potassium": "3.5 - 5.5",
+          "Serum Chloride": "95.0 - 110.0",
+        },
+        unitPerTest: {
+          "Serum Creatinine": "mg/dL",
+          "Estimated GFR": "ml/min/1.73m2",
+          "Blood Urea": "mg/dL",
+          "Serum Sodium": "mEq/l",
+          "Serum Potassium": "mEq/l",
+          "Serum Chloride": "mEq/l",
+        },
+        category: "Renal",
+      },
+      {
+        code: "FT4",
+        name: "Free Thyroxine (Free T4)",
+        defaultPrice: 500.0,
+        estimatedCost: 150.0,
+        unit: "ng/dL",
+        referenceRange: {
+          "Free T4": "0.8 - 1.8",
+        },
+        category: "Hormone",
+      }
     ];
   }
 

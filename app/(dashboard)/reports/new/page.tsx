@@ -92,8 +92,16 @@ function getTestDetails(
     test.referenceRange[cleanComponentName] ||
     "";
 
+  // NEW: Check if test has unitPerTest mapping for specific components
+  let componentUnit = test.unit; // Default to test's general unit
+  if (test.unitPerTest) {
+    componentUnit = test.unitPerTest[componentName] || 
+                    test.unitPerTest[cleanComponentName] || 
+                    test.unit;
+  }
+
   return {
-    unit: test.unit,
+    unit: componentUnit,
     referenceRange: referenceRange,
   };
 }
@@ -182,17 +190,20 @@ export default function NewReportPage() {
 
         // For multi-component tests, create separate result entries for each component
         if (Object.keys(referenceRanges).length > 1) {
-          Object.entries(referenceRanges).forEach(([component, range]) => {
-            initialResults.push({
-              testCode: item.testCode,
-              testName: `${item.testName} - ${component}`,
-              value: "",
-              unit: test?.unit || "", // Use unit from test catalog
-              referenceRange: String(range), // Use reference range from catalog
-              comments: "",
-            });
-          });
-        } else {
+  Object.entries(referenceRanges).forEach(([component, range]) => {
+    // NEW: Get component-specific unit
+    const componentUnit = test?.unitPerTest?.[component] || test?.unit || "";
+    
+    initialResults.push({
+      testCode: item.testCode,
+      testName: `${item.testName} - ${component}`,
+      value: "",
+      unit: componentUnit, // Use component-specific unit
+      referenceRange: String(range),
+      comments: "",
+    });
+  });
+} else {
           // For single-component tests
           const firstRange = Object.entries(referenceRanges)[0];
           initialResults.push({
@@ -294,19 +305,22 @@ export default function NewReportPage() {
         return;
       }
 
-      // For multi-component tests, create separate result entries for each component
-      if (Object.keys(referenceRanges).length > 1) {
-        Object.entries(referenceRanges).forEach(([component, range]) => {
-          initialResults.push({
-            testCode: testCode,
-            testName: `${test?.name} - ${component}`,
-            value: "",
-            unit: test?.unit || "", // Use unit from test catalog
-             referenceRange: String(range), // Use reference range from catalog
-            comments: "",
-          });
-        });
-      } else {
+     // For multi-component tests, create separate result entries for each component
+if (Object.keys(referenceRanges).length > 1) {
+  Object.entries(referenceRanges).forEach(([component, range]) => {
+    // NEW: Get component-specific unit
+    const componentUnit = test?.unitPerTest?.[component] || test?.unit || "";
+    
+    initialResults.push({
+      testCode: testCode,
+      testName: `${test?.name} - ${component}`,
+      value: "",
+      unit: componentUnit, // Use component-specific unit
+      referenceRange: String(range),
+      comments: "",
+    });
+  });
+}else {
         // For single-component tests
         const firstRange = Object.entries(referenceRanges)[0];
         initialResults.push({
