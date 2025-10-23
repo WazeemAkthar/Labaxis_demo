@@ -33,9 +33,10 @@
     "name": "Erythrocyte Sedimentation Rate",
     "defaultPrice": 300.0,
     "estimatedCost": 100.0,
-    "unit": "per test",
+    "unit": "mm",
     "referenceRange": {
-      "ESR": "0-15 mm/hr (M), 0-20 mm/hr (F)"
+      "1st hour": "0-10",
+      "2nd hour": "0-20"
     },
     "category": "Hematology"
   },
@@ -53,14 +54,16 @@
   {
     "code": "LIPID",
     "name": "Lipid Profile",
-    "defaultPrice": 1200.0,
-    "estimatedCost": 400.0,
+    "defaultPrice": 1500.0,
+    "estimatedCost": 500.0,
     "unit": "per test",
     "referenceRange": {
-      "Total Cholesterol": "<200 mg/dL",
-      "HDL Cholesterol": ">40 mg/dL (M), >50 mg/dL (F)",
-      "LDL Cholesterol": "<100 mg/dL",
-      "Triglycerides": "<150 mg/dL"
+      "Total Cholesterol": "150-200 mg/dL",
+      "HDL Cholesterol": "40-60 mg/dL",
+      "Triglycerides": "50-150 mg/dL",
+      "VLDL Cholesterol": "5-40 mg/dL",
+      "LDL Cholesterol": "60-130 mg/dL",
+      "Total Cholesterol/HDL Ratio": "<5.0"
     },
     "category": "Biochemistry"
   },
@@ -90,6 +93,18 @@
     },
     "category": "Urinalysis"
   },
+  {
+    "code": "FBS",
+    "name": "Fasting Blood Sugar",
+    "defaultPrice": 300.0,
+    "estimatedCost": 100.0,
+    "unit": "per test",
+    "referenceRange": {
+      "FBS": "70–100 mg/dL"
+    },
+    "category": "Biochemistry"
+  },
+
   {
     "code": "TSH",
     "name": "Thyroid Stimulating Hormone",

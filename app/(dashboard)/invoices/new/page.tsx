@@ -105,6 +105,7 @@ export default function NewInvoicePage() {
         discountPercent: discountPercent / 100,
         discountAmount,
         grandTotal,
+        status: ""
       })
 
       console.log("[v0] Invoice created successfully:", invoice)

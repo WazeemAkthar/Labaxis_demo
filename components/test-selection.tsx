@@ -1,5 +1,4 @@
 "use client"
-
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -58,6 +57,8 @@ export function TestSelectionComponent({ selectedTests, onTestsChange }: TestSel
     return groups
   }, {} as Record<string, any[]>)
 
+
+
   return (
     <Card>
       <CardHeader>
@@ -80,7 +81,7 @@ export function TestSelectionComponent({ selectedTests, onTestsChange }: TestSel
 
         {/* Test Categories */}
         <div className="space-y-6">
-          {Object.entries(groupedTests).map(([category, tests]: [string, any[]]) => (
+          {Object.entries(groupedTests as Record<string, any[]>).map(([category, tests]) => (
             <div key={category} className="space-y-3">
               <div className="flex items-center gap-2">
                 <Badge variant="secondary">{category}</Badge>
