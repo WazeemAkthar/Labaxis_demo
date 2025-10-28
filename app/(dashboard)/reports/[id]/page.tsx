@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Download, Printer as Print, Edit } from "lucide-react";
 import { DataManager, type Report } from "@/lib/data-manager";
 import { generateReportPDF } from "@/lib/pdf-generator";
+import { useAuth } from "@/components/auth-provider";
 import Link from "next/link";
 import ReportQRCode from "@/components/ReportQRCode";
 import TestAdditionalDetails from "@/components/TestAdditionalDetails";
@@ -16,40 +17,44 @@ import TestAdditionalDetails from "@/components/TestAdditionalDetails";
 export default function ReportDetailsPage() {
   const params = useParams();
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const reportId = params.id as string;
 
   const [report, setReport] = useState<Report | null>(null);
   const [patient, setPatient] = useState<any>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const authStatus = localStorage.getItem("lablite_auth");
-    if (authStatus !== "authenticated") {
+    if (authLoading) return;
+
+    if (!user) {
       router.push("/");
       return;
     }
-    setIsAuthenticated(true);
 
     // Load report data
-    const dataManager = DataManager.getInstance();
-    const allReports = dataManager.getReports();
-    const reportData = allReports.find((rep) => rep.id === reportId);
+    async function loadReportData() {
+      const dataManager = DataManager.getInstance();
+      const allReports = await dataManager.getReports();
+      const reportData = allReports.find((rep) => rep.id === reportId);
 
-    if (!reportData) {
-      // Report not found, redirect to reports list
-      router.push("/reports");
-      return;
+      if (!reportData) {
+        // Report not found, redirect to reports list
+        router.push("/reports");
+        return;
+      }
+
+      setReport(reportData);
+
+      // Get patient data
+      const patientData = await dataManager.getPatientById(reportData.patientId);
+      setPatient(patientData);
+
+      setLoading(false);
     }
 
-    setReport(reportData);
-
-    // Get patient data
-    const patientData = dataManager.getPatientById(reportData.patientId);
-    setPatient(patientData);
-
-    setLoading(false);
-  }, [reportId]);
+    loadReportData();
+  }, [reportId, user, authLoading, router]);
 
   const handlePrint = () => {
     // Get the report content element
@@ -146,7 +151,7 @@ export default function ReportDetailsPage() {
     try {
       // Get patient data for the PDF
       const dataManager = DataManager.getInstance();
-      const patient = dataManager.getPatientById(report.patientId);
+      const patient = await dataManager.getPatientById(report.patientId);
 
       if (!patient) {
         alert("Patient information not found");
@@ -475,7 +480,7 @@ export default function ReportDetailsPage() {
     return "normal";
   };
 
-  if (loading || !isAuthenticated) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary display"></div>

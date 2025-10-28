@@ -12,11 +12,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Save, Trash2, User, TestTube, Calculator } from "lucide-react"
 import { DataManager, type Patient, type TestCatalogItem, type InvoiceLineItem } from "@/lib/data-manager"
+import { useAuth } from "@/components/auth-provider"
 import Link from "next/link"
 
 export default function NewInvoicePage() {
   const router = useRouter()
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const { user, loading: authLoading } = useAuth()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [patients, setPatients] = useState<Patient[]>([])
@@ -26,22 +27,26 @@ export default function NewInvoicePage() {
   const [discountPercent, setDiscountPercent] = useState(0)
 
   useEffect(() => {
-    const authStatus = localStorage.getItem("lablite_auth")
-    if (authStatus !== "authenticated") {
+    if (authLoading) return
+
+    if (!user) {
       router.push("/")
       return
     }
-    setIsAuthenticated(true)
 
     // Load data
-    const dataManager = DataManager.getInstance()
-    const patientsData = dataManager.getPatients()
-    setPatients(patientsData)
+    async function loadData() {
+      const dataManager = DataManager.getInstance()
+      const patientsData = await dataManager.getPatients()
+      setPatients(patientsData)
 
-    const catalogData = dataManager.getTestCatalog()
-    setTestCatalog(catalogData)
-    setLoading(false)
-  }, [])
+      const catalogData = await dataManager.getTestCatalog()
+      setTestCatalog(catalogData)
+      setLoading(false)
+    }
+
+    loadData()
+  }, [user, authLoading, router])
 
   const addTestToInvoice = (testCode: string) => {
     const test = testCatalog.find((t) => t.code === testCode)
@@ -97,7 +102,7 @@ export default function NewInvoicePage() {
       const dataManager = DataManager.getInstance()
       console.log("[v0] DataManager instance obtained")
 
-      const invoice = dataManager.addInvoice({
+      const invoice = await dataManager.addInvoice({
         patientId: selectedPatient.id,
         patientName: `${selectedPatient.firstName} ${selectedPatient.lastName}`,
         lineItems,
@@ -120,7 +125,7 @@ export default function NewInvoicePage() {
     }
   }
 
-  if (loading || !isAuthenticated) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>

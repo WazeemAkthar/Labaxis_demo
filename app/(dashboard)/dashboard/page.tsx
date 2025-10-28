@@ -5,11 +5,12 @@ import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, FileText, DollarSign, Activity } from "lucide-react"
 import { DataManager } from "@/lib/data-manager"
+import { useAuth } from "@/components/auth-provider"
 import Link from "next/link"
 
 export default function DashboardPage() {
   const router = useRouter()
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const { user, loading: authLoading } = useAuth()
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({
     totalPatients: 0,
@@ -19,38 +20,44 @@ export default function DashboardPage() {
   })
 
   useEffect(() => {
-    const authStatus = localStorage.getItem("lablite_auth")
-    if (authStatus !== "authenticated") {
+    if (authLoading) return
+
+    if (!user) {
       router.push("/")
       return
     }
-    setIsAuthenticated(true)
 
     // Load statistics
-    const dataManager = DataManager.getInstance()
-    const patients = dataManager.getPatients()
-    const invoices = dataManager.getInvoices()
-    const reports = dataManager.getReports()
+    async function loadStats() {
+      const dataManager = DataManager.getInstance()
+      const [patients, invoices, reports] = await Promise.all([
+        dataManager.getPatients(),
+        dataManager.getInvoices(),
+        dataManager.getReports(),
+      ])
 
-    // Calculate monthly revenue
-    const now = new Date()
-    const monthlyInvoices = invoices.filter((inv) => {
-      const invDate = new Date(inv.createdAt)
-      return invDate.getMonth() === now.getMonth() && invDate.getFullYear() === now.getFullYear()
-    })
-    const monthlyRevenue = monthlyInvoices.reduce((sum, inv) => sum + inv.grandTotal, 0)
+      // Calculate monthly revenue
+      const now = new Date()
+      const monthlyInvoices = invoices.filter((inv) => {
+        const invDate = new Date(inv.createdAt)
+        return invDate.getMonth() === now.getMonth() && invDate.getFullYear() === now.getFullYear()
+      })
+      const monthlyRevenue = monthlyInvoices.reduce((sum, inv) => sum + inv.grandTotal, 0)
 
-    setStats({
-      totalPatients: patients.length,
-      totalInvoices: invoices.length,
-      monthlyRevenue,
-      testsCompleted: reports.reduce((sum, report) => sum + report.results.length, 0),
-    })
+      setStats({
+        totalPatients: patients.length,
+        totalInvoices: invoices.length,
+        monthlyRevenue,
+        testsCompleted: reports.reduce((sum, report) => sum + report.results.length, 0),
+      })
 
-    setLoading(false)
-  }, [router])
+      setLoading(false)
+    }
 
-  if (loading || !isAuthenticated) {
+    loadStats()
+  }, [user, authLoading, router])
+
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50/30 via-emerald-50/30 to-cyan-50/30">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>

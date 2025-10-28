@@ -16,11 +16,16 @@ export function TestSelectionComponent({ selectedTests, onTestsChange }: TestSel
   const [testCatalog, setTestCatalog] = useState<any[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [isUpdating, setIsUpdating] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const dataManager = DataManager.getInstance()
-    const catalog = dataManager.getTestCatalog()
-    setTestCatalog(catalog)
+    async function loadCatalog() {
+      const dataManager = DataManager.getInstance()
+      const catalog = await dataManager.getTestCatalog()
+      setTestCatalog(catalog)
+      setLoading(false)
+    }
+    loadCatalog()
   }, [])
 
   const handleTestToggle = (testCode: string) => {
@@ -40,6 +45,22 @@ export function TestSelectionComponent({ selectedTests, onTestsChange }: TestSel
     setTimeout(() => {
       setIsUpdating(false)
     }, 100)
+  }
+
+  if (loading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Select Tests</CardTitle>
+          <CardDescription>Loading tests...</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+          </div>
+        </CardContent>
+      </Card>
+    )
   }
 
   const filteredTests = testCatalog.filter(test =>

@@ -1,4 +1,8 @@
-// Data management utilities for localStorage persistence
+// Data management utilities - now using Firestore instead of localStorage
+// This file maintains backward compatibility while delegating to Firestore
+
+import * as firestoreService from "./firestore-service";
+
 export interface Patient {
   name: string;
   id: string;
@@ -68,21 +72,10 @@ export interface Report {
 
 export class DataManager {
   private static instance: DataManager;
-  private data: {
-    patients: Patient[];
-    invoices: Invoice[];
-    reports: Report[];
-    testCatalog: TestCatalogItem[];
-  };
+  private useFirestore: boolean = true; // Toggle to use Firestore or localStorage
 
   private constructor() {
-    this.data = {
-      patients: [],
-      invoices: [],
-      reports: [],
-      testCatalog: [],
-    };
-    this.loadData();
+    // Firestore initialization happens automatically
   }
 
   static getInstance(): DataManager {
@@ -92,51 +85,10 @@ export class DataManager {
     return DataManager.instance;
   }
 
-  private loadData() {
-    try {
-      const stored = localStorage.getItem("lablite_data");
-      if (stored) {
-        const parsedData = JSON.parse(stored);
-        this.data = parsedData;
-
-        // Always ensure we have the latest default tests
-        this.ensureDefaultTests();
-      } else {
-        // Initialize with fresh defaults
-        this.initializeWithDefaults();
-      }
-    } catch (error) {
-      console.error("Error loading data from localStorage:", error);
-      this.initializeWithDefaults();
-    }
-  }
-
-  private saveData() {
-    try {
-      localStorage.setItem("lablite_data", JSON.stringify(this.data));
-      console.log("Data saved to localStorage:", this.data);
-    } catch (error) {
-      console.error("Error saving data to localStorage:", error);
-    }
-  }
-
-  // Method to ensure default tests are always present
-  private ensureDefaultTests() {
+  // Method to ensure default tests are present in Firestore
+  async ensureDefaultTests() {
     const defaultTests = this.getDefaultTestCatalog();
-    const existingCodes = new Set(this.data.testCatalog.map((t) => t.code));
-
-    let hasNewTests = false;
-    defaultTests.forEach((test) => {
-      if (!existingCodes.has(test.code)) {
-        this.data.testCatalog.push(test);
-        hasNewTests = true;
-        console.log(`Added new test: ${test.code} - ${test.name}`);
-      }
-    });
-
-    if (hasNewTests) {
-      this.saveData();
-    }
+    await firestoreService.initializeDefaultTests(defaultTests);
   }
 
   // Method to get the default test catalog (separated for better management)
@@ -718,125 +670,93 @@ export class DataManager {
     ];
   }
 
-  // Patient methods
-  getPatients(): Patient[] {
-    return this.data.patients;
+  // Patient methods - delegated to Firestore
+  async getPatients(): Promise<Patient[]> {
+    return firestoreService.getPatients();
   }
 
-  addPatient(patient: Omit<Patient, "id" | "createdAt">): Patient {
-    const now = new Date();
-    const dateStr = now.toISOString().split("T")[0].replace(/-/g, "");
-    const sequence = String(this.data.patients.length + 1).padStart(4, "0");
-
-    const newPatient: Patient = {
-      ...patient,
-      id: `PAT-${dateStr}-${sequence}`,
-      createdAt: now.toISOString(),
-    };
-
-    this.data.patients.push(newPatient);
-    this.saveData();
-    return newPatient;
+  async addPatient(patient: Omit<Patient, "id" | "createdAt">): Promise<Patient> {
+    return firestoreService.addPatient(patient);
   }
 
-  getPatientById(id: string): Patient | undefined {
-    return this.data.patients.find((p) => p.id === id);
+  async getPatientById(id: string): Promise<Patient | null> {
+    return firestoreService.getPatientById(id);
   }
 
-  // Invoice methods
-  getInvoices(): Invoice[] {
-    return this.data.invoices;
+  async updatePatient(id: string, updates: Partial<Patient>): Promise<void> {
+    return firestoreService.updatePatient(id, updates);
   }
 
-  addInvoice(invoice: Omit<Invoice, "id" | "createdAt">): Invoice {
-    const now = new Date();
-    const dateStr = now.toISOString().split("T")[0].replace(/-/g, "");
-    const sequence = String(this.data.invoices.length + 1).padStart(4, "0");
-
-    const newInvoice: Invoice = {
-      ...invoice,
-      id: `INV-${dateStr}-${sequence}`,
-      createdAt: now.toISOString(),
-    };
-
-    this.data.invoices.push(newInvoice);
-    this.saveData();
-    return newInvoice;
+  async deletePatient(id: string): Promise<void> {
+    return firestoreService.deletePatient(id);
   }
 
-  // Report methods
-  getReports(): Report[] {
-    return this.data.reports;
+  // Invoice methods - delegated to Firestore
+  async getInvoices(): Promise<Invoice[]> {
+    return firestoreService.getInvoices();
   }
 
-  addReport(report: Omit<Report, "id" | "createdAt">): Report {
-    const now = new Date();
-    const dateStr = now.toISOString().split("T")[0].replace(/-/g, "");
-    const sequence = String(this.data.reports.length + 1).padStart(4, "0");
-
-    const newReport: Report = {
-      ...report,
-      id: `REP-${dateStr}-${sequence}`,
-      createdAt: now.toISOString(),
-    };
-
-    this.data.reports.push(newReport);
-    this.saveData();
-    return newReport;
+  async addInvoice(invoice: Omit<Invoice, "id" | "createdAt">): Promise<Invoice> {
+    return firestoreService.addInvoice(invoice);
   }
 
-  // Test catalog methods
-  getTestCatalog(): TestCatalogItem[] {
-    console.log("Getting test catalog:", this.data.testCatalog);
-    return this.data.testCatalog;
+  async getInvoiceById(id: string): Promise<Invoice | null> {
+    return firestoreService.getInvoiceById(id);
   }
 
-  // Method to add a single test to the catalog
-  addTestToCatalog(test: TestCatalogItem): void {
-    const existingIndex = this.data.testCatalog.findIndex(
-      (t) => t.code === test.code
-    );
-    if (existingIndex !== -1) {
-      // Update existing test
-      this.data.testCatalog[existingIndex] = test;
-      console.log(`Updated existing test: ${test.code}`);
-    } else {
-      // Add new test
-      this.data.testCatalog.push(test);
-      console.log(`Added new test: ${test.code} - ${test.name}`);
-    }
-    this.saveData();
+  async updateInvoice(id: string, updates: Partial<Invoice>): Promise<void> {
+    return firestoreService.updateInvoice(id, updates);
   }
 
-  // Method to remove a test from catalog
-  removeTestFromCatalog(testCode: string): boolean {
-    const initialLength = this.data.testCatalog.length;
-    this.data.testCatalog = this.data.testCatalog.filter(
-      (test) => test.code !== testCode
-    );
-
-    if (this.data.testCatalog.length < initialLength) {
-      console.log(`Removed test: ${testCode}`);
-      this.saveData();
-      return true;
-    }
-    return false;
+  async deleteInvoice(id: string): Promise<void> {
+    return firestoreService.deleteInvoice(id);
   }
 
-  setTestCatalog(catalog: TestCatalogItem[]) {
-    this.data.testCatalog = catalog;
-    this.saveData();
+  // Report methods - delegated to Firestore
+  async getReports(): Promise<Report[]> {
+    return firestoreService.getReports();
   }
 
-  // Method to force refresh test catalog (useful for development)
-  refreshTestCatalog(): void {
+  async addReport(report: Omit<Report, "id" | "createdAt">): Promise<Report> {
+    return firestoreService.addReport(report);
+  }
+
+  async getReportById(id: string): Promise<Report | null> {
+    return firestoreService.getReportById(id);
+  }
+
+  async updateReport(id: string, updates: Partial<Report>): Promise<void> {
+    return firestoreService.updateReport(id, updates);
+  }
+
+  async deleteReport(id: string): Promise<void> {
+    return firestoreService.deleteReport(id);
+  }
+
+  // Test catalog methods - delegated to Firestore
+  async getTestCatalog(): Promise<TestCatalogItem[]> {
+    return firestoreService.getTestCatalog();
+  }
+
+  async addTestToCatalog(test: TestCatalogItem): Promise<void> {
+    return firestoreService.addTestToCatalog(test);
+  }
+
+  async removeTestFromCatalog(testCode: string): Promise<void> {
+    return firestoreService.removeTestFromCatalog(testCode);
+  }
+
+  async setTestCatalog(catalog: TestCatalogItem[]): Promise<void> {
+    await firestoreService.initializeDefaultTests(catalog);
+  }
+
+  async refreshTestCatalog(): Promise<void> {
     console.log("Refreshing test catalog...");
-    this.ensureDefaultTests();
+    await this.ensureDefaultTests();
   }
 
-  // Method to get test by code
-  getTestByCode(code: string): TestCatalogItem | undefined {
-    return this.data.testCatalog.find((test) => test.code === code);
+  async getTestByCode(code: string): Promise<TestCatalogItem | null> {
+    return firestoreService.getTestByCode(code);
   }
 
   // Utility methods
@@ -847,162 +767,11 @@ export class DataManager {
     return `${prefix}-${dateStr}-${sequence}`;
   }
 
-  // Method to clear all data (useful for development/testing)
-  clearAllData(): void {
-    this.data = {
-      patients: [],
-      invoices: [],
-      reports: [],
-      testCatalog: [],
-    };
-    localStorage.removeItem("lablite_data");
-    this.initializeWithDefaults();
-  }
-
-  // Method to initialize with defaults
-  private initializeWithDefaults() {
-    this.data.testCatalog = this.getDefaultTestCatalog();
-    this.initializeSampleData();
-    this.saveData();
-    console.log("Initialized with default data:", this.data);
-  }
-
-  private initializeSampleData() {
-    // Add sample patients
-    const samplePatients: Patient[] = [
-      {
-        id: "PAT-20241201-0001",
-        firstName: "John",
-        lastName: "Smith",
-        age: 45,
-        gender: "Male",
-        phone: "+1-555-0123",
-        email: "john.smith@email.com",
-        doctorName: "Dr. Sarah Johnson",
-        notes: "Regular checkup patient",
-        createdAt: "2024-12-01T10:00:00.000Z",
-        name: "",
-      },
-      {
-        id: "PAT-20241201-0002",
-        firstName: "Emily",
-        lastName: "Davis",
-        age: 32,
-        gender: "Female",
-        phone: "+1-555-0124",
-        email: "emily.davis@email.com",
-        doctorName: "Dr. Michael Brown",
-        notes: "Diabetes monitoring",
-        createdAt: "2024-12-01T11:30:00.000Z",
-        name: "",
-      },
-      {
-        id: "PAT-20241201-0003",
-        firstName: "Robert",
-        lastName: "Wilson",
-        age: 58,
-        gender: "Male",
-        phone: "+1-555-0125",
-        email: "robert.wilson@email.com",
-        doctorName: "Dr. Sarah Johnson",
-        notes: "Cardiac risk assessment",
-        createdAt: "2024-12-01T14:15:00.000Z",
-        name: "",
-      },
-    ];
-
-    // Add sample invoices
-    const sampleInvoices: Invoice[] = [
-      {
-        id: "INV-20241201-0001",
-        patientId: "PAT-20241201-0001",
-        patientName: "John Smith",
-        lineItems: [
-          {
-            testCode: "FBC",
-            testName: "Full Blood Count",
-            quantity: 1,
-            unitPrice: 800.0,
-            total: 800.0,
-          },
-          {
-            testCode: "LIPID",
-            testName: "Lipid Profile",
-            quantity: 1,
-            unitPrice: 1200.0,
-            total: 1200.0,
-          },
-        ],
-        subtotal: 2000.0,
-        discountPercent: 0,
-        discountAmount: 0,
-        grandTotal: 2000.0,
-        createdAt: "2024-12-01T10:30:00.000Z",
-        status: "",
-      },
-      {
-        id: "INV-20241201-0002",
-        patientId: "PAT-20241201-0002",
-        patientName: "Emily Davis",
-        lineItems: [
-          {
-            testCode: "FBS",
-            testName: "Fasting Blood Sugar",
-            quantity: 1,
-            unitPrice: 200.0,
-            total: 200.0,
-          },
-          {
-            testCode: "HBA1C",
-            testName: "Hemoglobin A1c",
-            quantity: 1,
-            unitPrice: 2400.0,
-            total: 2400.0,
-          },
-        ],
-        subtotal: 2600.0,
-        discountPercent: 5,
-        discountAmount: 130.0,
-        grandTotal: 2470.0,
-        createdAt: "2024-12-01T12:00:00.000Z",
-        status: "",
-      },
-    ];
-
-    // Add sample reports
-    const sampleReports: Report[] = [
-      {
-        id: "REP-20241201-0001",
-        patientId: "PAT-20241201-0001",
-        patientName: "John Smith",
-        invoiceId: "INV-20241201-0001",
-        results: [
-          {
-            testCode: "FBC",
-            testName: "Full Blood Count",
-            value: "WBC: 7.2, RBC: 4.8, Hgb: 14.5, Hct: 42, PLT: 280",
-            unit: "Various",
-            referenceRange: "WBC: 4.0-11.0, RBC: 4.5-5.5, Hgb: 12.0-16.0",
-            comments: "All values within normal limits",
-          },
-          {
-            testCode: "LIPID",
-            testName: "Lipid Profile",
-            value: "Total: 185, HDL: 45, LDL: 110, TG: 150",
-            unit: "mg/dL",
-            referenceRange: "Total <200, HDL >40, LDL <100, TG <150",
-            comments: "LDL slightly elevated",
-          },
-        ],
-        doctorRemarks:
-          "Overall good health. Recommend dietary modifications for cholesterol management.",
-        reviewedBy: "Dr. Sarah Johnson",
-        createdAt: "2024-12-01T16:00:00.000Z",
-      },
-    ];
-
-    this.data.patients = samplePatients;
-    this.data.invoices = sampleInvoices;
-    this.data.reports = sampleReports;
+  // Initialize defaults in Firestore
+  async initializeWithDefaults(): Promise<void> {
+    const defaultTests = this.getDefaultTestCatalog();
+    await firestoreService.initializeDefaultTests(defaultTests);
+    await firestoreService.initializeSampleData();
+    console.log("Initialized Firestore with default data");
   }
 }

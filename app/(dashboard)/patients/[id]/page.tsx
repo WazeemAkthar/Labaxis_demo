@@ -8,49 +8,54 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, User, Phone, Mail, Calendar, FileText, DollarSign, Edit, Activity } from "lucide-react"
 import { DataManager, type Patient, type Invoice, type Report } from "@/lib/data-manager"
+import { useAuth } from "@/components/auth-provider"
 import Link from "next/link"
 
 export default function PatientDetailsPage() {
   const params = useParams()
   const router = useRouter()
+  const { user, loading: authLoading } = useAuth()
   const patientId = params.id as string
 
   const [patient, setPatient] = useState<Patient | null>(null)
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [reports, setReports] = useState<Report[]>([])
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const authStatus = localStorage.getItem("lablite_auth")
-    if (authStatus !== "authenticated") {
+    if (authLoading) return
+
+    if (!user) {
       router.push("/")
       return
     }
-    setIsAuthenticated(true)
 
-    const dataManager = DataManager.getInstance()
-    const patientData = dataManager.getPatientById(patientId)
+    async function loadPatientData() {
+      const dataManager = DataManager.getInstance()
+      const patientData = await dataManager.getPatientById(patientId)
 
-    if (!patientData) {
-      router.push("/patients")
-      return
+      if (!patientData) {
+        router.push("/patients")
+        return
+      }
+
+      setPatient(patientData)
+
+      const allInvoices = await dataManager.getInvoices()
+      const patientInvoices = allInvoices.filter((inv) => inv.patientId === patientId)
+      setInvoices(patientInvoices)
+
+      const allReports = await dataManager.getReports()
+      const patientReports = allReports.filter((rep) => rep.patientId === patientId)
+      setReports(patientReports)
+
+      setLoading(false)
     }
 
-    setPatient(patientData)
+    loadPatientData()
+  }, [patientId, user, authLoading, router])
 
-    const allInvoices = dataManager.getInvoices()
-    const patientInvoices = allInvoices.filter((inv) => inv.patientId === patientId)
-    setInvoices(patientInvoices)
-
-    const allReports = dataManager.getReports()
-    const patientReports = allReports.filter((rep) => rep.patientId === patientId)
-    setReports(patientReports)
-
-    setLoading(false)
-  }, [patientId, router])
-
-  if (loading || !isAuthenticated) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 to-cyan-50">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-200 border-t-teal-600"></div>

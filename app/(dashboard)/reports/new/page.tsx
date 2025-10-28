@@ -31,6 +31,7 @@ import {
 } from "@/lib/data-manager";
 import { FBCReportCard } from "@/components/fbc-report-card";
 import { TestSelectionComponent } from "@/components/test-selection";
+import { useAuth } from "@/components/auth-provider";
 import Link from "next/link";
 import { UFRReportCard } from "@/components/ufr-report-card";
 import { LipidProfileReportCard } from "@/components/lipid-profile-report-card";
@@ -46,12 +47,12 @@ function getUnitFromRange(range: string): string {
   return "";
 }
 
-function getDefaultReferenceRange(
+async function getDefaultReferenceRange(
   testCode: string,
   componentName: string,
   dataManager: any
-): string {
-  const test = dataManager.getTestByCode(testCode);
+): Promise<string> {
+  const test = await dataManager.getTestByCode(testCode);
   if (!test || !test.referenceRange) return "";
 
   // For components like "Total Cholesterol" from "Lipid Profile - Total Cholesterol"
@@ -65,12 +66,12 @@ function getDefaultReferenceRange(
 }
 
 // Helper function to get unit and reference range from test catalog
-function getTestDetails(
+async function getTestDetails(
   testCode: string,
   componentName: string,
   dataManager: any
 ) {
-  const test = dataManager.getTestByCode(testCode);
+  const test = await dataManager.getTestByCode(testCode);
 
   if (!test) {
     return { unit: "", referenceRange: "" };
@@ -108,7 +109,7 @@ function getTestDetails(
 
 export default function NewReportPage() {
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -136,22 +137,25 @@ export default function NewReportPage() {
       false;
 
   useEffect(() => {
-    const authStatus = localStorage.getItem("lablite_auth");
-    if (authStatus !== "authenticated") {
+    if (authLoading) return;
+
+    if (!user) {
       router.push("/");
       return;
     }
 
-    setIsAuthenticated(true);
-
     // Load data
-    const dataManager = DataManager.getInstance();
-    const patientsData = dataManager.getPatients();
-    const invoicesData = dataManager.getInvoices();
-    setPatients(patientsData);
-    setInvoices(invoicesData);
-    setLoading(false);
-  }, []);
+    async function loadData() {
+      const dataManager = DataManager.getInstance();
+      const patientsData = await dataManager.getPatients();
+      const invoicesData = await dataManager.getInvoices();
+      setPatients(patientsData);
+      setInvoices(invoicesData);
+      setLoading(false);
+    }
+
+    loadData();
+  }, [user, authLoading, router]);
 
   const handlePatientChange = (patientId: string) => {
     const patient = patients.find((p) => p.id === patientId);
@@ -163,7 +167,7 @@ export default function NewReportPage() {
     setFbcValues(null);
   };
 
-  const handleInvoiceChange = (invoiceId: string) => {
+  const handleInvoiceChange = async (invoiceId: string) => {
     const invoice = invoices.find((inv) => inv.id === invoiceId);
     setSelectedInvoice(invoice || null);
     setFbcValues(null);
@@ -171,7 +175,7 @@ export default function NewReportPage() {
     if (invoice) {
       // Initialize results from invoice line items
       const dataManager = DataManager.getInstance();
-      const testCatalog = dataManager.getTestCatalog();
+      const testCatalog = await dataManager.getTestCatalog();
 
       const initialResults: ReportResult[] = [];
 
@@ -281,7 +285,7 @@ export default function NewReportPage() {
     setFbcValues(null);
   };
 
-  const handleTestSelection = (testCodes: string[]) => {
+  const handleTestSelection = async (testCodes: string[]) => {
     // Prevent infinite loops by checking if the selection has actually changed
     if (
       JSON.stringify(testCodes.sort()) === JSON.stringify(selectedTests.sort())
@@ -293,7 +297,7 @@ export default function NewReportPage() {
 
     // Initialize results from selected tests
     const dataManager = DataManager.getInstance();
-    const testCatalog = dataManager.getTestCatalog();
+    const testCatalog = await dataManager.getTestCatalog();
     const initialResults: ReportResult[] = [];
 
     testCodes.forEach((testCode) => {
@@ -739,7 +743,7 @@ if (Object.keys(referenceRanges).length > 1) {
 
       if (allResults.length === 0) return;
 
-      const report = dataManager.addReport({
+      const report = await dataManager.addReport({
         patientId: selectedPatient.id,
         patientName: `${selectedPatient.firstName} ${selectedPatient.lastName}`,
         invoiceId: selectedInvoice?.id || null,
@@ -803,7 +807,7 @@ if (Object.keys(referenceRanges).length > 1) {
     ? invoices.filter((inv) => inv.patientId === selectedPatient.id)
     : [];
 
-  if (loading || !isAuthenticated) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>

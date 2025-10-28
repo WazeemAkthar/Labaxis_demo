@@ -8,30 +8,35 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Plus, Search, Filter, Calendar, Activity, FileText } from "lucide-react"
 import { DataManager, type Report } from "@/lib/data-manager"
+import { useAuth } from "@/components/auth-provider"
 import Link from "next/link"
 
 export default function ReportsPage() {
   const router = useRouter()
+  const { user, loading: authLoading } = useAuth()
   const [reports, setReports] = useState<Report[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [filteredReports, setFilteredReports] = useState<Report[]>([])
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const authStatus = localStorage.getItem("lablite_auth")
-    if (authStatus !== "authenticated") {
+    if (authLoading) return
+
+    if (!user) {
       router.push("/")
       return
     }
-    setIsAuthenticated(true)
 
-    const dataManager = DataManager.getInstance()
-    const reportsData = dataManager.getReports()
-    setReports(reportsData)
-    setFilteredReports(reportsData)
-    setLoading(false)
-  }, [])
+    async function loadReports() {
+      const dataManager = DataManager.getInstance()
+      const reportsData = await dataManager.getReports()
+      setReports(reportsData)
+      setFilteredReports(reportsData)
+      setLoading(false)
+    }
+
+    loadReports()
+  }, [user, authLoading, router])
 
   useEffect(() => {
     const filtered = reports.filter(
@@ -44,7 +49,7 @@ export default function ReportsPage() {
     setFilteredReports(filtered)
   }, [searchTerm, reports])
 
-  if (loading || !isAuthenticated) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 via-cyan-50 to-blue-50">
         <div className="animate-spin rounded-full h-10 w-10 border-3 border-teal-600 border-t-transparent"></div>

@@ -8,9 +8,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Settings, User, Lock, Save } from "lucide-react"
+import { useAuth } from "@/components/auth-provider"
 
 export default function SettingsPage() {
   const router = useRouter()
+  const { user, loading: authLoading } = useAuth()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState("")
@@ -23,9 +25,9 @@ export default function SettingsPage() {
   })
 
   useEffect(() => {
-    // Check authentication
-    const authStatus = localStorage.getItem("lablite_auth")
-    if (authStatus !== "authenticated") {
+    if (authLoading) return
+
+    if (!user) {
       router.push("/")
       return
     }
@@ -48,7 +50,7 @@ export default function SettingsPage() {
       }))
     }
     setLoading(false)
-  }, [router])
+  }, [user, authLoading, router])
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -98,12 +100,32 @@ export default function SettingsPage() {
     }
   }
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     )
+  }
+
+  const handleInitializeData = async () => {
+    setSaving(true)
+    setMessage("")
+
+    try {
+      // Import DataManager dynamically to avoid issues
+      const { DataManager } = await import('@/lib/data-manager')
+      const dataManager = DataManager.getInstance()
+
+      await dataManager.initializeWithDefaults()
+
+      setMessage("Database initialized with default tests and sample data!")
+    } catch (error: any) {
+      console.error('Initialization error:', error)
+      setMessage(`Error: ${error.message || 'Failed to initialize data'}`)
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -114,6 +136,30 @@ export default function SettingsPage() {
       </div>
 
       <div className="grid gap-6 max-w-2xl">
+        {/* Database Initialization */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Initialize Database</CardTitle>
+            <CardDescription>Load default test catalog and sample data into Firestore</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={handleInitializeData} disabled={saving} variant="outline">
+              {saving ? "Initializing..." : "Initialize Default Data"}
+            </Button>
+            {message && (
+              <div
+                className={`text-sm p-2 rounded mt-4 ${
+                  message.includes("successfully") || message.includes("initialized")
+                    ? "text-green-600 bg-green-50"
+                    : "text-red-600 bg-red-50"
+                }`}
+              >
+                {message}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Account Settings */}
         <Card>
           <CardHeader>

@@ -8,31 +8,36 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Plus, Search, Filter, Calendar, FileText, DollarSign } from "lucide-react"
 import { DataManager, type Invoice } from "@/lib/data-manager"
+import { useAuth } from "@/components/auth-provider"
 import Link from "next/link"
 
 export default function InvoicesPage() {
   const router = useRouter()
+  const { user, loading: authLoading } = useAuth()
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [filteredInvoices, setFilteredInvoices] = useState<Invoice[]>([])
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const authStatus = localStorage.getItem("lablite_auth")
-    if (authStatus !== "authenticated") {
+    if (authLoading) return
+
+    if (!user) {
       router.push("/")
       return
     }
-    setIsAuthenticated(true)
 
     // Load invoices
-    const dataManager = DataManager.getInstance()
-    const invoicesData = dataManager.getInvoices()
-    setInvoices(invoicesData)
-    setFilteredInvoices(invoicesData)
-    setLoading(false)
-  }, [])
+    async function loadInvoices() {
+      const dataManager = DataManager.getInstance()
+      const invoicesData = await dataManager.getInvoices()
+      setInvoices(invoicesData)
+      setFilteredInvoices(invoicesData)
+      setLoading(false)
+    }
+
+    loadInvoices()
+  }, [user, authLoading, router])
 
   useEffect(() => {
     // Filter invoices based on search term
@@ -45,7 +50,7 @@ export default function InvoicesPage() {
     setFilteredInvoices(filtered)
   }, [searchTerm, invoices])
 
-  if (loading || !isAuthenticated) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>

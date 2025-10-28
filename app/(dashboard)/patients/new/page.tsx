@@ -11,11 +11,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Save, User, Phone, Stethoscope, FileText } from "lucide-react"
 import { DataManager } from "@/lib/data-manager"
+import { useAuth } from "@/components/auth-provider"
 import Link from "next/link"
 
 export default function NewPatientPage() {
   const router = useRouter()
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const { user, loading: authLoading } = useAuth()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [formData, setFormData] = useState({
@@ -28,14 +29,15 @@ export default function NewPatientPage() {
   })
 
   useEffect(() => {
-    const authStatus = localStorage.getItem("lablite_auth")
-    if (authStatus !== "authenticated") {
+    if (authLoading) return
+
+    if (!user) {
       router.push("/")
       return
     }
-    setIsAuthenticated(true)
+
     setLoading(false)
-  }, [router])
+  }, [user, authLoading, router])
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -54,7 +56,7 @@ export default function NewPatientPage() {
       const firstName = nameParts[0] || ""
       const lastName = nameParts.slice(1).join(" ") || ""
 
-      const patient = dataManager.addPatient({
+      const patient = await dataManager.addPatient({
         firstName,
         lastName,
         age: Number.parseInt(formData.age),
@@ -85,7 +87,7 @@ export default function NewPatientPage() {
     return formData.fullName.trim() && formData.age && formData.gender && formData.phone.trim()
   }
 
-  if (loading || !isAuthenticated) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 to-cyan-50">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-200 border-t-teal-600"></div>

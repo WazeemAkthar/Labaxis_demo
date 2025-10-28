@@ -8,30 +8,35 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Plus, Search, Filter, Calendar, User } from "lucide-react"
 import { DataManager, type Patient } from "@/lib/data-manager"
+import { useAuth } from "@/components/auth-provider"
 import Link from "next/link"
 
 export default function PatientsPage() {
   const router = useRouter()
+  const { user, loading: authLoading } = useAuth()
   const [patients, setPatients] = useState<Patient[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [filteredPatients, setFilteredPatients] = useState<Patient[]>([])
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const authStatus = localStorage.getItem("lablite_auth")
-    if (authStatus !== "authenticated") {
+    if (authLoading) return
+
+    if (!user) {
       router.push("/")
       return
     }
-    setIsAuthenticated(true)
 
-    const dataManager = DataManager.getInstance()
-    const patientsData = dataManager.getPatients()
-    setPatients(patientsData)
-    setFilteredPatients(patientsData)
-    setLoading(false)
-  }, [router])
+    async function loadPatients() {
+      const dataManager = DataManager.getInstance()
+      const patientsData = await dataManager.getPatients()
+      setPatients(patientsData)
+      setFilteredPatients(patientsData)
+      setLoading(false)
+    }
+
+    loadPatients()
+  }, [user, authLoading, router])
 
   useEffect(() => {
     const filtered = patients.filter(
@@ -44,7 +49,7 @@ export default function PatientsPage() {
     setFilteredPatients(filtered)
   }, [searchTerm, patients])
 
-  if (loading || !isAuthenticated) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 to-cyan-50">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-200 border-t-teal-600"></div>

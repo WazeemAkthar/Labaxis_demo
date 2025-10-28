@@ -9,39 +9,44 @@ import { Separator } from "@/components/ui/separator"
 import { ArrowLeft, Download, Printer as Print, Edit } from "lucide-react"
 import { DataManager, type Invoice } from "@/lib/data-manager"
 import { generateInvoicePDF } from "@/lib/pdf-generator"
+import { useAuth } from "@/components/auth-provider"
 import Link from "next/link"
 
 export default function InvoiceDetailsPage() {
   const params = useParams()
   const router = useRouter()
+  const { user, loading: authLoading } = useAuth()
   const invoiceId = params.id as string
 
   const [invoice, setInvoice] = useState<Invoice | null>(null)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const authStatus = localStorage.getItem("lablite_auth")
-    if (authStatus !== "authenticated") {
+    if (authLoading) return
+
+    if (!user) {
       router.push("/")
       return
     }
-    setIsAuthenticated(true)
 
     // Load invoice data
-    const dataManager = DataManager.getInstance()
-    const allInvoices = dataManager.getInvoices()
-    const invoiceData = allInvoices.find((inv) => inv.id === invoiceId)
+    async function loadInvoice() {
+      const dataManager = DataManager.getInstance()
+      const allInvoices = await dataManager.getInvoices()
+      const invoiceData = allInvoices.find((inv) => inv.id === invoiceId)
 
-    if (!invoiceData) {
-      // Invoice not found, redirect to invoices list
-      router.push("/invoices")
-      return
+      if (!invoiceData) {
+        // Invoice not found, redirect to invoices list
+        router.push("/invoices")
+        return
+      }
+
+      setInvoice(invoiceData)
+      setLoading(false)
     }
 
-    setInvoice(invoiceData)
-    setLoading(false)
-  }, [invoiceId])
+    loadInvoice()
+  }, [invoiceId, user, authLoading, router])
 
   const handlePrint = () => {
     window.print()
@@ -49,11 +54,11 @@ export default function InvoiceDetailsPage() {
 
   const handleDownloadPDF = async () => {
     if (!invoice) return
-    
+
     try {
       // Get patient data for the PDF
       const dataManager = DataManager.getInstance()
-      const patient = dataManager.getPatientById(invoice.patientId)
+      const patient = await dataManager.getPatientById(invoice.patientId)
       
       if (!patient) {
         alert("Patient information not found")
@@ -69,7 +74,7 @@ export default function InvoiceDetailsPage() {
   }
 
 
-  if (loading || !isAuthenticated) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
