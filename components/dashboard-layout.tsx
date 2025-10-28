@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { FlaskConical, Users, FileText, Activity, DollarSign, Menu, LogOut, Home, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { logOut } from "@/lib/auth"
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
@@ -27,9 +28,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  const handleSignOut = () => {
-    localStorage.removeItem("lablite_auth")
-    router.push("/")
+  const handleSignOut = async () => {
+    try {
+      await logOut()
+      router.push("/")
+    } catch (error) {
+      console.error("Sign out error:", error)
+    }
   }
 
   return (
