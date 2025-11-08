@@ -13,6 +13,7 @@ import { useAuth } from "@/components/auth-provider";
 import Link from "next/link";
 import ReportQRCode from "@/components/ReportQRCode";
 import TestAdditionalDetails from "@/components/TestAdditionalDetails";
+import { OGTTGraph } from "@/components/ogtt-graph";
 
 export default function ReportDetailsPage() {
   const params = useParams();
@@ -399,13 +400,88 @@ export default function ReportDetailsPage() {
   };
 
   const renderRegularTestResults = (testCode: string, testResults: any[]) => {
-
     const dataManager = DataManager.getInstance();
     const testConfig = dataManager.getTestByCode(testCode);
     const testName = testConfig ? testConfig.name : testCode;
     const isESR = testCode === "ESR";
-    const isTSH = testCode === "TSH"; // ADD THIS LINE
-    const hideReferenceRange = isESR || isTSH; // ADD THIS LINE
+    const isTSH = testCode === "TSH";
+    const hideReferenceRange = isESR || isTSH;
+
+    const hasGraph = testConfig?.hasGraph || false;
+    const isOGTT = testCode === "OGTT";
+    if (isOGTT && hasGraph) {
+      const fastingResult = testResults.find((r) =>
+        r.testName.includes("Fasting")
+      );
+      const oneHourResult = testResults.find((r) =>
+        r.testName.includes("1 Hour")
+      );
+      const twoHoursResult = testResults.find((r) =>
+        r.testName.includes("2 Hours")
+      );
+
+      return (
+        <div key={testCode} className="space-y-4">
+          <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
+            {testName}
+          </h1>
+
+       
+
+          {/* Then show the table */}
+          <table className="w-full border-collapse mt-4">
+            <thead>
+              <tr className="border-b">
+                <th className="text-left p-4">Test</th>
+                <th className="text-left p-4">Value</th>
+                <th className="text-left p-4">Units</th>
+                <th className="text-left p-4">Reference Range</th>
+              </tr>
+            </thead>
+            <tbody>
+              {testResults.map((result, index) => {
+                const displayName = result.testName.includes(" - ")
+                  ? result.testName.split(" - ")[1]
+                  : result.testName;
+                return (
+                  <tr key={`${testCode}-${index}`} className="border-b">
+                    <td className="p-4">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{displayName}</span>
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="font-semibold text-lg">
+                        {result.value}
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="font-semibold text-lg">{result.unit}</div>
+                    </td>
+                    <td className="p-4">
+                      <div className="font-semibold text-lg">
+                        {result.referenceRange}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+
+             {/* Show the graph */}
+          <OGTTGraph
+            fasting={fastingResult?.value || "0"}
+            afterOneHour={oneHourResult?.value || "0"}
+            afterTwoHours={twoHoursResult?.value || "0"}
+          />
+
+          <div className="mt-[5rem]">
+            <TestAdditionalDetails testCode={testCode} />
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div key={testCode}>
@@ -446,7 +522,7 @@ export default function ReportDetailsPage() {
                   <td className="p-4">
                     <div className="font-semibold text-lg">{result.unit}</div>
                   </td>
-                  {!hideReferenceRange &&  (
+                  {!hideReferenceRange && (
                     <td className="p-4">
                       <div className="font-semibold text-lg">
                         {result.referenceRange}
@@ -777,6 +853,10 @@ export default function ReportDetailsPage() {
             padding-top: 8px !important;
             border-top: 1px solid #e0e0e0 !important;
           }
+        }
+        /* OGTT Graph styles */
+        .recharts-responsive-container {
+          page-break-inside: avoid !important;
         }
       `}</style>
       <div className="space-y-6">
