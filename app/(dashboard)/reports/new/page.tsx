@@ -533,7 +533,7 @@ if (Object.keys(referenceRanges).length > 1) {
             testName: "Total Cholesterol",
             value: lipidValues.totalCholesterol,
             unit: "mg/dL",
-            referenceRange: "<200",
+            referenceRange: "< 200",
             comments: "",
           },
           {
@@ -541,7 +541,7 @@ if (Object.keys(referenceRanges).length > 1) {
             testName: "HDL Cholesterol",
             value: lipidValues.hdl,
             unit: "mg/dL",
-            referenceRange: ">40",
+            referenceRange: "> 40",
             comments: "",
           },
           {
@@ -549,7 +549,7 @@ if (Object.keys(referenceRanges).length > 1) {
             testName: "Triglycerides",
             value: lipidValues.triglycerides,
             unit: "mg/dL",
-            referenceRange: "<150",
+            referenceRange: "< 150",
             comments: "",
           },
           {
@@ -557,7 +557,7 @@ if (Object.keys(referenceRanges).length > 1) {
             testName: "VLDL Cholesterol",
             value: lipidValues.vldl,
             unit: "mg/dL",
-            referenceRange: "5-40",
+            referenceRange: "< 40",
             comments: "",
           },
           {
@@ -565,7 +565,7 @@ if (Object.keys(referenceRanges).length > 1) {
             testName: "LDL Cholesterol",
             value: lipidValues.ldl,
             unit: "mg/dL",
-            referenceRange: "<130",
+            referenceRange: "< 150",
             comments: "",
           },
           {
@@ -573,32 +573,23 @@ if (Object.keys(referenceRanges).length > 1) {
             testName: "Total Cholesterol/HDL Ratio",
             value: lipidValues.tcHdlRatio,
             unit: "",
-            referenceRange: "<5.0",
+            referenceRange: "< 5.0",
             comments: "",
           },
-
-          {
-            testCode: "LIPID",
-            testName: "Total Cholesterol/HDL Ratio",
-            value: lipidValues.tcHdlRatio,
-            unit: "",
-            referenceRange: "3.5-5.0",
-            comments: "",
-          },
-          {
-            testCode: "LIPID",
-            testName: "TG/HDL Ratio",
-            value: lipidValues.tgHdlRatio,
-            unit: "",
-            referenceRange: "<4.0",
-            comments: "",
-          },
+          // {
+          //   testCode: "LIPID",
+          //   testName: "TG/HDL Ratio",
+          //   value: lipidValues.tgHdlRatio,
+          //   unit: "",
+          //   referenceRange: "< 4.0",
+          //   comments: "",
+          // },
           {
             testCode: "LIPID",
             testName: "Non-HDL Cholesterol",
             value: lipidValues.nonHdl,
             unit: "mg/dL",
-            referenceRange: "<130",
+            referenceRange: "< 130",
             comments: "",
           },
         ].filter((r) => r.value && r.value.trim() !== "");

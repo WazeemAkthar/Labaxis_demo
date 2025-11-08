@@ -171,11 +171,12 @@ export function UFRReportCard({ onValuesChange }: UFRReportCardProps) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Nil">Nil</SelectItem>
-                  <SelectItem value="Trace">Trace</SelectItem>
-                  <SelectItem value="+">+</SelectItem>
-                  <SelectItem value="++">++</SelectItem>
-                  <SelectItem value="+++">+++</SelectItem>
-                  <SelectItem value="++++">++++</SelectItem>
+                  <SelectItem value="Faint trace">Faint trace</SelectItem>
+                  <SelectItem value="Trace (15 mg/dL)">Trace (15 mg/dL)</SelectItem>
+                  <SelectItem value="+ (30 mg/dL)">+ (30 mg/dL)</SelectItem>
+                  <SelectItem value="++ (100 mg/dL)">++ (100 mg/dL)</SelectItem>
+                  <SelectItem value="+++ (300 mg/dL)">+++ (300 mg/dL)</SelectItem>
+                  <SelectItem value="++++ (2000 mg/dL)">++++ (2000 mg/dL)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -191,11 +192,11 @@ export function UFRReportCard({ onValuesChange }: UFRReportCardProps) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Nil">Nil</SelectItem>
-                  <SelectItem value="Trace">Trace</SelectItem>
-                  <SelectItem value="+">+</SelectItem>
-                  <SelectItem value="++">++</SelectItem>
-                  <SelectItem value="+++">+++</SelectItem>
-                  <SelectItem value="++++">++++</SelectItem>
+                  <SelectItem value="Trace (100 mg/dL)">Trace (100 mg/dL)</SelectItem>
+                  <SelectItem value="+ (250 mg/dL)">+ (250 mg/dL)</SelectItem>
+                  <SelectItem value="++ (500 mg/dL)">++ (500 mg/dL)</SelectItem>
+                  <SelectItem value="+++ (1000 mg/dL)">+++ (1000 mg/dL)</SelectItem>
+                  <SelectItem value="++++ (&ge;2000 mg/dL)">++++ (&ge;2000 mg/dL)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
