@@ -366,86 +366,89 @@ export default function ReportDetailsPage() {
     );
   };
 
-  // FIXED: Now uses pre-loaded testConfigs
-  const renderRegularTestResults = (testCode: string, testResults: any[]) => {
-    const testConfig = testConfigs[testCode]; // ✅ Now synchronous
-    const testName = testConfig ? testConfig.name : testCode;
-    const isESR = testCode === "ESR";
-    const isTSH = testCode === "TSH";
-    const hideReferenceRange = isESR || isTSH;
+const renderRegularTestResults = (testCode: string, testResults: any[]) => {
+  const testConfig = testConfigs[testCode];
+  const testName = testConfig ? testConfig.name : testCode;
+  const isESR = testCode === "ESR";
+  const isTSH = testCode === "TSH";
+  const hideReferenceRange = isESR || isTSH;
 
-    const hasGraph = testConfig?.hasGraph || false;
-    const isOGTT = testCode === "OGTT";
-    
-    if (isOGTT && hasGraph) {
-      const fastingResult = testResults.find((r) =>
-        r.testName.includes("Fasting")
-      );
-      const oneHourResult = testResults.find((r) =>
-        r.testName.includes("1 Hour")
-      );
-      const twoHoursResult = testResults.find((r) =>
-        r.testName.includes("2 Hours")
-      );
+  const hasGraph = testConfig?.hasGraph || false;
+  const isOGTT = testCode === "OGTT";
+  
+  if (isOGTT && hasGraph) {
+    const fastingResult = testResults.find((r) =>
+      r.testName.includes("Fasting")
+    );
+    const oneHourResult = testResults.find((r) =>
+      r.testName.includes("1 Hour")
+    );
+    const twoHoursResult = testResults.find((r) =>
+      r.testName.includes("2 Hour")
+    );
 
-      return (
-        <div key={testCode} className="space-y-4">
-          <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
-            {testName}
-          </h1>
+    const fastingValue = fastingResult?.value || "0";
+    const oneHourValue = oneHourResult?.value || "0";
+    const twoHoursValue = twoHoursResult?.value || "0";
 
-          <table className="w-full border-collapse mt-4">
-            <thead>
-              <tr className="border-b">
-                <th className="text-left p-4">Test</th>
-                <th className="text-left p-4">Value</th>
-                <th className="text-left p-4">Units</th>
-                <th className="text-left p-4">Reference Range</th>
-              </tr>
-            </thead>
-            <tbody>
-              {testResults.map((result, index) => {
-                const displayName = result.testName.includes(" - ")
-                  ? result.testName.split(" - ")[1]
-                  : result.testName;
-                return (
-                  <tr key={`${testCode}-${index}`} className="border-b">
-                    <td className="p-4">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">{displayName}</span>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="font-semibold text-lg">
-                        {result.value}
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="font-semibold text-lg">{result.unit}</div>
-                    </td>
-                    <td className="p-4">
-                      <div className="font-semibold text-lg">
-                        {result.referenceRange}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+    return (
+      <div key={testCode} className="space-y-4 ogtt-section">
+        <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
+          {testName}
+        </h1>
 
-          {fastingResult && oneHourResult && twoHoursResult && (
-            <div className="mt-6">
-              <OGTTGraph
-                fasting={fastingResult?.value || "0"}
-                afterOneHour={oneHourResult?.value || "0"}
-                afterTwoHours={twoHoursResult?.value || "0"}
-              />
-            </div>
-          )}
-        </div>
-      );
-    }
+        <table className="w-full border-collapse mt-4">
+          <thead>
+            <tr className="border-b">
+              <th className="text-left p-4">Test</th>
+              <th className="text-left p-4">Value</th>
+              <th className="text-left p-4">Units</th>
+              <th className="text-left p-4">Reference Range</th>
+            </tr>
+          </thead>
+          <tbody>
+            {testResults.map((result, index) => {
+              const displayName = result.testName.includes(" - ")
+                ? result.testName.split(" - ")[1]
+                : result.testName;
+              return (
+                <tr key={`${testCode}-${index}`} className="border-b">
+                  <td className="p-4">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{displayName}</span>
+                    </div>
+                  </td>
+                  <td className="p-4">
+                    <div className="font-semibold text-lg">
+                      {result.value}
+                    </div>
+                  </td>
+                  <td className="p-4">
+                    <div className="font-semibold text-lg">{result.unit}</div>
+                  </td>
+                  <td className="p-4">
+                    <div className="font-semibold text-lg">
+                      {result.referenceRange}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+
+        {fastingValue && oneHourValue && twoHoursValue && (
+          <div className="mt-6 ogtt-graph-wrapper">
+            <OGTTGraph
+              fasting={fastingValue}
+              afterOneHour={oneHourValue}
+              afterTwoHours={twoHoursValue}
+            />
+          </div>
+        )}
+      </div>
+    );
+  }
 
     return (
       <div key={testCode}>
@@ -798,6 +801,62 @@ export default function ReportDetailsPage() {
             display: block !important;
           }
         }
+          /* OGTT Graph Print Styles */
+  .ogtt-section {
+    page-break-inside: avoid !important;
+  }
+
+  .ogtt-graph-wrapper {
+    page-break-inside: avoid !important;
+    display: block !important;
+    margin-top: 20px !important;
+    margin-bottom: 20px !important;
+  }
+
+  .ogtt-graph-container {
+    page-break-inside: avoid !important;
+    box-shadow: none !important;
+    border: 1px solid #e5e7eb !important;
+  }
+
+  .recharts-wrapper {
+    page-break-inside: avoid !important;
+  }
+
+  .recharts-surface {
+    page-break-inside: avoid !important;
+  }
+
+  /* Make sure graph card header prints */
+  .ogtt-graph-container [class*="CardHeader"] {
+    display: block !important;
+    background-color: #f9fafb !important;
+    padding: 12px !important;
+    border-bottom: 1px solid #e5e7eb !important;
+  }
+
+  .ogtt-graph-container [class*="CardTitle"] {
+    font-size: 14px !important;
+    font-weight: bold !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+
+  .ogtt-graph-container [class*="CardContent"] {
+    display: block !important;
+    padding: 12px !important;
+  }
+
+  /* Interpretation box */
+  .ogtt-graph-container .bg-blue-50 {
+    background-color: #eff6ff !important;
+    border-left: 4px solid #3b82f6 !important;
+    padding: 10px !important;
+    margin-top: 12px !important;
+    page-break-inside: avoid !important;
+  }
+}
       `}</style>
       <div className="space-y-6">
         <div className="flex items-center gap-4 no-print">

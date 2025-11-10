@@ -756,7 +756,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       const ogttResultsArray = [
         {
           testCode: "OGTT",
-          testName: "Fasting Glucose",
+          testName: "Fasting",
           value: ogttValues.fasting || "",
           unit: "mg/dL",
           referenceRange: "60 - 115",
@@ -764,7 +764,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         },
         {
           testCode: "OGTT",
-          testName: "After 1 Hour Glucose",
+          testName: "After 1 Hour",
           value: ogttValues.afterOneHour || "",
           unit: "mg/dL",
           referenceRange: "< 180",
@@ -772,7 +772,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         },
         {
           testCode: "OGTT",
-          testName: "After 2 Hour Glucose",
+          testName: "After 2 Hour",
           value: ogttValues.afterTwoHours || "",
           unit: "mg/dL",
           referenceRange: "< 140",
@@ -1061,7 +1061,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                 <CardContent className="space-y-4">
                   <div className="grid gap-4 md:grid-cols-3">
                     <div className="space-y-2">
-                      <Label htmlFor="ogtt-fasting">Fasting Glucose (mg/dL)</Label>
+                      <Label htmlFor="ogtt-fasting">Fasting (mg/dL)</Label>
                       <Input
                         id="ogtt-fasting"
                         type="number"
@@ -1072,11 +1072,11 @@ const handleSubmit = async (e: React.FormEvent) => {
                             fasting: e.target.value,
                           })
                         }
-                        placeholder="70-100"
+                        placeholder="70 - 100"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="ogtt-1hour">After 1 Hour Glucose (mg/dL)</Label>
+                      <Label htmlFor="ogtt-1hour">After 1 Hour (mg/dL)</Label>
                       <Input
                         id="ogtt-1hour"
                         type="number"
@@ -1087,11 +1087,11 @@ const handleSubmit = async (e: React.FormEvent) => {
                             afterOneHour: e.target.value,
                           })
                         }
-                        placeholder="< 140"
+                        placeholder="< 180"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="ogtt-2hour">After 2 Hour Glucose (mg/dL)</Label>
+                      <Label htmlFor="ogtt-2hour">After 2 Hour (mg/dL)</Label>
                       <Input
                         id="ogtt-2hour"
                         type="number"

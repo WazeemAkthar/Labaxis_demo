@@ -9,12 +9,10 @@ interface OGTTGraphProps {
 }
 
 export const OGTTGraph: React.FC<OGTTGraphProps> = ({ fasting, afterOneHour, afterTwoHours }) => {
-  // Parse values
   const fastingVal = parseFloat(fasting) || 0;
   const oneHourVal = parseFloat(afterOneHour) || 0;
   const twoHourVal = parseFloat(afterTwoHours) || 0;
 
-  // Create data points for the graph matching the reference image
   const data = [
     { 
       time: 'Fasting', 
@@ -39,7 +37,6 @@ export const OGTTGraph: React.FC<OGTTGraphProps> = ({ fasting, afterOneHour, aft
     }
   ];
 
-  // Determine status based on values
   const getStatus = () => {
     if (twoHourVal >= 200 || fastingVal >= 126) return { text: 'Diabetic', color: '#ef4444' };
     if (twoHourVal >= 140 || fastingVal >= 100) return { text: 'Prediabetic', color: '#f59e0b' };
@@ -48,7 +45,6 @@ export const OGTTGraph: React.FC<OGTTGraphProps> = ({ fasting, afterOneHour, aft
 
   const status = getStatus();
 
-  // Custom tooltip
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
@@ -68,7 +64,6 @@ export const OGTTGraph: React.FC<OGTTGraphProps> = ({ fasting, afterOneHour, aft
     return null;
   };
 
-  // Custom label for data points
   const CustomLabel = (props: any) => {
     const { x, y, value } = props;
     return (
@@ -98,7 +93,7 @@ export const OGTTGraph: React.FC<OGTTGraphProps> = ({ fasting, afterOneHour, aft
   };
 
   return (
-    <Card className="w-full ogtt-graph-container">
+    <Card className="w-full ogtt-graph-container print-preserve">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>Oral Glucose Tolerance Test (OGTT)</span>
@@ -144,7 +139,6 @@ export const OGTTGraph: React.FC<OGTTGraphProps> = ({ fasting, afterOneHour, aft
               wrapperStyle={{ fontSize: 14 }}
             />
             
-            {/* Min-Max Range Area (Red/Pink) */}
             <Area 
               type="monotone" 
               dataKey="maxRange" 
@@ -166,7 +160,6 @@ export const OGTTGraph: React.FC<OGTTGraphProps> = ({ fasting, afterOneHour, aft
               dot={{ fill: '#dc2626', r: 5, strokeWidth: 2, stroke: 'white' }}
             />
             
-            {/* Patient Findings Line (Blue) */}
             <Line 
               type="monotone" 
               dataKey="findings" 
@@ -179,7 +172,6 @@ export const OGTTGraph: React.FC<OGTTGraphProps> = ({ fasting, afterOneHour, aft
           </ComposedChart>
         </ResponsiveContainer>
 
-        {/* Interpretation */}
         <div className="mt-4 p-4 bg-blue-50 border-l-4 border-blue-500 rounded text-sm">
           <div className="font-semibold mb-2 text-blue-900">Interpretation:</div>
           <div className="text-gray-700">
