@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Download, Printer as Print, Edit } from "lucide-react";
-import { DataManager, type Report } from "@/lib/data-manager";
+import { DataManager, type Report, type TestCatalogItem } from "@/lib/data-manager";
 import { generateReportPDF } from "@/lib/pdf-generator";
 import { useAuth } from "@/components/auth-provider";
 import Link from "next/link";
@@ -24,6 +24,7 @@ export default function ReportDetailsPage() {
   const [report, setReport] = useState<Report | null>(null);
   const [patient, setPatient] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [testConfigs, setTestConfigs] = useState<Record<string, TestCatalogItem>>({});
 
   useEffect(() => {
     if (authLoading) return;
@@ -40,7 +41,6 @@ export default function ReportDetailsPage() {
       const reportData = allReports.find((rep) => rep.id === reportId);
 
       if (!reportData) {
-        // Report not found, redirect to reports list
         router.push("/reports");
         return;
       }
@@ -51,6 +51,18 @@ export default function ReportDetailsPage() {
       const patientData = await dataManager.getPatientById(reportData.patientId);
       setPatient(patientData);
 
+      // FIXED: Load all test configurations
+      const configs: Record<string, TestCatalogItem> = {};
+      const uniqueTestCodes = [...new Set(reportData.results.map(r => r.testCode))];
+      
+      for (const testCode of uniqueTestCodes) {
+        const config = await dataManager.getTestByCode(testCode);
+        if (config) {
+          configs[testCode] = config;
+        }
+      }
+      setTestConfigs(configs);
+
       setLoading(false);
     }
 
@@ -58,23 +70,18 @@ export default function ReportDetailsPage() {
   }, [reportId, user, authLoading, router]);
 
   const handlePrint = () => {
-    // Get the report content element
     const reportContent = document.querySelector(".print-content");
-
     if (!reportContent) {
       console.error("Report content not found");
       return;
     }
 
-    // Create a new window for printing
     const printWindow = window.open("", "_blank");
-
     if (!printWindow) {
       console.error("Could not open print window");
       return;
     }
 
-    // Get the styles from the current document
     const styles = Array.from(document.styleSheets)
       .map((styleSheet) => {
         try {
@@ -88,7 +95,6 @@ export default function ReportDetailsPage() {
       })
       .join("");
 
-    // Write the HTML content to the new window
     printWindow.document.write(`
       <!DOCTYPE html>
       <html>
@@ -96,50 +102,15 @@ export default function ReportDetailsPage() {
         <title>Lab Report - ${report?.id ?? ""}</title>
         <style>
           ${styles}
-          /* Additional print-specific styles */
-        @media print {
-          body { 
-            font-size: 8px; 
-            font-family: Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-          }
-          @page { 
-            margin: 15px; 
-            size: A4;
-          }
-          
-          /* Your existing print styles here - copy from the <style jsx global> block */
-          /* Hide header for print - letterhead will be used */
-          [class*="CardHeader"] {
-            display: none !important;
-          }
-          header {
-            display: none !important;
-          }
-          .display {
-            display: none !important;
-          }
-          
-          /* Remove main card border and shadow */
-          .print\\:shadow-none {
-            box-shadow: none !important;
-            border: none !important;
-          }
-          
-          /* All your other existing print styles... */
-        }
-      </style>
-    </head>
-    <body>
-      ${reportContent.innerHTML}
-    </body>
-    </html>
-  `);
+        </style>
+      </head>
+      <body>
+        ${reportContent.innerHTML}
+      </body>
+      </html>
+    `);
 
     printWindow.document.close();
-
-    // Wait for content to load, then print
     printWindow.onload = () => {
       printWindow.print();
       printWindow.close();
@@ -150,7 +121,6 @@ export default function ReportDetailsPage() {
     if (!report) return;
 
     try {
-      // Get patient data for the PDF
       const dataManager = DataManager.getInstance();
       const patient = await dataManager.getPatientById(report.patientId);
 
@@ -159,7 +129,6 @@ export default function ReportDetailsPage() {
         return;
       }
 
-      // Generate and download PDF
       await generateReportPDF(report, patient);
     } catch (error) {
       console.error("Error generating PDF:", error);
@@ -167,42 +136,127 @@ export default function ReportDetailsPage() {
     }
   };
 
-  const renderTestResults = (results: any[]) => {
-    // Group results by test type
-    const groupedResults = results.reduce((groups, result) => {
-      const testCode = result.testCode;
-      if (!groups[testCode]) {
-        groups[testCode] = [];
-      }
-      groups[testCode].push(result);
-      return groups;
-    }, {} as Record<string, any[]>);
+const renderTestResults = (results: any[]) => {
+  console.log("=== RENDERING ALL TEST RESULTS ===");
+  console.log("Total results:", results.length);
+  console.log("Results:", results);
+  
+  const groupedResults = results.reduce((groups, result) => {
+    const testCode = result.testCode;
+    if (!groups[testCode]) {
+      groups[testCode] = [];
+    }
+    groups[testCode].push(result);
+    return groups;
+  }, {} as Record<string, any[]>);
 
-    return (
-      <div className="space-y-6">
-        {Object.entries(groupedResults).map(([testCode, testResults]) => {
-          const resultsArray = testResults as any[];
-          if (testCode === "FBC") {
-            return <div key={testCode}>{renderFBCResults(resultsArray)}</div>;
-          } else if (testCode === "UFR") {
-            return <div key={testCode}>{renderUFRResults(resultsArray)}</div>;
-          } else {
-            return (
-              <div key={testCode}>
-                {renderRegularTestResults(testCode, resultsArray)}
-                <div className="mt-[5rem]">
-                  <TestAdditionalDetails testCode={testCode} />
-                </div>
+  console.log("Grouped results:", groupedResults);
+
+  return (
+    <div className="space-y-6">
+      {Object.entries(groupedResults).map(([testCode, testResults]) => {
+        console.log(`Rendering testCode: ${testCode}, results:`, testResults);
+        
+        const resultsArray = testResults as any[];
+        if (testCode === "FBC") {
+          return <div key={testCode}>{renderFBCResults(resultsArray)}</div>;
+        } else if (testCode === "UFR") {
+          return <div key={testCode}>{renderUFRResults(resultsArray)}</div>;
+        } else if (testCode === "OGTT") {
+          return <div key={testCode}>{renderOGTTResults(resultsArray)}</div>;
+        } else {
+          return (
+            <div key={testCode}>
+              {renderRegularTestResults(testCode, resultsArray)}
+              <div className="mt-[5rem]">
+                <TestAdditionalDetails testCode={testCode} />
               </div>
-            );
-          }
-        })}
+            </div>
+          );
+        }
+      })}
+    </div>
+  );
+};
+
+const renderOGTTResults = (ogttResults: any[]) => {
+  console.log("=== RENDERING OGTT RESULTS ===");
+  console.log("OGTT Results:", ogttResults);
+  
+  const fastingResult = ogttResults.find((r) =>
+    r.testName.includes("Fasting")
+  );
+  const oneHourResult = ogttResults.find((r) =>
+    r.testName.includes("1 Hour")
+  );
+  const twoHoursResult = ogttResults.find((r) =>
+    r.testName.includes("2 Hour")
+  );
+
+  console.log("Fasting:", fastingResult);
+  console.log("1 Hour:", oneHourResult);
+  console.log("2 Hours:", twoHoursResult);
+
+  const fastingValue = fastingResult?.value || "";
+  const oneHourValue = oneHourResult?.value || "";
+  const twoHoursValue = twoHoursResult?.value || "";
+
+  console.log("Values extracted - Fasting:", fastingValue, "1H:", oneHourValue, "2H:", twoHoursValue);
+
+  return (
+    <div key="OGTT" className="border rounded-lg p-6 ogtt-section">
+      <div className="flex items-center gap-2 mb-6">
+        <Badge variant="outline" className="text-lg px-3 py-1">
+          OGTT
+        </Badge>
+        <span className="font-semibold text-lg">Oral Glucose Tolerance Test</span>
       </div>
-    );
-  };
+
+      <div className="overflow-x-auto mb-6">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-collapse border-t-2 border-b-2 border-gray-900">
+              <th className="text-left font-semibold">Test</th>
+              <th className="text-right font-semibold">Result</th>
+              <th className="text-right font-semibold">Units</th>
+              <th className="text-right font-semibold">Reference Range</th>
+            </tr>
+          </thead>
+          <tbody>
+            {ogttResults.map((result, index) => {
+              const displayName = result.testName.replace("Glucose", "").trim();
+              return (
+                <tr key={index} className="border-0 font-mono p-0 table-row">
+                  <td className="py-0 font-mono">{displayName}</td>
+                  <td className="text-right py-0 font-mono font-bold">
+                    {result.value}
+                  </td>
+                  <td className="text-right py-0 font-mono">{result.unit}</td>
+                  <td className="text-right py-0 font-mono">
+                    {result.referenceRange}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Graph Section */}
+      {(fastingValue || oneHourValue || twoHoursValue) && (
+        <div className="mt-6 ogtt-graph-wrapper">
+          <OGTTGraph
+            fasting={fastingValue}
+            afterOneHour={oneHourValue}
+            afterTwoHours={twoHoursValue}
+          />
+        </div>
+      )}
+    </div>
+  );
+};
 
   const renderFBCResults = (fbcResults: any[]) => {
-    // Categorize the FBC results
     const mainParams = fbcResults.filter((result) =>
       [
         "Hemoglobin",
@@ -399,152 +453,74 @@ export default function ReportDetailsPage() {
     );
   };
 
-  const renderRegularTestResults = (testCode: string, testResults: any[]) => {
-    const dataManager = DataManager.getInstance();
-    const testConfig = dataManager.getTestByCode(testCode);
-    const testName = testConfig ? testConfig.name : testCode;
-    const isESR = testCode === "ESR";
-    const isTSH = testCode === "TSH";
-    const hideReferenceRange = isESR || isTSH;
+const renderRegularTestResults = (testCode: string, testResults: any[]) => {
+  const testConfig = testConfigs[testCode];
+  const testName = testConfig ? testConfig.name : testCode;
+  const isESR = testCode === "ESR";
+  const isTSH = testCode === "TSH";
+  const hideReferenceRange = isESR || isTSH;
 
-    const hasGraph = testConfig?.hasGraph || false;
-    const isOGTT = testCode === "OGTT";
-    if (isOGTT && hasGraph) {
-      const fastingResult = testResults.find((r) =>
-        r.testName.includes("Fasting")
-      );
-      const oneHourResult = testResults.find((r) =>
-        r.testName.includes("1 Hour")
-      );
-      const twoHoursResult = testResults.find((r) =>
-        r.testName.includes("2 Hours")
-      );
+  return (
+    <div key={testCode}>
+      <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
+        {testName}
+      </h1>
+      <table className="w-full border-collapse">
+        <thead>
+          <tr className="border-b">
+            <th className="text-left p-4">Test</th>
+            <th className="text-left p-4">Value</th>
+            <th className="text-left p-4">Units</th>
+            {!hideReferenceRange && <th className="text-left p-4">Reference Range</th>}
+          </tr>
+        </thead>
+        <tbody>
+          {testResults.map((result, index) => {
+            const isQualitative = testConfig?.isQualitative || false;
 
-      return (
-        <div key={testCode} className="space-y-4">
-          <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
-            {testName}
-          </h1>
-
-       
-
-          {/* Then show the table */}
-          <table className="w-full border-collapse mt-4">
-            <thead>
-              <tr className="border-b">
-                <th className="text-left p-4">Test</th>
-                <th className="text-left p-4">Value</th>
-                <th className="text-left p-4">Units</th>
-                <th className="text-left p-4">Reference Range</th>
-              </tr>
-            </thead>
-            <tbody>
-              {testResults.map((result, index) => {
-                const displayName = result.testName.includes(" - ")
-                  ? result.testName.split(" - ")[1]
-                  : result.testName;
-                return (
-                  <tr key={`${testCode}-${index}`} className="border-b">
-                    <td className="p-4">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">{displayName}</span>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="font-semibold text-lg">
-                        {result.value}
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="font-semibold text-lg">{result.unit}</div>
-                    </td>
-                    <td className="p-4">
-                      <div className="font-semibold text-lg">
-                        {result.referenceRange}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-
-             {/* Show the graph */}
-          <OGTTGraph
-            fasting={fastingResult?.value || "0"}
-            afterOneHour={oneHourResult?.value || "0"}
-            afterTwoHours={twoHoursResult?.value || "0"}
-          />
-
-          <div className="mt-[5rem]">
-            <TestAdditionalDetails testCode={testCode} />
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div key={testCode}>
-        <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
-          {testName}
-        </h1>
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="border-b">
-              <th className="text-left p-4">Test</th>
-              <th className="text-left p-4">Value</th>
-              <th className="text-left p-4">Units</th>
-              {!isESR && <th className="text-left p-4">Reference Range</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {testResults.map((result, index) => {
-              const isQualitative = testConfig?.isQualitative || false;
-
-              const displayName = result.testName.includes(" - ")
-                ? result.testName.split(" - ")[1]
-                : result.testName;
-              return (
-                <tr key={`${testCode}-${index}`} className="border-b">
-                  <td className="p-4">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{displayName}</span>
-                    </div>
-                  </td>
+            const displayName = result.testName.includes(" - ")
+              ? result.testName.split(" - ")[1]
+              : result.testName;
+            return (
+              <tr key={`${testCode}-${index}`} className="border-b">
+                <td className="p-4">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">{displayName}</span>
+                  </div>
+                </td>
+                <td className="p-4">
+                  <div className="font-semibold text-lg">
+                    {result.value}
+                    {isQualitative && result.comments && (
+                      <span className="ml-2">({result.comments})</span>
+                    )}
+                  </div>
+                </td>
+                <td className="p-4">
+                  <div className="font-semibold text-lg">{result.unit}</div>
+                </td>
+                {!hideReferenceRange && (
                   <td className="p-4">
                     <div className="font-semibold text-lg">
-                      {result.value}
-                      {isQualitative && result.comments && (
-                        <span className="ml-2">({result.comments})</span>
-                      )}
+                      {result.referenceRange}
                     </div>
                   </td>
-                  <td className="p-4">
-                    <div className="font-semibold text-lg">{result.unit}</div>
-                  </td>
-                  {!hideReferenceRange && (
-                    <td className="p-4">
-                      <div className="font-semibold text-lg">
-                        {result.referenceRange}
-                      </div>
-                    </td>
-                  )}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    );
-  };
+                )}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
   const checkValueStatus = (value: string, referenceRange: string) => {
-    // Returns 'normal', 'low', or 'high'
     if (!value || !referenceRange) return "normal";
 
     const numValue = parseFloat(value);
     if (isNaN(numValue)) return "normal";
 
-    // Extract range like "12.0-16.0" or "4.0-11.0"
     const rangeMatch = referenceRange.match(/(\d+\.?\d*)-(\d+\.?\d*)/);
     if (!rangeMatch) return "normal";
 
@@ -581,7 +557,6 @@ export default function ReportDetailsPage() {
         @media print {
           body {
             font-size: 8px;
-            // font-family: Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
           }
@@ -600,7 +575,6 @@ export default function ReportDetailsPage() {
             size: A4;
           }
 
-          /* Hide header for print - letterhead will be used */
           [class*="CardHeader"] {
             display: none !important;
           }
@@ -614,36 +588,30 @@ export default function ReportDetailsPage() {
             display: none !important;
           }
 
-          /* Remove main card border and shadow */
           .print\\:shadow-none {
             box-shadow: none !important;
             border: none !important;
           }
 
-          /* Remove outer card styling */
           .max-w-4xl.mx-auto.print\\:max-w-none {
             border: none !important;
             box-shadow: none !important;
           }
 
-          /* Remove any container borders around patient section */
           .space-y-6 {
             border: none !important;
           }
 
-          /* Remove card content borders */
           [class*="CardContent"] {
             border: none !important;
           }
 
-          /* Keep patient info section border as is */
           .bg-gray-50.p-4.rounded-sm.border {
             background-color: #f9fafb !important;
             padding: 6px !important;
             margin-bottom: 8px !important;
           }
 
-          /* Section titles - reduced spacing */
           h3 {
             font-size: 11px;
             font-weight: bold;
@@ -652,7 +620,16 @@ export default function ReportDetailsPage() {
             color: #374151;
           }
 
-          /* FBC Title - center it with reduced margins */
+          h1.font-semibold.text-xl.text-center {
+            display: block !important;
+            font-size: 16px !important;
+            font-weight: 900 !important;
+            text-align: center !important;
+            margin-bottom: 8px !important;
+            border-bottom: 2px solid #000 !important;
+            padding-bottom: 4px !important;
+          }
+
           .border.rounded-lg .flex.items-center.gap-2 {
             justify-content: center !important;
             margin-bottom: 4px !important;
@@ -660,14 +637,12 @@ export default function ReportDetailsPage() {
             width: 100% !important;
           }
 
-          /* Hide the FBC badge completely - multiple selectors */
           .border.rounded-lg .flex.items-center.gap-2 > [class*="Badge"],
           .border.rounded-lg .flex.items-center.gap-2 > [class*="badge"],
           .border.rounded-lg .flex.items-center.gap-2 > *:first-child {
             display: none !important;
           }
 
-          /* Style only the Full Blood Count text span (not the badge) */
           .border.rounded-lg
             .flex.items-center.gap-2
             > span:not([class*="badge"]):not([class*="Badge"]) {
@@ -675,18 +650,10 @@ export default function ReportDetailsPage() {
             font-weight: 900 !important;
             text-align: center !important;
             background-color: #f3f4f6 !important;
-            // padding: 6px 12px !important;
             border-radius: 3px !important;
             letter-spacing: 0.5px !important;
           }
 
-          .border.rounded-lg
-            .flex.items-center.gap-2
-            > span:not([class*="badge"]):not([class*="Badge"])::after {
-            content: " ( FBC )" !important;
-          }
-
-          /* Tables - larger fonts for better readability */
           table {
             font-size: 14px;
             border-collapse: collapse;
@@ -695,8 +662,6 @@ export default function ReportDetailsPage() {
           }
           th,
           td {
-            // padding: 3px 5px;
-            // border: 1px solid #ccc;
             vertical-align: middle;
           }
           th {
@@ -707,17 +672,14 @@ export default function ReportDetailsPage() {
             padding: 0px !important;
           }
           td {
-            // font-size: 14px;
             font-family: Menlo, Monaco, Consolas, "Liberation Mono",
               "Courier New", monospace;
           }
 
-          /* Proper column alignment with consistent large fonts */
           th:first-child,
           td:first-child {
             text-align: left !important;
             width: 30%;
-            // font-size: 14px !important;
             padding: 0px !important;
           }
           th:nth-child(2),
@@ -725,32 +687,27 @@ export default function ReportDetailsPage() {
             text-align: center !important;
             width: 15%;
             font-weight: bold !important;
-            // font-size: 14px !important;
             padding: 0px !important;
           }
           th:nth-child(3),
           td:nth-child(3) {
             text-align: center !important;
             width: 15%;
-            // font-size: 14px !important;
             padding: 0px !important;
           }
           th:nth-child(4),
           td:nth-child(4) {
             text-align: center !important;
             width: 25%;
-            // font-size: 14px !important;
             padding: 0px !important;
           }
           th:nth-child(5),
           td:nth-child(5) {
             text-align: center !important;
             width: 15%;
-            // font-size: 14px !important;
             padding: 0px !important;
           }
 
-          /* Show section sub-headers with reduced margins */
           .border.rounded-lg h4 {
             display: block !important;
             font-size: 16px !important;
@@ -763,39 +720,27 @@ export default function ReportDetailsPage() {
             text-align: left !important;
           }
 
-          /* Keep the first table header, hide only the subsequent ones */
-          /* Hide 2nd table header (Differential Count) */
           .border.rounded-lg .mb-6:nth-child(4) table thead {
             display: none !important;
           }
 
-          /* Hide 3rd table header (Absolute Count) */
           .border.rounded-lg .mb-6:nth-child(6) table thead {
             display: none !important;
           }
 
-          /* More specific targeting based on structure after title */
           .border.rounded-lg .mb-6 + hr + .mb-6 table thead,
           .border.rounded-lg .mb-6 + hr + .mb-6 + hr + .mb-6 table thead {
             display: none !important;
           }
 
-          /* Hide the "Test Results:" heading */
-          .space-y-6 > div > h3 {
-            display: none !important;
-          }
-
-          /* Remove separators between sections */
           .border.rounded-lg hr {
             display: none !important;
           }
 
-          /* Remove spacing between table sections */
           .border.rounded-lg .mb-6:not(:first-child) {
             margin-bottom: 0 !important;
           }
 
-          /* FBC sections - remove outer border and reduce spacing */
           .border.rounded-lg {
             border: none !important;
             border-radius: 0 !important;
@@ -804,7 +749,6 @@ export default function ReportDetailsPage() {
             background: transparent !important;
           }
 
-          /* Badge styling - larger for better visibility */
           .badge,
           [class*="badge"] {
             font-size: 14px !important;
@@ -815,7 +759,6 @@ export default function ReportDetailsPage() {
             border-radius: 3px !important;
           }
 
-          /* Status badges - larger and more visible */
           [class*="bg-red"],
           [class*="destructive"] {
             background-color: #ef4444 !important;
@@ -826,7 +769,6 @@ export default function ReportDetailsPage() {
             border-radius: 3px !important;
           }
 
-          /* Labels and values */
           .text-muted-foreground {
             color: #6b7280 !important;
             font-size: 8px !important;
@@ -837,7 +779,6 @@ export default function ReportDetailsPage() {
             font-weight: bold !important;
           }
 
-          /* Separators - minimal spacing */
           hr,
           .border-t,
           .border-b {
@@ -845,7 +786,6 @@ export default function ReportDetailsPage() {
             margin: 1px 0 !important;
           }
 
-          /* Footer styling */
           .text-center.text-sm.text-muted-foreground {
             font-size: 8px !important;
             color: #9ca3af !important;
@@ -853,14 +793,21 @@ export default function ReportDetailsPage() {
             padding-top: 8px !important;
             border-top: 1px solid #e0e0e0 !important;
           }
+
+          .recharts-responsive-container {
+            page-break-inside: avoid !important;
+            display: block !important;
+            margin-top: 20px !important;
+            margin-bottom: 20px !important;
+          }
+
+          .space-y-4 {
+            display: block !important;
+          }
         }
-        /* OGTT Graph styles */
-        .recharts-responsive-container {
-          page-break-inside: avoid !important;
-        }
+}
       `}</style>
       <div className="space-y-6">
-        {/* Header */}
         <div className="flex items-center gap-4 no-print">
           <Button asChild variant="outline" size="icon">
             <Link href="/reports">
@@ -882,14 +829,13 @@ export default function ReportDetailsPage() {
               <Download className="h-4 w-4 mr-2" />
               Download PDF
             </Button>
-            <Button variant="outline">
+            {/* <Button variant="outline">
               <Edit className="h-4 w-4 mr-2" />
               Edit
-            </Button>
+            </Button> */}
           </div>
         </div>
 
-        {/* Report Content */}
         <Card className="print:shadow-none max-w-4xl mx-auto print:max-w-none print-content">
           <CardHeader className="pb-6 border-b-2 border-gray-300 display">
             <div className="flex items-start justify-between">
@@ -915,10 +861,9 @@ export default function ReportDetailsPage() {
           </CardHeader>
 
           <CardContent className="space-y-3 p-3">
-            {/* Patient Information - match PDF section styling */}
             <div className="bg-gray-50">
               <div className="space-y-2 border-t-2 border-black">
-                <div className="grid grid-cols-2 gap-8">
+                <div className="grid grid-cols-2">
                   <div className="flex">
                     <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">
                       Patient Name
@@ -936,7 +881,7 @@ export default function ReportDetailsPage() {
                     </span>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-8">
+                <div className="grid grid-cols-2">
                   <div className="flex">
                     <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">
                       Age
@@ -954,7 +899,7 @@ export default function ReportDetailsPage() {
                     </span>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-8">
+                <div className="grid grid-cols-2">
                   <div className="flex">
                     <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">
                       Gender
@@ -973,7 +918,7 @@ export default function ReportDetailsPage() {
                     </span>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-8">
+                <div className="grid grid-cols-2">
                   <div className="flex">
                     <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">
                       Phone
@@ -995,10 +940,8 @@ export default function ReportDetailsPage() {
               </div>
             </div>
 
-            {/* Test Results */}
             <div>{renderTestResults(report.results)}</div>
 
-            {/* Doctor's Remarks */}
             {report.doctorRemarks && (
               <>
                 <Separator />
@@ -1009,24 +952,9 @@ export default function ReportDetailsPage() {
               </>
             )}
 
-            {/* Footer */}
-
-            {/* <div className="text-center text-sm text-muted-foreground space-y-2 flex-1"> */}
             <p className="font-normal text-center text-lg text-black">
               -- End of Report --
             </p>
-
-            {/* QR Code for download */}
-            {/* <div className="flex-shrink-0">
-                <ReportQRCode
-                  reportId={report.id}
-                  patientName={report.patientName}
-                  size={80}
-                  showLabel={true}
-                  className="print:block"
-                />
-              </div> */}
-            {/* </div> */}
           </CardContent>
         </Card>
       </div>
