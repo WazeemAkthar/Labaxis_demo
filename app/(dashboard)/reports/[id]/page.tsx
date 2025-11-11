@@ -570,7 +570,8 @@ export default function ReportDetailsPage() {
     const isESR = testCode === "ESR";
     const isTSH = testCode === "TSH";
     const isHBA1C = testCode === "HBA1C";
-    const hideReferenceRange = isESR || isTSH || isHBA1C;
+    const isBUN = testCode === "BUN";
+    const hideReferenceRange = isESR || isTSH || isHBA1C || isBUN;
 
     return (
       <div key={testCode}>

@@ -468,7 +468,7 @@ export class DataManager {
         estimatedCost: 105.0,
         unit: "mg/dL",
         referenceRange: {
-          "Blood Urea Nitrogen (BUN)": "7.0 - 20.0",
+          BUN: " ",
         },
         category: "Biochemistry",
       },
