@@ -17,22 +17,22 @@ export const OGTTGraph: React.FC<OGTTGraphProps> = ({ fasting, afterOneHour, aft
     { 
       time: 'Fasting', 
       findings: fastingVal,
-      minRange: 70,
-      maxRange: 110,
+      minRange: 60,
+      maxRange: 115,
       label: 0
     },
     { 
       time: '1', 
       findings: oneHourVal,
       minRange: 90,
-      maxRange: 170,
+      maxRange: 180,
       label: 1
     },
     { 
       time: '2', 
       findings: twoHourVal,
       minRange: 80,
-      maxRange: 160,
+      maxRange: 140,
       label: 2
     }
   ];

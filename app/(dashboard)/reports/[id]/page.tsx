@@ -164,7 +164,9 @@ const renderTestResults = (results: any[]) => {
           return <div key={testCode}>{renderUFRResults(resultsArray)}</div>;
         } else if (testCode === "OGTT") {
           return <div key={testCode}>{renderOGTTResults(resultsArray)}</div>;
-        } else {
+        } else if (testCode === "PPBS") {  // Add this condition
+        return <div key={testCode}>{renderPPBSResults(resultsArray)}</div>;
+      } else {
           return (
             <div key={testCode}>
               {renderRegularTestResults(testCode, resultsArray)}
@@ -252,6 +254,47 @@ const renderOGTTResults = (ogttResults: any[]) => {
           />
         </div>
       )}
+    </div>
+  );
+};
+
+const renderPPBSResults = (ppbsResults: any[]) => {
+  console.log("=== RENDERING PPBS RESULTS ===");
+  console.log("PPBS Results:", ppbsResults);
+
+  return (
+    <div key="PPBS" className="border rounded-lg p-6">
+      <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
+        Post Prandial Blood Sugar
+      </h1>
+      <table className="w-full border-collapse">
+        <thead>
+          <tr className="border-b">
+            <th className="text-left p-4">Description</th>
+            <th className="text-left p-4">Result</th>
+            <th className="text-left p-4">Units</th>
+            <th className="text-left p-4">Reference Range</th>
+          </tr>
+        </thead>
+        <tbody>
+          {ppbsResults.map((result, index) => (
+            <tr key={index} className="border-b">
+              <td className="p-4">
+                <div className="font-medium">{result.testName}</div>
+              </td>
+              <td className="p-4">
+                <div className="font-semibold text-lg">{result.value}</div>
+              </td>
+              <td className="p-4">
+                <div className="font-semibold text-lg">{result.unit}</div>
+              </td>
+              <td className="p-4">
+                <div className="font-semibold text-lg">{result.referenceRange}</div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
@@ -458,7 +501,8 @@ const renderRegularTestResults = (testCode: string, testResults: any[]) => {
   const testName = testConfig ? testConfig.name : testCode;
   const isESR = testCode === "ESR";
   const isTSH = testCode === "TSH";
-  const hideReferenceRange = isESR || isTSH;
+  const isHBA1C = testCode === "HBA1C";
+  const hideReferenceRange = isESR || isTSH || isHBA1C;
 
   return (
     <div key={testCode}>
