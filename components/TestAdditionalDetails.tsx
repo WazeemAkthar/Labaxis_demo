@@ -136,63 +136,76 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
       case "glycated hemoglobin":
       case "glycosylated haemoglobin":
         return {
-          title: "HbA1c Interpretation Guidelines",
+          title: "HbA1c Reference Values (According to NGSP/DCCT Guidelines)",
           content: (
             <div className="space-y-4">
-              <div>
-                <p className="text-sm mb-3 leading-relaxed">
-                  HbA1c reflects average blood glucose levels over the past 2-3
-                  months. It is a key indicator for diabetes management and
-                  cardiovascular risk assessment.
-                </p>
-              </div>
+              <p className="text-sm mb-3 leading-relaxed">
+                HbA1c reflects the average blood glucose levels over the past
+                2–3 months. It is an essential marker for diabetes diagnosis and
+                monitoring glycemic control.
+              </p>
 
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-gray-300 text-sm">
                   <thead>
                     <tr className="bg-gray-50">
                       <th className="border border-gray-300 p-2 text-left font-semibold">
-                        HbA1c Level (%)
+                        Category
                       </th>
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
-                        Interpretation
-                      </th>
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
-                        Recommendation
+                      <th className="border border-gray-300 p-2 text-center font-semibold">
+                        HbA1c (%)
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="border border-gray-300 p-2">&lt;5.7%</td>
-                      <td className="border border-gray-300 p-2">Normal</td>
+                      <td className="border border-gray-300 p-2 font-medium">
+                        Non-Diabetics
+                      </td>
+                      <td className="border border-gray-300 p-2 text-center">
+                        4.6 – 6.2
+                      </td>
+                    </tr>
+
+                    <tr className="bg-gray-100">
+                      <td
+                        className="border border-gray-300 p-2 font-semibold"
+                        colSpan={2}
+                      >
+                        Diabetics
+                      </td>
+                    </tr>
+
+                    <tr>
                       <td className="border border-gray-300 p-2">
-                        Continue healthy lifestyle
+                        Good Control
+                      </td>
+                      <td className="border border-gray-300 p-2 text-center">
+                        &lt; 7.0
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">5.7-6.4%</td>
                       <td className="border border-gray-300 p-2">
-                        Prediabetes
+                        Moderate Control
                       </td>
-                      <td className="border border-gray-300 p-2">
-                        Lifestyle modification, regular monitoring
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-300 p-2">≥6.5%</td>
-                      <td className="border border-gray-300 p-2">Diabetes</td>
-                      <td className="border border-gray-300 p-2">
-                        Medical management required
+                      <td className="border border-gray-300 p-2 text-center">
+                        7.0 – 8.0
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">&lt;7.0%</td>
                       <td className="border border-gray-300 p-2">
-                        Good control (Adults)
+                        Poor Control
                       </td>
+                      <td className="border border-gray-300 p-2 text-center">
+                        8.0 – 10.0
+                      </td>
+                    </tr>
+                    <tr>
                       <td className="border border-gray-300 p-2">
-                        Target for most adults with diabetes
+                        Very Poor Control
+                      </td>
+                      <td className="border border-gray-300 p-2 text-center">
+                        &gt; 10.0
                       </td>
                     </tr>
                   </tbody>
@@ -206,105 +219,113 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
       case "tsh":
       case "thyroid profile":
         return {
-          title: "Thyroid Function Interpretation",
+          title: "TSH Normal Reference Ranges",
           content: (
             <div className="space-y-4">
-              <div>
-                <p className="text-sm mb-3 leading-relaxed">
-                  Thyroid function tests help evaluate thyroid gland activity
-                  and diagnose thyroid disorders. TSH is the primary screening
-                  test, with T3 and T4 providing additional information about
-                  thyroid hormone levels.
-                </p>
-              </div>
+              <p className="text-sm mb-3 leading-relaxed">
+                The following table shows the expected TSH (Thyroid-Stimulating
+                Hormone) reference ranges by age group and pregnancy status.
+              </p>
 
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-gray-300 text-sm">
                   <thead>
                     <tr className="bg-gray-50">
                       <th className="border border-gray-300 p-2 text-left font-semibold">
-                        Condition
+                        AGE
                       </th>
                       <th className="border border-gray-300 p-2 text-center font-semibold">
-                        TSH
-                      </th>
-                      <th className="border border-gray-300 p-2 text-center font-semibold">
-                        T4
-                      </th>
-                      <th className="border border-gray-300 p-2 text-center font-semibold">
-                        T3
+                        NORMAL RANGE (µIU/ml)
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="border border-gray-300 p-2 font-medium">
-                        Normal
+                      <td className="border border-gray-300 p-2">
+                        &lt; 3 Days
                       </td>
                       <td className="border border-gray-300 p-2 text-center">
-                        Normal
-                      </td>
-                      <td className="border border-gray-300 p-2 text-center">
-                        Normal
-                      </td>
-                      <td className="border border-gray-300 p-2 text-center">
-                        Normal
+                        0.68 – 29.0
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2 font-medium">
-                        Primary Hypothyroidism
+                      <td className="border border-gray-300 p-2">
+                        4 – 30 Days
                       </td>
                       <td className="border border-gray-300 p-2 text-center">
-                        High
-                      </td>
-                      <td className="border border-gray-300 p-2 text-center">
-                        Low
-                      </td>
-                      <td className="border border-gray-300 p-2 text-center">
-                        Low
+                        0.51 – 11.0
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2 font-medium">
-                        Subclinical Hypothyroidism
+                      <td className="border border-gray-300 p-2">
+                        1 – 12 Months
                       </td>
                       <td className="border border-gray-300 p-2 text-center">
-                        High
-                      </td>
-                      <td className="border border-gray-300 p-2 text-center">
-                        Normal
-                      </td>
-                      <td className="border border-gray-300 p-2 text-center">
-                        Normal
+                        0.55 – 6.7
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2 font-medium">
-                        Primary Hyperthyroidism
+                      <td className="border border-gray-300 p-2">
+                        1 – 6 Years
                       </td>
                       <td className="border border-gray-300 p-2 text-center">
-                        Low
-                      </td>
-                      <td className="border border-gray-300 p-2 text-center">
-                        High
-                      </td>
-                      <td className="border border-gray-300 p-2 text-center">
-                        High
+                        0.45 – 6.0
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2 font-medium">
-                        Subclinical Hyperthyroidism
+                      <td className="border border-gray-300 p-2">
+                        6 – 12 Years
                       </td>
                       <td className="border border-gray-300 p-2 text-center">
-                        Low
+                        0.61 – 5.2
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        12 – 16 Years
                       </td>
                       <td className="border border-gray-300 p-2 text-center">
-                        Normal
+                        0.36 – 4.7
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">Adults</td>
+                      <td className="border border-gray-300 p-2 text-center">
+                        0.27 – 4.2
+                      </td>
+                    </tr>
+
+                    {/* Pregnancy Section */}
+                    <tr className="bg-gray-100">
+                      <td
+                        className="border border-gray-300 p-2 font-semibold"
+                        colSpan={2}
+                      >
+                        Pregnancy
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        1st Trimester
                       </td>
                       <td className="border border-gray-300 p-2 text-center">
-                        Normal
+                        0.33 – 4.59
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        2nd Trimester
+                      </td>
+                      <td className="border border-gray-300 p-2 text-center">
+                        0.35 – 4.10
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        3rd Trimester
+                      </td>
+                      <td className="border border-gray-300 p-2 text-center">
+                        0.21 – 3.15
                       </td>
                     </tr>
                   </tbody>
@@ -1296,65 +1317,49 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                   <tbody>
                     <tr>
                       <td className="border border-gray-300 p-2">Newborn</td>
-                      <td className="border border-gray-300 p-2">
-                        2.8 - 5.2
-                      </td>
+                      <td className="border border-gray-300 p-2">2.8 - 5.2</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         6 days - 3 months
                       </td>
-                      <td className="border border-gray-300 p-2">
-                        2.9 - 5.1
-                      </td>
+                      <td className="border border-gray-300 p-2">2.9 - 5.1</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         4 - 6 months
                       </td>
-                      <td className="border border-gray-300 p-2">
-                        2.9 - 4.7
-                      </td>
+                      <td className="border border-gray-300 p-2">2.9 - 4.7</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         7 - 11 months
                       </td>
-                      <td className="border border-gray-300 p-2">
-                        2.9 - 4.7
-                      </td>
+                      <td className="border border-gray-300 p-2">2.9 - 4.7</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         1 - 6 years
                       </td>
-                      <td className="border border-gray-300 p-2">
-                        2.9 - 4.4
-                      </td>
+                      <td className="border border-gray-300 p-2">2.9 - 4.4</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         7 - 11 years
                       </td>
-                      <td className="border border-gray-300 p-2">
-                        3.0 - 4.2
-                      </td>
+                      <td className="border border-gray-300 p-2">3.0 - 4.2</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         12 - 20 years
                       </td>
-                      <td className="border border-gray-300 p-2">
-                        3.1 - 4.3
-                      </td>
+                      <td className="border border-gray-300 p-2">3.1 - 4.3</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         Adults (21+ years)
                       </td>
-                      <td className="border border-gray-300 p-2">
-                        2.9 - 4.3
-                      </td>
+                      <td className="border border-gray-300 p-2">2.9 - 4.3</td>
                     </tr>
                   </tbody>
                 </table>

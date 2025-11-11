@@ -28,6 +28,7 @@ export interface TestCatalogItem {
   isQualitative?: boolean;
   unitPerTest?: Record<string, string>;
   hasGraph?: boolean;
+  hasMealOptions?: boolean;
 }
 
 export interface InvoiceLineItem {
@@ -199,7 +200,7 @@ export class DataManager {
         estimatedCost: 800.0,
         unit: "%",
         referenceRange: {
-          HbA1c: "<5.7% (Normal), 5.7-6.4% (Prediabetes), ≥6.5% (Diabetes)",
+          HbA1c: " ",
         },
         category: "Biochemistry",
       },
@@ -423,6 +424,7 @@ export class DataManager {
           "Post Prandial": "<140",
         },
         category: "Biochemistry",
+         hasMealOptions: true,
       },
       {
         code: "UA",

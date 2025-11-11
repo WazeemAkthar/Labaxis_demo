@@ -36,6 +36,7 @@ import Link from "next/link";
 import { UFRReportCard } from "@/components/ufr-report-card";
 import { LipidProfileReportCard } from "@/components/lipid-profile-report-card";
 import { OGTTGraph } from "@/components/ogtt-graph";
+import { PPBSReportCard } from "@/components/ppbs-report-card";
 
 // Helper function to extract unit from reference range
 function getUnitFromRange(range: string): string {
@@ -127,6 +128,7 @@ export default function NewReportPage() {
   const [lipidValues, setLipidValues] = useState<any>(null);
   const [ufrValues, setUfrValues] = useState<any>(null);
   const [ogttValues, setOgttValues] = useState<any>(null);
+  const [ppbsValues, setPpbsValues] = useState<any>(null);
 
   const hasUFRTest = useDirectTestSelection
     ? selectedTests.includes("UFR")
@@ -142,6 +144,11 @@ export default function NewReportPage() {
     ? selectedTests.includes("OGTT")
     : selectedInvoice?.lineItems.some((item) => item.testCode === "OGTT") ||
       false;
+
+      const hasPPBSTest = useDirectTestSelection
+  ? selectedTests.includes("PPBS")
+  : selectedInvoice?.lineItems.some((item) => item.testCode === "PPBS") ||
+    false;
 
   useEffect(() => {
     if (authLoading) return;
@@ -175,6 +182,7 @@ export default function NewReportPage() {
     setLipidValues(null);
     setUfrValues(null);
     setOgttValues(null);
+    setPpbsValues(null);
   };
 
   const handleInvoiceChange = async (invoiceId: string) => {
@@ -184,6 +192,7 @@ export default function NewReportPage() {
     setLipidValues(null);
     setUfrValues(null);
     setOgttValues(null);
+    setPpbsValues(null);
 
     if (invoice) {
       // Initialize results from invoice line items
@@ -201,7 +210,8 @@ export default function NewReportPage() {
           item.testCode === "FBC" ||
           item.testCode === "LIPID" ||
           item.testCode === "UFR" ||
-          item.testCode === "OGTT"
+          item.testCode === "OGTT" ||
+          item.testCode === "PPBS"
         ) {
           return;
         }
@@ -319,7 +329,7 @@ export default function NewReportPage() {
       const referenceRanges = test?.referenceRange || {};
 
       // Handle FBC, LIPID, UFR, OGTT specially - don't create individual result entries
-      if (testCode === "FBC" || testCode === "LIPID" || testCode === "UFR" || testCode === "OGTT") {
+      if (testCode === "FBC" || testCode === "LIPID" || testCode === "UFR" || testCode === "OGTT" || testCode === "PPBS") {
         return;
       }
 
@@ -787,6 +797,19 @@ if (ogttValues && hasOGTTTest) {
       comments: "",
     });
   }
+  // Add PPBS results if available
+if (ppbsValues && hasPPBSTest && ppbsValues.value && ppbsValues.value.trim() !== "") {
+  const referenceRange = ppbsValues.hourType === "After 1 Hour" ? "< 160" : "< 140";
+  
+  allResults.push({
+    testCode: "PPBS",
+    testName: `Post Prandial Blood Sugar (${ppbsValues.mealType} / ${ppbsValues.hourType})`,
+    value: ppbsValues.value,
+    unit: "mg/dL",
+    referenceRange: referenceRange,
+    comments: "",
+  });
+}
   
   console.log("OGTT results to save:", ogttResultsArray);
 
@@ -820,6 +843,12 @@ if (ogttValues && hasOGTTTest) {
   }
 };
 
+const hasPPBSResults =
+  ppbsValues &&
+  hasPPBSTest &&
+  ppbsValues.value &&
+  ppbsValues.value.trim() !== "";
+
   const isFormValid = () => {
     const hasRegularResults = results.some((r) => r.value.trim() !== "");
     const hasFBC = useDirectTestSelection
@@ -851,11 +880,13 @@ if (ogttValues && hasOGTTTest) {
         hasLipidResults ||
         hasPathologyResults ||
         hasUFRResults ||
-        hasOGTTResults) &&
+        hasOGTTResults ||
+      hasPPBSResults ) &&
       reviewedBy.trim() !== ""
     );
   };
 
+  
   // Check if FBC test is selected
   const hasFBCTest = useDirectTestSelection
     ? selectedTests.includes("FBC")
@@ -1123,6 +1154,8 @@ if (ogttValues && hasOGTTTest) {
                 </CardContent>
               </Card>
             )}
+
+            {hasPPBSTest && <PPBSReportCard onValuesChange={setPpbsValues} />}
 
             {/* Other Tests */}
             {results.length > 0 && (
