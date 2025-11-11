@@ -37,6 +37,7 @@ import { UFRReportCard } from "@/components/ufr-report-card";
 import { LipidProfileReportCard } from "@/components/lipid-profile-report-card";
 import { OGTTGraph } from "@/components/ogtt-graph";
 import { PPBSReportCard } from "@/components/ppbs-report-card";
+import { BSSReportCard } from "@/components/bss-report-card";
 
 // Helper function to extract unit from reference range
 function getUnitFromRange(range: string): string {
@@ -129,6 +130,7 @@ export default function NewReportPage() {
   const [ufrValues, setUfrValues] = useState<any>(null);
   const [ogttValues, setOgttValues] = useState<any>(null);
   const [ppbsValues, setPpbsValues] = useState<any>(null);
+  const [bssValues, setBssValues] = useState<any[]>([]);
 
   const hasUFRTest = useDirectTestSelection
     ? selectedTests.includes("UFR")
@@ -148,6 +150,11 @@ export default function NewReportPage() {
       const hasPPBSTest = useDirectTestSelection
   ? selectedTests.includes("PPBS")
   : selectedInvoice?.lineItems.some((item) => item.testCode === "PPBS") ||
+    false;
+
+    const hasBSSTest = useDirectTestSelection
+  ? selectedTests.includes("BSS")
+  : selectedInvoice?.lineItems.some((item) => item.testCode === "BSS") ||
     false;
 
   useEffect(() => {
@@ -183,6 +190,7 @@ export default function NewReportPage() {
     setUfrValues(null);
     setOgttValues(null);
     setPpbsValues(null);
+    setBssValues([]);
   };
 
   const handleInvoiceChange = async (invoiceId: string) => {
@@ -193,6 +201,7 @@ export default function NewReportPage() {
     setUfrValues(null);
     setOgttValues(null);
     setPpbsValues(null);
+    setBssValues([]);
 
     if (invoice) {
       // Initialize results from invoice line items
@@ -211,7 +220,8 @@ export default function NewReportPage() {
           item.testCode === "LIPID" ||
           item.testCode === "UFR" ||
           item.testCode === "OGTT" ||
-          item.testCode === "PPBS"
+          item.testCode === "PPBS" ||
+          item.testCode === "BSS"
         ) {
           return;
         }
@@ -810,6 +820,24 @@ if (ppbsValues && hasPPBSTest && ppbsValues.value && ppbsValues.value.trim() !==
     comments: "",
   });
 }
+
+// Add BSS results if available
+if (bssValues && hasBSSTest && bssValues.length > 0) {
+  bssValues.forEach((entry) => {
+    if (entry.value && entry.value.trim() !== "") {
+      const referenceRange = entry.hourType === "After 1 Hour" ? "< 160" : "< 140";
+      
+      allResults.push({
+        testCode: "BSS",
+        testName: `Post Prandial Blood Sugar (${entry.mealType} / ${entry.hourType})`,
+        value: entry.value,
+        unit: "mg/dL",
+        referenceRange: referenceRange,
+        comments: "",
+      });
+    }
+  });
+}
   
   console.log("OGTT results to save:", ogttResultsArray);
 
@@ -849,6 +877,12 @@ const hasPPBSResults =
   ppbsValues.value &&
   ppbsValues.value.trim() !== "";
 
+  const hasBSSResults =
+  bssValues &&
+  hasBSSTest &&
+  bssValues.length > 0 &&
+  bssValues.some((entry) => entry.value && entry.value.trim() !== "");
+
   const isFormValid = () => {
     const hasRegularResults = results.some((r) => r.value.trim() !== "");
     const hasFBC = useDirectTestSelection
@@ -881,7 +915,8 @@ const hasPPBSResults =
         hasPathologyResults ||
         hasUFRResults ||
         hasOGTTResults ||
-      hasPPBSResults ) &&
+      hasPPBSResults ||
+    hasBSSResults ) &&
       reviewedBy.trim() !== ""
     );
   };
@@ -1156,6 +1191,8 @@ const hasPPBSResults =
             )}
 
             {hasPPBSTest && <PPBSReportCard onValuesChange={setPpbsValues} />}
+
+            {hasBSSTest && <BSSReportCard onValuesChange={setBssValues} />}
 
             {/* Other Tests */}
             {results.length > 0 && (

@@ -7,7 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Download, Printer as Print, Edit } from "lucide-react";
-import { DataManager, type Report, type TestCatalogItem } from "@/lib/data-manager";
+import {
+  DataManager,
+  type Report,
+  type TestCatalogItem,
+} from "@/lib/data-manager";
 import { generateReportPDF } from "@/lib/pdf-generator";
 import { useAuth } from "@/components/auth-provider";
 import Link from "next/link";
@@ -24,7 +28,9 @@ export default function ReportDetailsPage() {
   const [report, setReport] = useState<Report | null>(null);
   const [patient, setPatient] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [testConfigs, setTestConfigs] = useState<Record<string, TestCatalogItem>>({});
+  const [testConfigs, setTestConfigs] = useState<
+    Record<string, TestCatalogItem>
+  >({});
 
   useEffect(() => {
     if (authLoading) return;
@@ -48,13 +54,17 @@ export default function ReportDetailsPage() {
       setReport(reportData);
 
       // Get patient data
-      const patientData = await dataManager.getPatientById(reportData.patientId);
+      const patientData = await dataManager.getPatientById(
+        reportData.patientId
+      );
       setPatient(patientData);
 
       // FIXED: Load all test configurations
       const configs: Record<string, TestCatalogItem> = {};
-      const uniqueTestCodes = [...new Set(reportData.results.map(r => r.testCode))];
-      
+      const uniqueTestCodes = [
+        ...new Set(reportData.results.map((r) => r.testCode)),
+      ];
+
       for (const testCode of uniqueTestCodes) {
         const config = await dataManager.getTestByCode(testCode);
         if (config) {
@@ -136,168 +146,226 @@ export default function ReportDetailsPage() {
     }
   };
 
-const renderTestResults = (results: any[]) => {
-  console.log("=== RENDERING ALL TEST RESULTS ===");
-  console.log("Total results:", results.length);
-  console.log("Results:", results);
-  
-  const groupedResults = results.reduce((groups, result) => {
-    const testCode = result.testCode;
-    if (!groups[testCode]) {
-      groups[testCode] = [];
-    }
-    groups[testCode].push(result);
-    return groups;
-  }, {} as Record<string, any[]>);
+  const renderTestResults = (results: any[]) => {
+    console.log("=== RENDERING ALL TEST RESULTS ===");
+    console.log("Total results:", results.length);
+    console.log("Results:", results);
 
-  console.log("Grouped results:", groupedResults);
+    const groupedResults = results.reduce((groups, result) => {
+      const testCode = result.testCode;
+      if (!groups[testCode]) {
+        groups[testCode] = [];
+      }
+      groups[testCode].push(result);
+      return groups;
+    }, {} as Record<string, any[]>);
 
-  return (
-    <div className="space-y-6">
-      {Object.entries(groupedResults).map(([testCode, testResults]) => {
-        console.log(`Rendering testCode: ${testCode}, results:`, testResults);
-        
-        const resultsArray = testResults as any[];
-        if (testCode === "FBC") {
-          return <div key={testCode}>{renderFBCResults(resultsArray)}</div>;
-        } else if (testCode === "UFR") {
-          return <div key={testCode}>{renderUFRResults(resultsArray)}</div>;
-        } else if (testCode === "OGTT") {
-          return <div key={testCode}>{renderOGTTResults(resultsArray)}</div>;
-        } else if (testCode === "PPBS") {  // Add this condition
-        return <div key={testCode}>{renderPPBSResults(resultsArray)}</div>;
-      } else {
-          return (
-            <div key={testCode}>
-              {renderRegularTestResults(testCode, resultsArray)}
-              <div className="mt-[5rem]">
-                <TestAdditionalDetails testCode={testCode} />
+    console.log("Grouped results:", groupedResults);
+
+    return (
+      <div className="space-y-6">
+        {Object.entries(groupedResults).map(([testCode, testResults]) => {
+          console.log(`Rendering testCode: ${testCode}, results:`, testResults);
+
+          const resultsArray = testResults as any[];
+          if (testCode === "FBC") {
+            return <div key={testCode}>{renderFBCResults(resultsArray)}</div>;
+          } else if (testCode === "UFR") {
+            return <div key={testCode}>{renderUFRResults(resultsArray)}</div>;
+          } else if (testCode === "OGTT") {
+            return <div key={testCode}>{renderOGTTResults(resultsArray)}</div>;
+          } else if (testCode === "PPBS") {
+            return <div key={testCode}>{renderPPBSResults(resultsArray)}</div>;
+          } else if (testCode === "BSS") {
+            return <div key={testCode}>{renderBSSResults(resultsArray)}</div>;
+          } else {
+            return (
+              <div key={testCode}>
+                {renderRegularTestResults(testCode, resultsArray)}
+                <div className="mt-[5rem]">
+                  <TestAdditionalDetails testCode={testCode} />
+                </div>
               </div>
-            </div>
-          );
-        }
-      })}
-    </div>
-  );
-};
-
-const renderOGTTResults = (ogttResults: any[]) => {
-  console.log("=== RENDERING OGTT RESULTS ===");
-  console.log("OGTT Results:", ogttResults);
-  
-  const fastingResult = ogttResults.find((r) =>
-    r.testName.includes("Fasting")
-  );
-  const oneHourResult = ogttResults.find((r) =>
-    r.testName.includes("1 Hour")
-  );
-  const twoHoursResult = ogttResults.find((r) =>
-    r.testName.includes("2 Hour")
-  );
-
-  console.log("Fasting:", fastingResult);
-  console.log("1 Hour:", oneHourResult);
-  console.log("2 Hours:", twoHoursResult);
-
-  const fastingValue = fastingResult?.value || "";
-  const oneHourValue = oneHourResult?.value || "";
-  const twoHoursValue = twoHoursResult?.value || "";
-
-  console.log("Values extracted - Fasting:", fastingValue, "1H:", oneHourValue, "2H:", twoHoursValue);
-
-  return (
-    <div key="OGTT" className="border rounded-lg p-6 ogtt-section">
-      <div className="flex items-center gap-2 mb-6">
-        <Badge variant="outline" className="text-lg px-3 py-1">
-          OGTT
-        </Badge>
-        <span className="font-semibold text-lg">Oral Glucose Tolerance Test</span>
+            );
+          }
+        })}
       </div>
+    );
+  };
 
-      <div className="overflow-x-auto mb-6">
-        <table className="w-full text-sm">
+  const renderOGTTResults = (ogttResults: any[]) => {
+    console.log("=== RENDERING OGTT RESULTS ===");
+    console.log("OGTT Results:", ogttResults);
+
+    const fastingResult = ogttResults.find((r) =>
+      r.testName.includes("Fasting")
+    );
+    const oneHourResult = ogttResults.find((r) =>
+      r.testName.includes("1 Hour")
+    );
+    const twoHoursResult = ogttResults.find((r) =>
+      r.testName.includes("2 Hour")
+    );
+
+    console.log("Fasting:", fastingResult);
+    console.log("1 Hour:", oneHourResult);
+    console.log("2 Hours:", twoHoursResult);
+
+    const fastingValue = fastingResult?.value || "";
+    const oneHourValue = oneHourResult?.value || "";
+    const twoHoursValue = twoHoursResult?.value || "";
+
+    console.log(
+      "Values extracted - Fasting:",
+      fastingValue,
+      "1H:",
+      oneHourValue,
+      "2H:",
+      twoHoursValue
+    );
+
+    return (
+      <div key="OGTT" className="border rounded-lg p-6 ogtt-section">
+        <div className="flex items-center gap-2 mb-6">
+          <Badge variant="outline" className="text-lg px-3 py-1">
+            OGTT
+          </Badge>
+          <span className="font-semibold text-lg">
+            Oral Glucose Tolerance Test
+          </span>
+        </div>
+
+        <div className="overflow-x-auto mb-6">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-collapse border-t-2 border-b-2 border-gray-900">
+                <th className="text-left font-semibold">Test</th>
+                <th className="text-right font-semibold">Result</th>
+                <th className="text-right font-semibold">Units</th>
+                <th className="text-right font-semibold">Reference Range</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ogttResults.map((result, index) => {
+                const displayName = result.testName
+                  .replace("Glucose", "")
+                  .trim();
+                return (
+                  <tr key={index} className="border-0 font-mono p-0 table-row">
+                    <td className="py-0 font-mono">{displayName}</td>
+                    <td className="text-right py-0 font-mono font-bold">
+                      {result.value}
+                    </td>
+                    <td className="text-right py-0 font-mono">{result.unit}</td>
+                    <td className="text-right py-0 font-mono">
+                      {result.referenceRange}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Graph Section */}
+        {(fastingValue || oneHourValue || twoHoursValue) && (
+          <div className="mt-6 ogtt-graph-wrapper">
+            <OGTTGraph
+              fasting={fastingValue}
+              afterOneHour={oneHourValue}
+              afterTwoHours={twoHoursValue}
+            />
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderPPBSResults = (ppbsResults: any[]) => {
+    console.log("=== RENDERING PPBS RESULTS ===");
+    console.log("PPBS Results:", ppbsResults);
+
+    return (
+      <div key="PPBS" className="border rounded-lg p-6">
+        <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
+          Post Prandial Blood Sugar
+        </h1>
+        <table className="w-full border-collapse">
           <thead>
-            <tr className="border-collapse border-t-2 border-b-2 border-gray-900">
-              <th className="text-left font-semibold">Test</th>
-              <th className="text-right font-semibold">Result</th>
-              <th className="text-right font-semibold">Units</th>
-              <th className="text-right font-semibold">Reference Range</th>
+            <tr className="border-b">
+              <th className="text-left p-4">Description</th>
+              <th className="text-left p-4">Result</th>
+              <th className="text-left p-4">Units</th>
+              <th className="text-left p-4">Reference Range</th>
             </tr>
           </thead>
           <tbody>
-            {ogttResults.map((result, index) => {
-              const displayName = result.testName.replace("Glucose", "").trim();
-              return (
-                <tr key={index} className="border-0 font-mono p-0 table-row">
-                  <td className="py-0 font-mono">{displayName}</td>
-                  <td className="text-right py-0 font-mono font-bold">
-                    {result.value}
-                  </td>
-                  <td className="text-right py-0 font-mono">{result.unit}</td>
-                  <td className="text-right py-0 font-mono">
+            {ppbsResults.map((result, index) => (
+              <tr key={index} className="border-b">
+                <td className="p-4">
+                  <div className="font-medium">{result.testName}</div>
+                </td>
+                <td className="p-4">
+                  <div className="font-semibold text-lg">{result.value}</div>
+                </td>
+                <td className="p-4">
+                  <div className="font-semibold text-lg">{result.unit}</div>
+                </td>
+                <td className="p-4">
+                  <div className="font-semibold text-lg">
                     {result.referenceRange}
-                  </td>
-                </tr>
-              );
-            })}
+                  </div>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
+    );
+  };
 
-      {/* Graph Section */}
-      {(fastingValue || oneHourValue || twoHoursValue) && (
-        <div className="mt-6 ogtt-graph-wrapper">
-          <OGTTGraph
-            fasting={fastingValue}
-            afterOneHour={oneHourValue}
-            afterTwoHours={twoHoursValue}
-          />
-        </div>
-      )}
-    </div>
-  );
-};
+  const renderBSSResults = (bssResults: any[]) => {
+    console.log("=== RENDERING BSS RESULTS ===");
+    console.log("BSS Results:", bssResults);
 
-const renderPPBSResults = (ppbsResults: any[]) => {
-  console.log("=== RENDERING PPBS RESULTS ===");
-  console.log("PPBS Results:", ppbsResults);
-
-  return (
-    <div key="PPBS" className="border rounded-lg p-6">
-      <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
-        Post Prandial Blood Sugar
-      </h1>
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="border-b">
-            <th className="text-left p-4">Description</th>
-            <th className="text-left p-4">Result</th>
-            <th className="text-left p-4">Units</th>
-            <th className="text-left p-4">Reference Range</th>
-          </tr>
-        </thead>
-        <tbody>
-          {ppbsResults.map((result, index) => (
-            <tr key={index} className="border-b">
-              <td className="p-4">
-                <div className="font-medium">{result.testName}</div>
-              </td>
-              <td className="p-4">
-                <div className="font-semibold text-lg">{result.value}</div>
-              </td>
-              <td className="p-4">
-                <div className="font-semibold text-lg">{result.unit}</div>
-              </td>
-              <td className="p-4">
-                <div className="font-semibold text-lg">{result.referenceRange}</div>
-              </td>
+    return (
+      <div key="BSS" className="border rounded-lg p-6">
+        <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
+          Blood for BSS
+        </h1>
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="border-b">
+              <th className="text-left p-4">Description</th>
+              <th className="text-left p-4">Result</th>
+              <th className="text-left p-4">Units</th>
+              <th className="text-left p-4">Reference Range</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-};
+          </thead>
+          <tbody>
+            {bssResults.map((result, index) => (
+              <tr key={index} className="border-b">
+                <td className="p-4">
+                  <div className="font-medium">{result.testName}</div>
+                </td>
+                <td className="p-4">
+                  <div className="font-semibold text-lg">{result.value}</div>
+                </td>
+                <td className="p-4">
+                  <div className="font-semibold text-lg">{result.unit}</div>
+                </td>
+                <td className="p-4">
+                  <div className="font-semibold text-lg">
+                    {result.referenceRange}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
 
   const renderFBCResults = (fbcResults: any[]) => {
     const mainParams = fbcResults.filter((result) =>
@@ -496,68 +564,70 @@ const renderPPBSResults = (ppbsResults: any[]) => {
     );
   };
 
-const renderRegularTestResults = (testCode: string, testResults: any[]) => {
-  const testConfig = testConfigs[testCode];
-  const testName = testConfig ? testConfig.name : testCode;
-  const isESR = testCode === "ESR";
-  const isTSH = testCode === "TSH";
-  const isHBA1C = testCode === "HBA1C";
-  const hideReferenceRange = isESR || isTSH || isHBA1C;
+  const renderRegularTestResults = (testCode: string, testResults: any[]) => {
+    const testConfig = testConfigs[testCode];
+    const testName = testConfig ? testConfig.name : testCode;
+    const isESR = testCode === "ESR";
+    const isTSH = testCode === "TSH";
+    const isHBA1C = testCode === "HBA1C";
+    const hideReferenceRange = isESR || isTSH || isHBA1C;
 
-  return (
-    <div key={testCode}>
-      <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
-        {testName}
-      </h1>
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="border-b">
-            <th className="text-left p-4">Test</th>
-            <th className="text-left p-4">Value</th>
-            <th className="text-left p-4">Units</th>
-            {!hideReferenceRange && <th className="text-left p-4">Reference Range</th>}
-          </tr>
-        </thead>
-        <tbody>
-          {testResults.map((result, index) => {
-            const isQualitative = testConfig?.isQualitative || false;
+    return (
+      <div key={testCode}>
+        <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
+          {testName}
+        </h1>
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="border-b">
+              <th className="text-left p-4">Test</th>
+              <th className="text-left p-4">Value</th>
+              <th className="text-left p-4">Units</th>
+              {!hideReferenceRange && (
+                <th className="text-left p-4">Reference Range</th>
+              )}
+            </tr>
+          </thead>
+          <tbody>
+            {testResults.map((result, index) => {
+              const isQualitative = testConfig?.isQualitative || false;
 
-            const displayName = result.testName.includes(" - ")
-              ? result.testName.split(" - ")[1]
-              : result.testName;
-            return (
-              <tr key={`${testCode}-${index}`} className="border-b">
-                <td className="p-4">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">{displayName}</span>
-                  </div>
-                </td>
-                <td className="p-4">
-                  <div className="font-semibold text-lg">
-                    {result.value}
-                    {isQualitative && result.comments && (
-                      <span className="ml-2">({result.comments})</span>
-                    )}
-                  </div>
-                </td>
-                <td className="p-4">
-                  <div className="font-semibold text-lg">{result.unit}</div>
-                </td>
-                {!hideReferenceRange && (
+              const displayName = result.testName.includes(" - ")
+                ? result.testName.split(" - ")[1]
+                : result.testName;
+              return (
+                <tr key={`${testCode}-${index}`} className="border-b">
                   <td className="p-4">
-                    <div className="font-semibold text-lg">
-                      {result.referenceRange}
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{displayName}</span>
                     </div>
                   </td>
-                )}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
-  );
-};
+                  <td className="p-4">
+                    <div className="font-semibold text-lg">
+                      {result.value}
+                      {isQualitative && result.comments && (
+                        <span className="ml-2">({result.comments})</span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="p-4">
+                    <div className="font-semibold text-lg">{result.unit}</div>
+                  </td>
+                  {!hideReferenceRange && (
+                    <td className="p-4">
+                      <div className="font-semibold text-lg">
+                        {result.referenceRange}
+                      </div>
+                    </td>
+                  )}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
 
   const checkValueStatus = (value: string, referenceRange: string) => {
     if (!value || !referenceRange) return "normal";
