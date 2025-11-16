@@ -180,12 +180,9 @@ export default function ReportDetailsPage() {
             return <div key={testCode}>{renderBSSResults(resultsArray)}</div>;
           } else {
             return (
-              <div key={testCode}>
-                {renderRegularTestResults(testCode, resultsArray)}
-                <div className="mt-[5rem]">
-                  <TestAdditionalDetails testCode={testCode} />
-                </div>
-              </div>
+               <div key={testCode}>
+      {renderRegularTestResults(testCode, resultsArray)}
+    </div>
             );
           }
         })}
@@ -571,7 +568,10 @@ export default function ReportDetailsPage() {
     const isTSH = testCode === "TSH";
     const isHBA1C = testCode === "HBA1C";
     const isBUN = testCode === "BUN";
-    const hideReferenceRange = isESR || isTSH || isHBA1C || isBUN;
+     const isVDRL = testCode === "VDRL";
+     const isHIV = testCode === "HIV";
+    const hideReferenceRange = isESR || isTSH || isHBA1C || isBUN || isVDRL || isHIV;
+    const hideunits = isHIV;
 
     return (
       <div key={testCode}>
@@ -583,48 +583,57 @@ export default function ReportDetailsPage() {
             <tr className="border-b">
               <th className="text-left p-4">Test</th>
               <th className="text-left p-4">Value</th>
-              <th className="text-left p-4">Units</th>
+              {!hideunits && (<th className="text-left p-4">Units</th>)}
               {!hideReferenceRange && (
                 <th className="text-left p-4">Reference Range</th>
               )}
             </tr>
           </thead>
           <tbody>
-            {testResults.map((result, index) => {
-              const isQualitative = testConfig?.isQualitative || false;
+  {testResults.map((result, index) => {
+    const isQualitative = testConfig?.isQualitative || false;
 
-              const displayName = result.testName.includes(" - ")
-                ? result.testName.split(" - ")[1]
-                : result.testName;
-              return (
-                <tr key={`${testCode}-${index}`} className="border-b">
-                  <td className="p-4">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{displayName}</span>
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <div className=" text-lg">
-                      {result.value}
-                      {isQualitative && result.comments && (
-                        <span className="ml-2">({result.comments})</span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <div className=" text-lg">{result.unit}</div>
-                  </td>
-                  {!hideReferenceRange && (
-                    <td className="p-4">
-                      <div className=" text-lg">
-                        {result.referenceRange}
-                      </div>
-                    </td>
-                  )}
-                </tr>
-              );
-            })}
-          </tbody>
+    const displayName = result.testName.includes(" - ")
+      ? result.testName.split(" - ")[1]
+      : result.testName;
+    return (
+      <tr key={`${testCode}-${index}`} className="border-b">
+        <td className="p-4">
+          <div className="flex items-center gap-2">
+            <span className="font-medium">{displayName}</span>
+          </div>
+        </td>
+        <td className="p-4">
+          <div className="text-lg">
+            {isVDRL || isHIV ? (
+              // For VDRL, show only the comments (Reactive/Non-Reactive)
+              <span className="font-semibold">{result.comments}</span>
+            ) : (
+              <>
+                {result.value}
+                {isQualitative && result.comments && (
+                  <span className="ml-2">({result.comments})</span>
+                )}
+              </>
+            )}
+          </div>
+        </td>
+        {!hideunits && (
+          <td className="p-4">
+            <div className="text-lg">{result.unit}</div>
+          </td>
+        )}
+        {!hideReferenceRange && (
+          <td className="p-4">
+            <div className="text-lg">
+              {result.referenceRange}
+            </div>
+          </td>
+        )}
+      </tr>
+    );
+  })}
+</tbody>
         </table>
       </div>
     );
@@ -1054,7 +1063,23 @@ export default function ReportDetailsPage() {
               </div>
             </div>
 
-            <div>{renderTestResults(report.results)}</div>
+            <div>
+  {renderTestResults(report.results)}
+  
+  {/* Show Additional Details only if there's a single unique test code */}
+  {(() => {
+    const uniqueTestCodes = [...new Set(report.results.map(r => r.testCode))];
+    const shouldShowAdditionalDetails = 
+      uniqueTestCodes.length === 1 && 
+      !['FBC', 'UFR', 'OGTT', 'PPBS', 'BSS', 'LIPID'].includes(uniqueTestCodes[0]);
+    
+    return shouldShowAdditionalDetails ? (
+      <div className="mt-8">
+        <TestAdditionalDetails testCode={uniqueTestCodes[0]} />
+      </div>
+    ) : null;
+  })()}
+</div>
 
             {report.doctorRemarks && (
               <>

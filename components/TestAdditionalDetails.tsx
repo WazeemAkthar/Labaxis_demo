@@ -1424,6 +1424,65 @@ case "blood urea nitrogen":
     ),
   };
 
+  case "crp":
+      case "c reactive protein":
+        return {
+          title: "C-Reactive Protein (CRP) Clinical Guidelines",
+          content: (
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm mb-3 leading-relaxed">
+                  C-Reactive Protein (CRP) is a marker of inflammation in the
+                  body. Elevated levels may indicate infection, chronic
+                  inflammatory diseases, or acute conditions.
+                </p>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse border border-gray-300 text-sm">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                        CRP Level (mg/L)
+                      </th>
+                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                        Clinical Significance
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="border border-gray-300 p-2">&lt; 3</td>
+                      <td className="border border-gray-300 p-2">
+                        Normal - No significant inflammation
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">3 - 10</td>
+                      <td className="border border-gray-300 p-2">
+                        Mild inflammation - Possible minor infection or chronic
+                        condition
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">10 - 100</td>
+                      <td className="border border-gray-300 p-2">
+                        Moderate inflammation - Suggests active infection or
+                        inflammatory disease
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">&gt; 100</td>
+                      <td className="border border-gray-300 p-2">
+                        Severe inflammation - Indicates serious infection or
+                        trauma
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ),
+        };
       default:
         return null;
     }

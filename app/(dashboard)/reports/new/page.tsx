@@ -39,6 +39,25 @@ import { OGTTGraph } from "@/components/ogtt-graph";
 import { PPBSReportCard } from "@/components/ppbs-report-card";
 import { BSSReportCard } from "@/components/bss-report-card";
 
+// Helper function to get qualitative options for a test
+function getQualitativeOptions(
+  testCode: string
+): { value: string; label: string }[] {
+  // Special cases for specific tests
+  if (testCode === "VDRL") {
+    return [
+      { value: "Reactive", label: "Reactive" },
+      { value: "Non-Reactive", label: "Non-Reactive" },
+    ];
+  }
+
+  // Default qualitative options
+  return [
+    { value: "Positive", label: "Positive" },
+    { value: "Negative", label: "Negative" },
+  ];
+}
+
 // Helper function to extract unit from reference range
 function getUnitFromRange(range: string): string {
   // Extract unit from ranges like "4.0-11.0 x10³/μL" or "12.0-16.0 g/dL" or "< 8 IU/ml"
@@ -99,9 +118,10 @@ async function getTestDetails(
   // NEW: Check if test has unitPerTest mapping for specific components
   let componentUnit = test.unit; // Default to test's general unit
   if (test.unitPerTest) {
-    componentUnit = test.unitPerTest[componentName] || 
-                    test.unitPerTest[cleanComponentName] || 
-                    test.unit;
+    componentUnit =
+      test.unitPerTest[componentName] ||
+      test.unitPerTest[cleanComponentName] ||
+      test.unit;
   }
 
   return {
@@ -148,15 +168,15 @@ export default function NewReportPage() {
     : selectedInvoice?.lineItems.some((item) => item.testCode === "OGTT") ||
       false;
 
-      const hasPPBSTest = useDirectTestSelection
-  ? selectedTests.includes("PPBS")
-  : selectedInvoice?.lineItems.some((item) => item.testCode === "PPBS") ||
-    false;
+  const hasPPBSTest = useDirectTestSelection
+    ? selectedTests.includes("PPBS")
+    : selectedInvoice?.lineItems.some((item) => item.testCode === "PPBS") ||
+      false;
 
-    const hasBSSTest = useDirectTestSelection
-  ? selectedTests.includes("BSS")
-  : selectedInvoice?.lineItems.some((item) => item.testCode === "BSS") ||
-    false;
+  const hasBSSTest = useDirectTestSelection
+    ? selectedTests.includes("BSS")
+    : selectedInvoice?.lineItems.some((item) => item.testCode === "BSS") ||
+      false;
 
   useEffect(() => {
     if (authLoading) return;
@@ -214,7 +234,7 @@ export default function NewReportPage() {
 
       invoice.lineItems.forEach((item) => {
         const test = testCatalog.find((t) => t.code === item.testCode);
-  const referenceRanges = test?.referenceRange || {};
+        const referenceRanges = test?.referenceRange || {};
 
         // Handle FBC, LIPID, UFR, OGTT specially - don't create individual result entries
         if (
@@ -230,21 +250,22 @@ export default function NewReportPage() {
 
         // For multi-component tests, create separate result entries for each component
         if (Object.keys(referenceRanges).length > 1) {
-  Object.entries(referenceRanges).forEach(([component, range]) => {
-    // NEW: Get component-specific unit
-    const componentUnit = test?.unitPerTest?.[component] || test?.unit || "";
-    
-    initialResults.push({
-      testCode: item.testCode,
-      testName: `${item.testName} - ${component}`,
-      value: "",
-      unit: componentUnit, // Use component-specific unit
-      referenceRange: String(range),
-      comments: "",
-      isQualitative: test?.isQualitative || false,
-    });
-  });
-} else {
+          Object.entries(referenceRanges).forEach(([component, range]) => {
+            // NEW: Get component-specific unit
+            const componentUnit =
+              test?.unitPerTest?.[component] || test?.unit || "";
+
+            initialResults.push({
+              testCode: item.testCode,
+              testName: `${item.testName} - ${component}`,
+              value: "",
+              unit: componentUnit, // Use component-specific unit
+              referenceRange: String(range),
+              comments: "",
+              isQualitative: test?.isQualitative || false,
+            });
+          });
+        } else {
           // For single-component tests
           const firstRange = Object.entries(referenceRanges)[0];
           initialResults.push({
@@ -341,27 +362,35 @@ export default function NewReportPage() {
       const test = testCatalog.find((t) => t.code === testCode);
       const referenceRanges = test?.referenceRange || {};
 
-// Handle FBC, LIPID, UFR, OGTT, PPBS, BSS specially - don't create individual result entries
-if (testCode === "FBC" || testCode === "LIPID" || testCode === "UFR" || testCode === "OGTT" || testCode === "PPBS" || testCode === "BSS") {
-  return;
-}
+      // Handle FBC, LIPID, UFR, OGTT, PPBS, BSS specially - don't create individual result entries
+      if (
+        testCode === "FBC" ||
+        testCode === "LIPID" ||
+        testCode === "UFR" ||
+        testCode === "OGTT" ||
+        testCode === "PPBS" ||
+        testCode === "BSS"
+      ) {
+        return;
+      }
 
-     // For multi-component tests, create separate result entries for each component
-if (Object.keys(referenceRanges).length > 1) {
-  Object.entries(referenceRanges).forEach(([component, range]) => {
-    // NEW: Get component-specific unit
-    const componentUnit = test?.unitPerTest?.[component] || test?.unit || "";
-    
-    initialResults.push({
-      testCode: testCode,
-      testName: `${test?.name} - ${component}`,
-      value: "",
-      unit: componentUnit, // Use component-specific unit
-      referenceRange: String(range),
-      comments: "",
-    });
-  });
-}else {
+      // For multi-component tests, create separate result entries for each component
+      if (Object.keys(referenceRanges).length > 1) {
+        Object.entries(referenceRanges).forEach(([component, range]) => {
+          // NEW: Get component-specific unit
+          const componentUnit =
+            test?.unitPerTest?.[component] || test?.unit || "";
+
+          initialResults.push({
+            testCode: testCode,
+            testName: `${test?.name} - ${component}`,
+            value: "",
+            unit: componentUnit, // Use component-specific unit
+            referenceRange: String(range),
+            comments: "",
+          });
+        });
+      } else {
         // For single-component tests
         const firstRange = Object.entries(referenceRanges)[0];
         initialResults.push({
@@ -388,513 +417,523 @@ if (Object.keys(referenceRanges).length > 1) {
     hasOGTTTest &&
     (ogttValues.fasting || ogttValues.afterOneHour || ogttValues.afterTwoHours);
 
-// In new-report-page.tsx, find the handleSubmit function
-// Replace the OGTT section (around line 450-480) with this corrected version:
+  // In new-report-page.tsx, find the handleSubmit function
+  // Replace the OGTT section (around line 450-480) with this corrected version:
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!selectedPatient || (!selectedInvoice && !useDirectTestSelection))
-    return;
-
-  setSaving(true);
-
-  try {
-    const dataManager = DataManager.getInstance();
-
-    // Prepare all results including FBC
-    const allResults: ReportResult[] = [
-      ...results.filter((r) => r.value.trim() !== ""),
-    ];
-
-    // Determine if FBC is included
-    const hasFBC = useDirectTestSelection
-      ? selectedTests.includes("FBC")
-      : selectedInvoice?.lineItems.some((item) => item.testCode === "FBC");
-
-    // Add FBC results if available
-    if (fbcValues && hasFBC) {
-      const fbcResults = [
-        {
-          testCode: "FBC",
-          testName: "Hemoglobin",
-          value: fbcValues.hemoglobin,
-          unit: "g/dL",
-          referenceRange: "12.0-16.0",
-          comments: "",
-        },
-        {
-          testCode: "FBC",
-          testName: "RBC",
-          value: fbcValues.rbc,
-          unit: "x10⁶/μL",
-          referenceRange: "3.8-5.2",
-          comments: "",
-        },
-        {
-          testCode: "FBC",
-          testName: "PCV",
-          value: fbcValues.pcv,
-          unit: "%",
-          referenceRange: "36-46",
-          comments: "",
-        },
-        {
-          testCode: "FBC",
-          testName: "MCV",
-          value: fbcValues.mcv,
-          unit: "fL",
-          referenceRange: "80-100",
-          comments: "",
-        },
-        {
-          testCode: "FBC",
-          testName: "MCH",
-          value: fbcValues.mch,
-          unit: "pg",
-          referenceRange: "27-33",
-          comments: "",
-        },
-        {
-          testCode: "FBC",
-          testName: "MCHC",
-          value: fbcValues.mchc,
-          unit: "g/dL",
-          referenceRange: "32-36",
-          comments: "",
-        },
-        {
-          testCode: "FBC",
-          testName: "RDW-CV",
-          value: fbcValues.rdwCv,
-          unit: "%",
-          referenceRange: "11.5-14.5",
-          comments: "",
-        },
-        {
-          testCode: "FBC",
-          testName: "Platelets",
-          value: fbcValues.platelets,
-          unit: "x10³/μL",
-          referenceRange: "150-450",
-          comments: "",
-        },
-        {
-          testCode: "FBC",
-          testName: "WBC",
-          value: fbcValues.wbc,
-          unit: "x10³/μL",
-          referenceRange: "4.0-11.0",
-          comments: "",
-        },
-        {
-          testCode: "FBC",
-          testName: "Neutrophils",
-          value: fbcValues.neutrophils,
-          unit: "%",
-          referenceRange: "40-70",
-          comments: "",
-        },
-        {
-          testCode: "FBC",
-          testName: "Lymphocytes",
-          value: fbcValues.lymphocytes,
-          unit: "%",
-          referenceRange: "20-40",
-          comments: "",
-        },
-        {
-          testCode: "FBC",
-          testName: "Eosinophils",
-          value: fbcValues.eosinophils,
-          unit: "%",
-          referenceRange: "1-4",
-          comments: "",
-        },
-        {
-          testCode: "FBC",
-          testName: "Monocytes",
-          value: fbcValues.monocytes,
-          unit: "%",
-          referenceRange: "2-8",
-          comments: "",
-        },
-        {
-          testCode: "FBC",
-          testName: "Basophils",
-          value: fbcValues.basophils,
-          unit: "%",
-          referenceRange: "0-1",
-          comments: "",
-        },
-        {
-          testCode: "FBC",
-          testName: "Neutrophils (Abs)",
-          value: fbcValues.neutrophilsAbs,
-          unit: "x10³/μL",
-          referenceRange: "2.0-7.5",
-          comments: "",
-        },
-        {
-          testCode: "FBC",
-          testName: "Lymphocytes (Abs)",
-          value: fbcValues.lymphocytesAbs,
-          unit: "x10³/μL",
-          referenceRange: "1.0-4.0",
-          comments: "",
-        },
-        {
-          testCode: "FBC",
-          testName: "Eosinophils (Abs)",
-          value: fbcValues.eosinophilsAbs,
-          unit: "x10³/μL",
-          referenceRange: "0.05-0.50",
-          comments: "",
-        },
-        {
-          testCode: "FBC",
-          testName: "Monocytes (Abs)",
-          value: fbcValues.monocytesAbs,
-          unit: "x10³/μL",
-          referenceRange: "0.20-1.00",
-          comments: "",
-        },
-        {
-          testCode: "FBC",
-          testName: "Basophils (Abs)",
-          value: fbcValues.basophilsAbs,
-          unit: "x10³/μL",
-          referenceRange: "0.00-0.20",
-          comments: "",
-        },
-      ].filter((r) => r.value && r.value.trim() !== "");
-
-      allResults.push(...fbcResults);
-    }
-
-    // Add Lipid Profile results if available
-    if (lipidValues && hasLipidProfileTest) {
-      const lipidResults = [
-        {
-          testCode: "LIPID",
-          testName: "Total Cholesterol",
-          value: lipidValues.totalCholesterol,
-          unit: "mg/dL",
-          referenceRange: "< 200",
-          comments: "",
-        },
-        {
-          testCode: "LIPID",
-          testName: "HDL Cholesterol",
-          value: lipidValues.hdl,
-          unit: "mg/dL",
-          referenceRange: "> 40",
-          comments: "",
-        },
-        {
-          testCode: "LIPID",
-          testName: "Triglycerides",
-          value: lipidValues.triglycerides,
-          unit: "mg/dL",
-          referenceRange: "< 150",
-          comments: "",
-        },
-        {
-          testCode: "LIPID",
-          testName: "VLDL Cholesterol",
-          value: lipidValues.vldl,
-          unit: "mg/dL",
-          referenceRange: "< 40",
-          comments: "",
-        },
-        {
-          testCode: "LIPID",
-          testName: "LDL Cholesterol",
-          value: lipidValues.ldl,
-          unit: "mg/dL",
-          referenceRange: "< 150",
-          comments: "",
-        },
-        {
-          testCode: "LIPID",
-          testName: "Total Cholesterol/HDL Ratio",
-          value: lipidValues.tcHdlRatio,
-          unit: "",
-          referenceRange: "< 5.0",
-          comments: "",
-        },
-        {
-          testCode: "LIPID",
-          testName: "Non-HDL Cholesterol",
-          value: lipidValues.nonHdl,
-          unit: "mg/dL",
-          referenceRange: "< 130",
-          comments: "",
-        },
-      ].filter((r) => r.value && r.value.trim() !== "");
-
-      allResults.push(...lipidResults);
-    }
-
-    // Add UFR results if available
-    if (ufrValues && hasUFRTest) {
-      const ufrResults = [
-        {
-          testCode: "UFR",
-          testName: "Colour",
-          value: ufrValues.colour,
-          unit: "",
-          referenceRange: "",
-          comments: "",
-        },
-        {
-          testCode: "UFR",
-          testName: "Appearance",
-          value: ufrValues.appearance,
-          unit: "",
-          referenceRange: "",
-          comments: "",
-        },
-        {
-          testCode: "UFR",
-          testName: "PH",
-          value: ufrValues.ph,
-          unit: "",
-          referenceRange: "",
-          comments: "",
-        },
-        {
-          testCode: "UFR",
-          testName: "Specific Gravity",
-          value: ufrValues.specificGravity,
-          unit: "",
-          referenceRange: "1.010-1.025",
-          comments: "",
-        },
-        {
-          testCode: "UFR",
-          testName: "Protein(Albumin)",
-          value: ufrValues.protein,
-          unit: "",
-          referenceRange: "",
-          comments: "",
-        },
-        {
-          testCode: "UFR",
-          testName: "Sugar(Reducing substances)",
-          value: ufrValues.sugar,
-          unit: "",
-          referenceRange: "",
-          comments: "",
-        },
-        {
-          testCode: "UFR",
-          testName: "Urobilinogen",
-          value: ufrValues.urobilinogen,
-          unit: "",
-          referenceRange: "",
-          comments: "",
-        },
-        {
-          testCode: "UFR",
-          testName: "Bile",
-          value: ufrValues.bile,
-          unit: "",
-          referenceRange: "",
-          comments: "",
-        },
-        {
-          testCode: "UFR",
-          testName: "Acetone/KB",
-          value: ufrValues.acetone,
-          unit: "",
-          referenceRange: "",
-          comments: "",
-        },
-        {
-          testCode: "UFR",
-          testName: "Epithelial cells",
-          value: ufrValues.epithelialCells,
-          unit: "/HPF",
-          referenceRange: "",
-          comments: "",
-        },
-        {
-          testCode: "UFR",
-          testName: "Pus cells",
-          value: ufrValues.pusCells,
-          unit: "/HPF",
-          referenceRange: "",
-          comments: "",
-        },
-        {
-          testCode: "UFR",
-          testName: "Red cells",
-          value: ufrValues.redCells,
-          unit: "/HPF",
-          referenceRange: "",
-          comments: "",
-        },
-        {
-          testCode: "UFR",
-          testName: "Crystals",
-          value: ufrValues.crystals,
-          unit: "/HPF",
-          referenceRange: "",
-          comments: "",
-        },
-        {
-          testCode: "UFR",
-          testName: "Casts",
-          value: ufrValues.casts,
-          unit: "/HPF",
-          referenceRange: "",
-          comments: "",
-        },
-        {
-          testCode: "UFR",
-          testName: "Organisms",
-          value: ufrValues.organisms,
-          unit: "/HPF",
-          referenceRange: "",
-          comments: "",
-        },
-        {
-          testCode: "UFR",
-          testName: "Others",
-          value: ufrValues.others,
-          unit: "",
-          referenceRange: "",
-          comments: "",
-        },
-      ].filter((r) => r.value && r.value.trim() !== "");
-
-      allResults.push(...ufrResults);
-    }
-
- // Add OGTT results if available
-if (ogttValues && hasOGTTTest) {
-  console.log("=== SAVING OGTT DATA ===");
-  console.log("ogttValues:", ogttValues);
-  
-  const ogttResultsArray = [];
-  
-  if (ogttValues.fasting && ogttValues.fasting.trim() !== "") {
-    ogttResultsArray.push({
-      testCode: "OGTT",
-      testName: "Fasting Glucose",
-      value: ogttValues.fasting,
-      unit: "mg/dL",
-      referenceRange: "60 - 115",
-      comments: "",
-    });
-  }
-  
-  if (ogttValues.afterOneHour && ogttValues.afterOneHour.trim() !== "") {
-    ogttResultsArray.push({
-      testCode: "OGTT",
-      testName: "After 1 Hour Glucose",
-      value: ogttValues.afterOneHour,
-      unit: "mg/dL",
-      referenceRange: "< 180",
-      comments: "",
-    });
-  }
-  
-  if (ogttValues.afterTwoHours && ogttValues.afterTwoHours.trim() !== "") {
-    ogttResultsArray.push({
-      testCode: "OGTT",
-      testName: "After 2 Hour Glucose",
-      value: ogttValues.afterTwoHours,
-      unit: "mg/dL",
-      referenceRange: "< 140",
-      comments: "",
-    });
-  }
-  
-  console.log("OGTT results to save:", ogttResultsArray);
-  allResults.push(...ogttResultsArray);
-}
-
-// Add PPBS results if available (MOVED OUTSIDE OF OGTT BLOCK)
-if (ppbsValues && hasPPBSTest && ppbsValues.value && ppbsValues.value.trim() !== "") {
-  console.log("=== SAVING PPBS DATA ===");
-  console.log("ppbsValues:", ppbsValues);
-  
-  const referenceRange = ppbsValues.hourType === "After 1 Hour" ? "< 160" : "< 140";
-  
-  allResults.push({
-    testCode: "PPBS",
-    testName: `Post Prandial Blood Sugar (${ppbsValues.mealType} / ${ppbsValues.hourType})`,
-    value: ppbsValues.value,
-    unit: "mg/dL",
-    referenceRange: referenceRange,
-    comments: "",
-  });
-  
-  console.log("PPBS result added to allResults");
-}
-
-// Add BSS results if available (MOVED OUTSIDE OF OGTT BLOCK)
-if (bssValues && hasBSSTest && bssValues.length > 0) {
-  console.log("=== SAVING BSS DATA ===");
-  console.log("bssValues:", bssValues);
-  
-  bssValues.forEach((entry) => {
-    if (entry.value && entry.value.trim() !== "") {
-      const referenceRange = entry.hourType === "After 1 Hour" ? "< 160" : "< 140";
-      
-      allResults.push({
-        testCode: "BSS",
-        testName: `Post Prandial Blood Sugar (${entry.mealType} / ${entry.hourType})`,
-        value: entry.value,
-        unit: "mg/dL",
-        referenceRange: referenceRange,
-        comments: "",
-      });
-    }
-  });
-  
-  console.log("BSS results added to allResults");
-}
-
-    if (allResults.length === 0) {
-      console.error("No results to save!");
-      setSaving(false);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedPatient || (!selectedInvoice && !useDirectTestSelection))
       return;
+
+    setSaving(true);
+
+    try {
+      const dataManager = DataManager.getInstance();
+
+      // Prepare all results including FBC
+      const allResults: ReportResult[] = [
+        ...results.filter((r) => r.value.trim() !== ""),
+      ];
+
+      // Determine if FBC is included
+      const hasFBC = useDirectTestSelection
+        ? selectedTests.includes("FBC")
+        : selectedInvoice?.lineItems.some((item) => item.testCode === "FBC");
+
+      // Add FBC results if available
+      if (fbcValues && hasFBC) {
+        const fbcResults = [
+          {
+            testCode: "FBC",
+            testName: "Hemoglobin",
+            value: fbcValues.hemoglobin,
+            unit: "g/dL",
+            referenceRange: "12.0-16.0",
+            comments: "",
+          },
+          {
+            testCode: "FBC",
+            testName: "RBC",
+            value: fbcValues.rbc,
+            unit: "x10⁶/μL",
+            referenceRange: "3.8-5.2",
+            comments: "",
+          },
+          {
+            testCode: "FBC",
+            testName: "PCV",
+            value: fbcValues.pcv,
+            unit: "%",
+            referenceRange: "36-46",
+            comments: "",
+          },
+          {
+            testCode: "FBC",
+            testName: "MCV",
+            value: fbcValues.mcv,
+            unit: "fL",
+            referenceRange: "80-100",
+            comments: "",
+          },
+          {
+            testCode: "FBC",
+            testName: "MCH",
+            value: fbcValues.mch,
+            unit: "pg",
+            referenceRange: "27-33",
+            comments: "",
+          },
+          {
+            testCode: "FBC",
+            testName: "MCHC",
+            value: fbcValues.mchc,
+            unit: "g/dL",
+            referenceRange: "32-36",
+            comments: "",
+          },
+          {
+            testCode: "FBC",
+            testName: "RDW-CV",
+            value: fbcValues.rdwCv,
+            unit: "%",
+            referenceRange: "11.5-14.5",
+            comments: "",
+          },
+          {
+            testCode: "FBC",
+            testName: "Platelets",
+            value: fbcValues.platelets,
+            unit: "x10³/μL",
+            referenceRange: "150-450",
+            comments: "",
+          },
+          {
+            testCode: "FBC",
+            testName: "WBC",
+            value: fbcValues.wbc,
+            unit: "x10³/μL",
+            referenceRange: "4.0-11.0",
+            comments: "",
+          },
+          {
+            testCode: "FBC",
+            testName: "Neutrophils",
+            value: fbcValues.neutrophils,
+            unit: "%",
+            referenceRange: "40-70",
+            comments: "",
+          },
+          {
+            testCode: "FBC",
+            testName: "Lymphocytes",
+            value: fbcValues.lymphocytes,
+            unit: "%",
+            referenceRange: "20-40",
+            comments: "",
+          },
+          {
+            testCode: "FBC",
+            testName: "Eosinophils",
+            value: fbcValues.eosinophils,
+            unit: "%",
+            referenceRange: "1-4",
+            comments: "",
+          },
+          {
+            testCode: "FBC",
+            testName: "Monocytes",
+            value: fbcValues.monocytes,
+            unit: "%",
+            referenceRange: "2-8",
+            comments: "",
+          },
+          {
+            testCode: "FBC",
+            testName: "Basophils",
+            value: fbcValues.basophils,
+            unit: "%",
+            referenceRange: "0-1",
+            comments: "",
+          },
+          {
+            testCode: "FBC",
+            testName: "Neutrophils (Abs)",
+            value: fbcValues.neutrophilsAbs,
+            unit: "x10³/μL",
+            referenceRange: "2.0-7.5",
+            comments: "",
+          },
+          {
+            testCode: "FBC",
+            testName: "Lymphocytes (Abs)",
+            value: fbcValues.lymphocytesAbs,
+            unit: "x10³/μL",
+            referenceRange: "1.0-4.0",
+            comments: "",
+          },
+          {
+            testCode: "FBC",
+            testName: "Eosinophils (Abs)",
+            value: fbcValues.eosinophilsAbs,
+            unit: "x10³/μL",
+            referenceRange: "0.05-0.50",
+            comments: "",
+          },
+          {
+            testCode: "FBC",
+            testName: "Monocytes (Abs)",
+            value: fbcValues.monocytesAbs,
+            unit: "x10³/μL",
+            referenceRange: "0.20-1.00",
+            comments: "",
+          },
+          {
+            testCode: "FBC",
+            testName: "Basophils (Abs)",
+            value: fbcValues.basophilsAbs,
+            unit: "x10³/μL",
+            referenceRange: "0.00-0.20",
+            comments: "",
+          },
+        ].filter((r) => r.value && r.value.trim() !== "");
+
+        allResults.push(...fbcResults);
+      }
+
+      // Add Lipid Profile results if available
+      if (lipidValues && hasLipidProfileTest) {
+        const lipidResults = [
+          {
+            testCode: "LIPID",
+            testName: "Total Cholesterol",
+            value: lipidValues.totalCholesterol,
+            unit: "mg/dL",
+            referenceRange: "< 200",
+            comments: "",
+          },
+          {
+            testCode: "LIPID",
+            testName: "HDL Cholesterol",
+            value: lipidValues.hdl,
+            unit: "mg/dL",
+            referenceRange: "> 40",
+            comments: "",
+          },
+          {
+            testCode: "LIPID",
+            testName: "Triglycerides",
+            value: lipidValues.triglycerides,
+            unit: "mg/dL",
+            referenceRange: "< 150",
+            comments: "",
+          },
+          {
+            testCode: "LIPID",
+            testName: "VLDL Cholesterol",
+            value: lipidValues.vldl,
+            unit: "mg/dL",
+            referenceRange: "< 40",
+            comments: "",
+          },
+          {
+            testCode: "LIPID",
+            testName: "LDL Cholesterol",
+            value: lipidValues.ldl,
+            unit: "mg/dL",
+            referenceRange: "< 150",
+            comments: "",
+          },
+          {
+            testCode: "LIPID",
+            testName: "Total Cholesterol/HDL Ratio",
+            value: lipidValues.tcHdlRatio,
+            unit: "",
+            referenceRange: "< 5.0",
+            comments: "",
+          },
+          {
+            testCode: "LIPID",
+            testName: "Non-HDL Cholesterol",
+            value: lipidValues.nonHdl,
+            unit: "mg/dL",
+            referenceRange: "< 130",
+            comments: "",
+          },
+        ].filter((r) => r.value && r.value.trim() !== "");
+
+        allResults.push(...lipidResults);
+      }
+
+      // Add UFR results if available
+      if (ufrValues && hasUFRTest) {
+        const ufrResults = [
+          {
+            testCode: "UFR",
+            testName: "Colour",
+            value: ufrValues.colour,
+            unit: "",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Appearance",
+            value: ufrValues.appearance,
+            unit: "",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "PH",
+            value: ufrValues.ph,
+            unit: "",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Specific Gravity",
+            value: ufrValues.specificGravity,
+            unit: "",
+            referenceRange: "1.010-1.025",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Protein(Albumin)",
+            value: ufrValues.protein,
+            unit: "",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Sugar(Reducing substances)",
+            value: ufrValues.sugar,
+            unit: "",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Urobilinogen",
+            value: ufrValues.urobilinogen,
+            unit: "",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Bile",
+            value: ufrValues.bile,
+            unit: "",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Acetone/KB",
+            value: ufrValues.acetone,
+            unit: "",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Epithelial cells",
+            value: ufrValues.epithelialCells,
+            unit: "/HPF",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Pus cells",
+            value: ufrValues.pusCells,
+            unit: "/HPF",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Red cells",
+            value: ufrValues.redCells,
+            unit: "/HPF",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Crystals",
+            value: ufrValues.crystals,
+            unit: "/HPF",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Casts",
+            value: ufrValues.casts,
+            unit: "/HPF",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Organisms",
+            value: ufrValues.organisms,
+            unit: "/HPF",
+            referenceRange: "",
+            comments: "",
+          },
+          {
+            testCode: "UFR",
+            testName: "Others",
+            value: ufrValues.others,
+            unit: "",
+            referenceRange: "",
+            comments: "",
+          },
+        ].filter((r) => r.value && r.value.trim() !== "");
+
+        allResults.push(...ufrResults);
+      }
+
+      // Add OGTT results if available
+      if (ogttValues && hasOGTTTest) {
+        console.log("=== SAVING OGTT DATA ===");
+        console.log("ogttValues:", ogttValues);
+
+        const ogttResultsArray = [];
+
+        if (ogttValues.fasting && ogttValues.fasting.trim() !== "") {
+          ogttResultsArray.push({
+            testCode: "OGTT",
+            testName: "Fasting Glucose",
+            value: ogttValues.fasting,
+            unit: "mg/dL",
+            referenceRange: "60 - 115",
+            comments: "",
+          });
+        }
+
+        if (ogttValues.afterOneHour && ogttValues.afterOneHour.trim() !== "") {
+          ogttResultsArray.push({
+            testCode: "OGTT",
+            testName: "After 1 Hour Glucose",
+            value: ogttValues.afterOneHour,
+            unit: "mg/dL",
+            referenceRange: "< 180",
+            comments: "",
+          });
+        }
+
+        if (
+          ogttValues.afterTwoHours &&
+          ogttValues.afterTwoHours.trim() !== ""
+        ) {
+          ogttResultsArray.push({
+            testCode: "OGTT",
+            testName: "After 2 Hour Glucose",
+            value: ogttValues.afterTwoHours,
+            unit: "mg/dL",
+            referenceRange: "< 140",
+            comments: "",
+          });
+        }
+
+        console.log("OGTT results to save:", ogttResultsArray);
+        allResults.push(...ogttResultsArray);
+      }
+
+      // Add PPBS results if available (MOVED OUTSIDE OF OGTT BLOCK)
+      if (
+        ppbsValues &&
+        hasPPBSTest &&
+        ppbsValues.value &&
+        ppbsValues.value.trim() !== ""
+      ) {
+        console.log("=== SAVING PPBS DATA ===");
+        console.log("ppbsValues:", ppbsValues);
+
+        const referenceRange =
+          ppbsValues.hourType === "After 1 Hour" ? "< 160" : "< 140";
+
+        allResults.push({
+          testCode: "PPBS",
+          testName: `Post Prandial Blood Sugar (${ppbsValues.mealType} / ${ppbsValues.hourType})`,
+          value: ppbsValues.value,
+          unit: "mg/dL",
+          referenceRange: referenceRange,
+          comments: "",
+        });
+
+        console.log("PPBS result added to allResults");
+      }
+
+      // Add BSS results if available (MOVED OUTSIDE OF OGTT BLOCK)
+      if (bssValues && hasBSSTest && bssValues.length > 0) {
+        console.log("=== SAVING BSS DATA ===");
+        console.log("bssValues:", bssValues);
+
+        bssValues.forEach((entry) => {
+          if (entry.value && entry.value.trim() !== "") {
+            const referenceRange =
+              entry.hourType === "After 1 Hour" ? "< 160" : "< 140";
+
+            allResults.push({
+              testCode: "BSS",
+              testName: `Post Prandial Blood Sugar (${entry.mealType} / ${entry.hourType})`,
+              value: entry.value,
+              unit: "mg/dL",
+              referenceRange: referenceRange,
+              comments: "",
+            });
+          }
+        });
+
+        console.log("BSS results added to allResults");
+      }
+
+      if (allResults.length === 0) {
+        console.error("No results to save!");
+        setSaving(false);
+        return;
+      }
+
+      console.log("All results to save:", allResults);
+
+      const report = await dataManager.addReport({
+        patientId: selectedPatient.id,
+        patientName: `${selectedPatient.firstName} ${selectedPatient.lastName}`,
+        invoiceId: selectedInvoice?.id || null,
+        results: allResults,
+        doctorRemarks,
+        reviewedBy,
+      });
+
+      // Redirect to report details page
+      router.push(`/reports/${report.id}`);
+    } catch (error) {
+      console.error("Error saving report:", error);
+      alert("Error saving report. Please check console for details.");
+    } finally {
+      setSaving(false);
     }
+  };
 
-    console.log("All results to save:", allResults);
-
-    const report = await dataManager.addReport({
-      patientId: selectedPatient.id,
-      patientName: `${selectedPatient.firstName} ${selectedPatient.lastName}`,
-      invoiceId: selectedInvoice?.id || null,
-      results: allResults,
-      doctorRemarks,
-      reviewedBy,
-    });
-
-    // Redirect to report details page
-    router.push(`/reports/${report.id}`);
-  } catch (error) {
-    console.error("Error saving report:", error);
-    alert("Error saving report. Please check console for details.");
-  } finally {
-    setSaving(false);
-  }
-};
-
-const hasPPBSResults =
-  ppbsValues &&
-  hasPPBSTest &&
-  ppbsValues.value &&
-  ppbsValues.value.trim() !== "";
+  const hasPPBSResults =
+    ppbsValues &&
+    hasPPBSTest &&
+    ppbsValues.value &&
+    ppbsValues.value.trim() !== "";
 
   const hasBSSResults =
-  bssValues &&
-  hasBSSTest &&
-  bssValues.length > 0 &&
-  bssValues.some((entry) => entry.value && entry.value.trim() !== "");
+    bssValues &&
+    hasBSSTest &&
+    bssValues.length > 0 &&
+    bssValues.some((entry) => entry.value && entry.value.trim() !== "");
 
   const isFormValid = () => {
     const hasRegularResults = results.some((r) => r.value.trim() !== "");
@@ -928,13 +967,12 @@ const hasPPBSResults =
         hasPathologyResults ||
         hasUFRResults ||
         hasOGTTResults ||
-      hasPPBSResults ||
-    hasBSSResults ) &&
+        hasPPBSResults ||
+        hasBSSResults) &&
       reviewedBy.trim() !== ""
     );
   };
 
-  
   // Check if FBC test is selected
   const hasFBCTest = useDirectTestSelection
     ? selectedTests.includes("FBC")
@@ -1113,13 +1151,13 @@ const hasPPBSResults =
         </Card>
 
         {/* Test Results */}
-{(results.length > 0 ||
-  hasFBCTest ||
-  hasLipidProfileTest ||
-  hasUFRTest ||
-  hasOGTTTest ||
-  hasPPBSTest ||
-  hasBSSTest) && (
+        {(results.length > 0 ||
+          hasFBCTest ||
+          hasLipidProfileTest ||
+          hasUFRTest ||
+          hasOGTTTest ||
+          hasPPBSTest ||
+          hasBSSTest) && (
           <div className="space-y-6">
             {/* FBC Test - Special Component */}
             {hasFBCTest && (
@@ -1224,8 +1262,10 @@ const hasPPBSResults =
                 <CardContent className="space-y-6">
                   {results.map((result, index) => {
                     const dataManager = DataManager.getInstance();
-                    const testDetails = testCatalog.find(t => t.code === result.testCode);
-const isQualitative = testDetails?.isQualitative || false;
+                    const testDetails = testCatalog.find(
+                      (t) => t.code === result.testCode
+                    );
+                    const isQualitative = testDetails?.isQualitative || false;
 
                     return (
                       <div
@@ -1284,17 +1324,23 @@ const isQualitative = testDetails?.isQualitative || false;
                                   <SelectValue placeholder="Select result" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="Positive">
-                                    Positive
-                                  </SelectItem>
-                                  <SelectItem value="Negative">
-                                    Negative
-                                  </SelectItem>
+                                  {getQualitativeOptions(result.testCode).map(
+                                    (option: {
+                                      value: string;
+                                      label: string;
+                                    }) => (
+                                      <SelectItem
+                                        key={option.value}
+                                        value={option.value}
+                                      >
+                                        {option.label}
+                                      </SelectItem>
+                                    )
+                                  )}
                                 </SelectContent>
                               </Select>
                             </div>
                           )}
-
                           <div className="space-y-2">
                             <Label
                               htmlFor={`unit-${result.testCode}-${result.testName}-${index}`}
@@ -1367,14 +1413,14 @@ const isQualitative = testDetails?.isQualitative || false;
           </div>
         )}
 
-{/* Doctor's Remarks */}
-{(results.length > 0 ||
-  hasFBCTest ||
-  hasLipidProfileTest ||
-  hasUFRTest ||
-  hasOGTTTest ||
-  hasPPBSTest ||
-  hasBSSTest) && (
+        {/* Doctor's Remarks */}
+        {(results.length > 0 ||
+          hasFBCTest ||
+          hasLipidProfileTest ||
+          hasUFRTest ||
+          hasOGTTTest ||
+          hasPPBSTest ||
+          hasBSSTest) && (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
