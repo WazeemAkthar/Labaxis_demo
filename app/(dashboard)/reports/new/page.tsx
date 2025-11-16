@@ -233,51 +233,52 @@ export default function NewReportPage() {
       const initialResults: ReportResult[] = [];
 
       invoice.lineItems.forEach((item) => {
-        const test = testCatalog.find((t) => t.code === item.testCode);
-        const referenceRanges = test?.referenceRange || {};
+  const test = testCatalog.find((t) => t.code === item.testCode);
+  const referenceRanges = test?.referenceRange || {};
 
-        // Handle FBC, LIPID, UFR, OGTT specially - don't create individual result entries
-        if (
-          item.testCode === "FBC" ||
-          item.testCode === "LIPID" ||
-          item.testCode === "UFR" ||
-          item.testCode === "OGTT" ||
-          item.testCode === "PPBS" ||
-          item.testCode === "BSS"
-        ) {
-          return;
-        }
+  // Handle FBC, LIPID, UFR, OGTT, PPBS, BSS specially - don't create individual result entries
+  if (
+    item.testCode === "FBC" ||
+    item.testCode === "LIPID" ||
+    item.testCode === "UFR" ||
+    item.testCode === "OGTT" ||
+    item.testCode === "PPBS" ||
+    item.testCode === "BSS"
+  ) {
+    return;
+  }
 
-        // For multi-component tests, create separate result entries for each component
-        if (Object.keys(referenceRanges).length > 1) {
-          Object.entries(referenceRanges).forEach(([component, range]) => {
-            // NEW: Get component-specific unit
-            const componentUnit =
-              test?.unitPerTest?.[component] || test?.unit || "";
+  // For multi-component tests, create separate result entries for each component
+  if (Object.keys(referenceRanges).length > 1) {
+    Object.entries(referenceRanges).forEach(([component, range]) => {
+      const componentUnit =
+        test?.unitPerTest?.[component] || test?.unit || "";
 
-            initialResults.push({
-              testCode: item.testCode,
-              testName: `${item.testName} - ${component}`,
-              value: "",
-              unit: componentUnit, // Use component-specific unit
-              referenceRange: String(range),
-              comments: "",
-              isQualitative: test?.isQualitative || false,
-            });
-          });
-        } else {
-          // For single-component tests
-          const firstRange = Object.entries(referenceRanges)[0];
-          initialResults.push({
-            testCode: item.testCode,
-            testName: item.testName,
-            value: "",
-            unit: test?.unit || "", // Use unit from test catalog
-            referenceRange: firstRange ? String(firstRange[1]) : "",
-            comments: "",
-          });
-        }
+      initialResults.push({
+        testCode: item.testCode,
+        testName: component, // ✅ USE ONLY THE COMPONENT NAME
+        value: "",
+        unit: componentUnit,
+        referenceRange: String(range),
+        comments: "",
+        isQualitative: test?.isQualitative || false,
       });
+    });
+  } else {
+    // For single-component tests - use the reference range key
+    const firstRange = Object.entries(referenceRanges)[0];
+    const componentName = firstRange ? firstRange[0] : item.testName;
+    
+    initialResults.push({
+      testCode: item.testCode,
+      testName: componentName, // ✅ USE THE REFERENCE RANGE KEY
+      value: "",
+      unit: test?.unit || "",
+      referenceRange: firstRange ? String(firstRange[1]) : "",
+      comments: "",
+    });
+  }
+});
 
       setResults(initialResults);
     }
@@ -359,50 +360,51 @@ export default function NewReportPage() {
     const initialResults: ReportResult[] = [];
 
     testCodes.forEach((testCode) => {
-      const test = testCatalog.find((t) => t.code === testCode);
-      const referenceRanges = test?.referenceRange || {};
+  const test = testCatalog.find((t) => t.code === testCode);
+  const referenceRanges = test?.referenceRange || {};
 
-      // Handle FBC, LIPID, UFR, OGTT, PPBS, BSS specially - don't create individual result entries
-      if (
-        testCode === "FBC" ||
-        testCode === "LIPID" ||
-        testCode === "UFR" ||
-        testCode === "OGTT" ||
-        testCode === "PPBS" ||
-        testCode === "BSS"
-      ) {
-        return;
-      }
+  // Handle FBC, LIPID, UFR, OGTT, PPBS, BSS specially - don't create individual result entries
+  if (
+    testCode === "FBC" ||
+    testCode === "LIPID" ||
+    testCode === "UFR" ||
+    testCode === "OGTT" ||
+    testCode === "PPBS" ||
+    testCode === "BSS"
+  ) {
+    return;
+  }
 
-      // For multi-component tests, create separate result entries for each component
-      if (Object.keys(referenceRanges).length > 1) {
-        Object.entries(referenceRanges).forEach(([component, range]) => {
-          // NEW: Get component-specific unit
-          const componentUnit =
-            test?.unitPerTest?.[component] || test?.unit || "";
+  // For multi-component tests, create separate result entries for each component
+  if (Object.keys(referenceRanges).length > 1) {
+    Object.entries(referenceRanges).forEach(([component, range]) => {
+      const componentUnit =
+        test?.unitPerTest?.[component] || test?.unit || "";
 
-          initialResults.push({
-            testCode: testCode,
-            testName: `${test?.name} - ${component}`,
-            value: "",
-            unit: componentUnit, // Use component-specific unit
-            referenceRange: String(range),
-            comments: "",
-          });
-        });
-      } else {
-        // For single-component tests
-        const firstRange = Object.entries(referenceRanges)[0];
-        initialResults.push({
-          testCode: testCode,
-          testName: test?.name || testCode,
-          value: "",
-          unit: test?.unit || "", // Use unit from test catalog
-          referenceRange: firstRange ? String(firstRange[1]) : "",
-          comments: "",
-        });
-      }
+      initialResults.push({
+        testCode: testCode,
+        testName: component, // ✅ USE ONLY THE COMPONENT NAME
+        value: "",
+        unit: componentUnit,
+        referenceRange: String(range),
+        comments: "",
+      });
     });
+  } else {
+    // For single-component tests - use the reference range key
+    const firstRange = Object.entries(referenceRanges)[0];
+    const componentName = firstRange ? firstRange[0] : (test?.name || testCode);
+    
+    initialResults.push({
+      testCode: testCode,
+      testName: componentName, // ✅ USE THE REFERENCE RANGE KEY
+      value: "",
+      unit: test?.unit || "",
+      referenceRange: firstRange ? String(firstRange[1]) : "",
+      comments: "",
+    });
+  }
+});
 
     setResults(initialResults);
   };

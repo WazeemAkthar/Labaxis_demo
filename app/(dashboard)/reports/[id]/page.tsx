@@ -597,11 +597,10 @@ const renderBSSResults = (bssResults: any[]) => {
             </tr>
           </thead>
           <tbody>
- {testResults.map((result, index) => {
-  const isQualitative = testConfig?.isQualitative || false;
+  {testResults.map((result, index) => {
+    const isQualitative = testConfig?.isQualitative || false;
 
-  // Use testName directly since it now contains the reference range key
-  const displayName = result.testName;
+    const displayName = result.testName;
     return (
       <tr key={`${testCode}-${index}`} className="border-b">
         <td className="p-4">
