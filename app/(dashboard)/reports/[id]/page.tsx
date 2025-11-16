@@ -577,8 +577,11 @@ const renderBSSResults = (bssResults: any[]) => {
      const isVDRL = testCode === "VDRL";
      const isHIV = testCode === "HIV";
      const isHCG = testCode === "HCG";
-    const hideReferenceRange = isESR || isTSH || isHBA1C || isBUN || isVDRL || isHIV || isHCG;
-    const hideunits = isHIV || isHCG;
+     const isDEN = testCode === "DEN";
+     const isFT3 = testCode === "FT3";
+     const isFER = testCode === "FER";
+    const hideReferenceRange = isESR || isTSH || isHBA1C || isBUN || isVDRL || isHIV || isHCG || isDEN || isFT3 || isFER;
+    const hideunits = isHIV || isHCG || isDEN;
 
     return (
       <div key={testCode}>
@@ -610,7 +613,7 @@ const renderBSSResults = (bssResults: any[]) => {
         </td>
         <td className="p-4">
           <div className="text-lg">
-            {isVDRL || isHIV || isHCG ? (
+            {isVDRL || isHIV || isHCG || isDEN ? (
               // For VDRL, show only the comments (Reactive/Non-Reactive)
               <span className="font-semibold">{result.comments}</span>
             ) : (
@@ -629,12 +632,29 @@ const renderBSSResults = (bssResults: any[]) => {
           </td>
         )}
         {!hideReferenceRange && (
-          <td className="p-4">
-            <div className="text-lg">
-              {result.referenceRange}
-            </div>
-          </td>
-        )}
+  <td className="p-4">
+    <div className="text-lg">
+      {(() => {
+        // Check if referenceRange is an object with nested values (like Man/Woman)
+        try {
+          const parsed = typeof result.referenceRange === 'string' 
+            ? JSON.parse(result.referenceRange) 
+            : result.referenceRange;
+          
+          if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
+            // Format nested reference ranges (e.g., Man: 13.0-18.0, Woman: 11.0-16.5)
+            return Object.entries(parsed)
+              .map(([key, value]) => `${key}: ${value}`)
+              .join(', ');
+          }
+          return result.referenceRange;
+        } catch {
+          return result.referenceRange;
+        }
+      })()}
+    </div>
+  </td>
+)}
       </tr>
     );
   })}

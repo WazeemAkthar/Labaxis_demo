@@ -393,16 +393,28 @@ export default function NewReportPage() {
   } else {
     // For single-component tests - use the reference range key
     const firstRange = Object.entries(referenceRanges)[0];
-    const componentName = firstRange ? firstRange[0] : (test?.name || testCode);
-    
-    initialResults.push({
-      testCode: testCode,
-      testName: componentName, // ✅ USE THE REFERENCE RANGE KEY
-      value: "",
-      unit: test?.unit || "",
-      referenceRange: firstRange ? String(firstRange[1]) : "",
-      comments: "",
-    });
+const componentName = firstRange ? firstRange[0] : (test?.name || testCode);
+
+// Handle nested reference ranges (like Man/Woman for Haemoglobin)
+let referenceRangeValue = "";
+if (firstRange) {
+  const rangeValue = firstRange[1];
+  if (typeof rangeValue === 'object' && rangeValue !== null) {
+    // Store as JSON string for nested objects
+    referenceRangeValue = JSON.stringify(rangeValue);
+  } else {
+    referenceRangeValue = String(rangeValue);
+  }
+}
+
+initialResults.push({
+  testCode: testCode,  // ✅ Changed from item.testCode to testCode
+  testName: componentName,
+  value: "",
+  unit: test?.unit || "",
+  referenceRange: referenceRangeValue,
+  comments: "",
+});
   }
 });
 
@@ -1361,24 +1373,56 @@ if (bssValues && hasBSSTest && bssValues.length > 0) {
                           </div>
 
                           <div className="space-y-2">
-                            <Label
-                              htmlFor={`range-${result.testCode}-${result.testName}-${index}`}
-                            >
-                              Reference Range
-                            </Label>
-                            <Input
-                              id={`range-${result.testCode}-${result.testName}-${index}`}
-                              value={result.referenceRange}
-                              onChange={(e) =>
-                                updateResult(
-                                  result.testName,
-                                  "referenceRange",
-                                  e.target.value
-                                )
-                              }
-                              placeholder={`e.g. ${result.referenceRange}`}
-                            />
-                          </div>
+  <Label
+    htmlFor={`range-${result.testCode}-${result.testName}-${index}`}
+  >
+    Reference Range
+  </Label>
+  <Input
+    id={`range-${result.testCode}-${result.testName}-${index}`}
+    value={(() => {
+      // Format nested reference ranges for display
+      try {
+        const parsed = typeof result.referenceRange === 'string' 
+          ? JSON.parse(result.referenceRange) 
+          : result.referenceRange;
+        
+        if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
+          return Object.entries(parsed)
+            .map(([key, value]) => `${key}: ${value}`)
+            .join(', ');
+        }
+        return result.referenceRange;
+      } catch {
+        return result.referenceRange;
+      }
+    })()}
+    onChange={(e) =>
+      updateResult(
+        result.testName,
+        "referenceRange",
+        e.target.value
+      )
+    }
+    placeholder={(() => {
+      // Format nested reference ranges for placeholder
+      try {
+        const parsed = typeof result.referenceRange === 'string' 
+          ? JSON.parse(result.referenceRange) 
+          : result.referenceRange;
+        
+        if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
+          return Object.entries(parsed)
+            .map(([key, value]) => `${key}: ${value}`)
+            .join(', ');
+        }
+        return `e.g. ${result.referenceRange}`;
+      } catch {
+        return `e.g. ${result.referenceRange}`;
+      }
+    })()}
+  />
+</div>
                         </div>
 
                         {!isQualitative && (

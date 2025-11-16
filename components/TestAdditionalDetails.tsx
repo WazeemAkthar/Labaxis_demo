@@ -1062,39 +1062,39 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                   <tbody>
                     <tr>
                       <td className="border border-gray-300 p-2">Adult Male</td>
-                      <td className="border border-gray-300 p-2">20 - 400</td>
+                      <td className="border border-gray-300 p-2">20 - 400 ng/mL</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         Adult Female (&lt;50 Years)
                       </td>
-                      <td className="border border-gray-300 p-2">8 - 140</td>
+                      <td className="border border-gray-300 p-2">8 - 140 ng/mL</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         Adult Female (≥50 Years)
                       </td>
-                      <td className="border border-gray-300 p-2">20 - 400</td>
+                      <td className="border border-gray-300 p-2">20 - 400 ng/mL</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">Newborn</td>
-                      <td className="border border-gray-300 p-2">25 - 200</td>
+                      <td className="border border-gray-300 p-2">25 - 200 ng/mL</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">1 Month</td>
-                      <td className="border border-gray-300 p-2">200 - 600</td>
+                      <td className="border border-gray-300 p-2">200 - 600 ng/mL</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         2 - 5 Months
                       </td>
-                      <td className="border border-gray-300 p-2">50 - 200</td>
+                      <td className="border border-gray-300 p-2">50 - 200 ng/mL</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         6 - 15 Months
                       </td>
-                      <td className="border border-gray-300 p-2">7 - 140</td>
+                      <td className="border border-gray-300 p-2">7 - 140 ng/mL</td>
                     </tr>
                   </tbody>
                 </table>
@@ -1274,49 +1274,43 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                   <tbody>
                     <tr>
                       <td className="border border-gray-300 p-2">Newborn</td>
-                      <td className="border border-gray-300 p-2">2.8 - 5.2</td>
+                      <td className="border border-gray-300 p-2">1.73 – 6.30 pg/ml</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         6 days - 3 months
                       </td>
-                      <td className="border border-gray-300 p-2">2.9 - 5.1</td>
+                      <td className="border border-gray-300 p-2">1.95 – 6.04 pg/ml</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
-                        4 - 6 months
+                        4 days - 12 months
                       </td>
-                      <td className="border border-gray-300 p-2">2.9 - 4.7</td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-300 p-2">
-                        7 - 11 months
-                      </td>
-                      <td className="border border-gray-300 p-2">2.9 - 4.7</td>
+                      <td className="border border-gray-300 p-2">2.15 – 5.83 pg/ml</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         1 - 6 years
                       </td>
-                      <td className="border border-gray-300 p-2">2.9 - 4.4</td>
+                      <td className="border border-gray-300 p-2">2.41 – 5.50 pg/ml</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         7 - 11 years
                       </td>
-                      <td className="border border-gray-300 p-2">3.0 - 4.2</td>
+                      <td className="border border-gray-300 p-2">2.53 - 5.22 pg/ml</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         12 - 20 years
                       </td>
-                      <td className="border border-gray-300 p-2">3.1 - 4.3</td>
+                      <td className="border border-gray-300 p-2">2.56 – 5.01 pg/ml</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         Adults (21+ years)
                       </td>
-                      <td className="border border-gray-300 p-2">2.9 - 4.3</td>
+                      <td className="border border-gray-300 p-2">2.00 – 4.40 pg/ml</td>
                     </tr>
                   </tbody>
                 </table>
