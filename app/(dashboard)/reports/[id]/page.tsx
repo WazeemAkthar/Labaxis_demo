@@ -580,8 +580,14 @@ const renderBSSResults = (bssResults: any[]) => {
      const isDEN = testCode === "DEN";
      const isFT3 = testCode === "FT3";
      const isFER = testCode === "FER";
-    const hideReferenceRange = isESR || isTSH || isHBA1C || isBUN || isVDRL || isHIV || isHCG || isDEN || isFT3 || isFER;
-    const hideunits = isHIV || isHCG || isDEN;
+     const isHBsAg = testCode === "HBsAg";
+     const isHCGU = testCode === "HCGU";
+     const isUKB = testCode === "UKB";
+     const isDNS1 = testCode === "DNS1";
+     const isWIDAL = testCode === "WIDAL";
+     const isUACR = testCode === "UACR";
+    const hideReferenceRange = isESR || isTSH || isHBA1C || isBUN || isVDRL || isHIV || isHCG || isDEN || isFT3 || isFER || isHBsAg || isHCGU || isUKB || isDNS1 || isWIDAL || isUACR;
+    const hideunits = isHIV || isHCG || isDEN || isHBsAg || isHCGU || isUKB || isDNS1 || isWIDAL;
 
     return (
       <div key={testCode}>
@@ -613,7 +619,7 @@ const renderBSSResults = (bssResults: any[]) => {
         </td>
         <td className="p-4">
           <div className="text-lg">
-            {isVDRL || isHIV || isHCG || isDEN ? (
+            {isVDRL || isHIV || isHCG || isDEN || isHBsAg || isHCGU || isUKB || isDNS1 || isWIDAL ? (
               // For VDRL, show only the comments (Reactive/Non-Reactive)
               <span className="font-semibold">{result.comments}</span>
             ) : (
@@ -633,7 +639,7 @@ const renderBSSResults = (bssResults: any[]) => {
         )}
         {!hideReferenceRange && (
   <td className="p-4">
-    <div className="text-lg">
+    <div className="text-md">
       {(() => {
         // Check if referenceRange is an object with nested values (like Man/Woman)
         try {
