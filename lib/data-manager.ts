@@ -680,18 +680,23 @@ export class DataManager {
         category: "Hormone",
       },
       {
-        code: "UACR",
-        name: "Urine Albumin with Creatinine Ratio",
-        defaultPrice: 400.0,
-        estimatedCost: 120.0,
-        unit: "mg/dL or mg of Alb/g of Cre",
-        referenceRange: {
-          "Urine Creatinine": "20.0 - 300.0 mg/dL",
-          "Urine Albumin": "0.0 - 30.0 mg/dL",
-          "Urine Albumin/Urine Creatinine": "< 30.0 mg of Alb/g of Cre",
-        },
-        category: "Renal",
-      },
+  code: "UACR",
+  name: "Urine Albumin with Creatinine Ratio",
+  defaultPrice: 800.0,
+  estimatedCost: 250.0,
+  unit: "mg/dL or mg of Alb/g of Cre",
+  referenceRange: {
+    "Urine Creatinine": "20.0 - 300.0",
+    "Urine Albumin": "0.0 - 30.0",
+    "Urine Albumin/Urine Creatinine": "< 30.0"
+  },
+  unitPerTest: {
+    "Urine Creatinine": "mg/dL",
+    "Urine Albumin": "mg/dL",
+    "Urine Albumin/Urine Creatinine": "mg of Alb/g of Cre"
+  },
+  category: "Renal"
+},
       {
   code: "BSS",
   name: "Blood for BSS",
@@ -734,6 +739,171 @@ export class DataManager {
     "Gamma GT": "IU/l"
   },
   category: "Biochemistry"
+},
+{
+  code: "HCGU",
+  name: "Urine for H.C.G",
+  defaultPrice: 400.0,
+  estimatedCost: 120.0,
+  unit: "qualitative",
+  referenceRange: {
+    "Human Chorionic Gonadotropin Hormone": "Negative"
+  },
+  category: "Hormone",
+  isQualitative: true
+},
+{
+  code: "ICA",
+  name: "Ionized Calcium",
+  defaultPrice: 800.0,
+  estimatedCost: 250.0,
+  unit: "mmol/L",
+  referenceRange: {
+    "Ionized Calcium": "1.12 - 1.32"
+  },
+  category: "Biochemistry"
+},
+{
+  code: "PT",
+  name: "Prothrombin Time",
+  defaultPrice: 600.0,
+  estimatedCost: 180.0,
+  unit: " ",
+  referenceRange: {
+    "Prothrombin Time": "10 - 14",
+    "Control": "10 - 14",
+    "Ratio": "< 1.5",
+    "I.N.R": "0.8 - 1.2"
+  },
+  unitPerTest: {
+    "Prothrombin Time": "sec",
+    "Control": "sec",
+    "Ratio": "",
+    "I.N.R": ""
+  },
+  category: "Coagulation"
+},
+{
+  code: "UKB",
+  name: "Urine Ketone Bodies",
+  defaultPrice: 250.0,
+  estimatedCost: 80.0,
+  unit: "qualitative",
+  referenceRange: {
+    "Ketone Bodies": "Negative"
+  },
+  category: "Urinalysis",
+  isQualitative: true
+},
+{
+  code: "LDH",
+  name: "Lactate Dehydrogenase (LDH)",
+  defaultPrice: 600.0,
+  estimatedCost: 180.0,
+  unit: "U/L",
+  referenceRange: {
+    "Lactate Dehydrogenase (LDH)": "< 480"
+  },
+  category: "Biochemistry"
+},
+{
+  code: "MGB",
+  name: "Blood for Magnesium",
+  defaultPrice: 600.0,
+  estimatedCost: 180.0,
+  unit: "mg/dL",
+  referenceRange: {
+    "Magnesium": "1.7 - 2.6"
+  },
+  category: "Biochemistry"
+},
+{
+  code: "DNS1",
+  name: "Dengue NS1 Antigen",
+  defaultPrice: 1200.0,
+  estimatedCost: 400.0,
+  unit: "qualitative",
+  referenceRange: {
+    "NS1 Ag": "Negative"
+  },
+  category: "Infectious Disease",
+  isQualitative: true
+},
+{
+  code: "PHO",
+  name: "Blood for Phosphorus Inorganic",
+  defaultPrice: 600.0,
+  estimatedCost: 180.0,
+  unit: "mg/dL",
+  referenceRange: {
+    "Phosphorus Inorganic": {
+      "Adults": "2.5 - 5.5",
+      "Children": "4.0 - 7.0"
+    }
+  },
+  category: "Biochemistry"
+},
+{
+  code: "SALB",
+  name: "Serum Albumin",
+  defaultPrice: 400.0,
+  estimatedCost: 120.0,
+  unit: "g/dL",
+  referenceRange: {
+    "Albumin": "2.5 - 6.0"
+  },
+  category: "Biochemistry"
+},
+{
+  code: "CA",
+  name: "Blood for Calcium",
+  defaultPrice: 400.0,
+  estimatedCost: 120.0,
+  unit: "mg/dL",
+  referenceRange: {
+    "Calcium": {
+      "Adults": "8.50 - 10.8",
+      "New Born": "8.50 - 12.0"
+    }
+  },
+  category: "Biochemistry"
+},
+{
+  code: "WIDAL",
+  name: "Serum Agglutination Test/Widal (SAT/Slide)",
+  defaultPrice: 800.0,
+  estimatedCost: 250.0,
+  unit: "qualitative",
+  referenceRange: {
+    "Salmonella Typhi H": "Negative",
+    "Salmonella Typhi O": "Negative",
+    "Salmonella Para Typhi AH": "Negative"
+  },
+  category: "Infectious Disease",
+  isQualitative: true
+},
+{
+  code: "TCHOL",
+  name: "Blood for Total Cholesterol",
+  defaultPrice: 500.0,
+  estimatedCost: 150.0,
+  unit: "mg/dL",
+  referenceRange: {
+    "Total Cholesterol": "< 225.0"
+  },
+  category: "Biochemistry"
+},
+{
+  code: "TROP",
+  name: "Troponin I",
+  defaultPrice: 2500.0,
+  estimatedCost: 800.0,
+  unit: "ng/mL",
+  referenceRange: {
+    "Troponin I": "< 0.3"
+  },
+  category: "Cardiac Markers",
+  isQualitative: true
 }
 
     ];

@@ -1434,6 +1434,67 @@ case "blood urea nitrogen":
             </div>
           ),
         };
+
+case "pt":
+case "prothrombin time":
+  return {
+    title: "Prothrombin Time (PT) Clinical Guidelines",
+    content: (
+      <div className="space-y-4">
+        <div>
+          <p className="text-sm mb-3 leading-relaxed">
+            This test measures the activity of extrinsic coagulation pathway (Factor II, V, VII, X)
+          </p>
+          <p className="text-sm leading-relaxed">
+            <strong>ISI Value: 1.15</strong>
+          </p>
+        </div>
+      </div>
+    ),
+  };
+
+  case "uacr":
+case "urine albumin with creatinine ratio":
+  return {
+    title: "Urine Albumin with Creatinine Ratio (UACR) Clinical Guidelines",
+    content: (
+      <div className="space-y-4">
+        <div>
+          <p className="text-sm mb-3 leading-relaxed">
+            The UACR is used to detect early kidney damage, especially in diabetic or hypertensive patients.
+          </p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse border border-gray-300 text-sm">
+            <thead>
+              <tr className="bg-gray-50">
+                <th className="border border-gray-300 p-2 text-left font-semibold">
+                  Category
+                </th>
+                <th className="border border-gray-300 p-2 text-left font-semibold">
+                  Reference Range (mg of Alb/g of Cre)
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="border border-gray-300 p-2">Normal</td>
+                <td className="border border-gray-300 p-2">&lt; 30 mg of Alb/g of Cre</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-300 p-2">Microalbuminuria</td>
+                <td className="border border-gray-300 p-2">30 – 300 mg of Alb/g of Cre</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-300 p-2">Albuminuria</td>
+                <td className="border border-gray-300 p-2">&gt; 300 mg of Alb/g of Cre</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    ),
+  };
       default:
         return null;
     }
