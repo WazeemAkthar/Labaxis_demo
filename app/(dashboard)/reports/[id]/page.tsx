@@ -147,9 +147,6 @@ export default function ReportDetailsPage() {
   };
 
   const renderTestResults = (results: any[]) => {
-    console.log("=== RENDERING ALL TEST RESULTS ===");
-    console.log("Total results:", results.length);
-    console.log("Results:", results);
 
     const groupedResults = results.reduce((groups, result) => {
       const testCode = result.testCode;
@@ -160,7 +157,6 @@ export default function ReportDetailsPage() {
       return groups;
     }, {} as Record<string, any[]>);
 
-    console.log("Grouped results:", groupedResults);
 
     return (
       <div className="space-y-6">
@@ -191,8 +187,6 @@ export default function ReportDetailsPage() {
   };
 
   const renderOGTTResults = (ogttResults: any[]) => {
-    console.log("=== RENDERING OGTT RESULTS ===");
-    console.log("OGTT Results:", ogttResults);
 
     const fastingResult = ogttResults.find((r) =>
       r.testName.includes("Fasting")
@@ -203,10 +197,6 @@ export default function ReportDetailsPage() {
     const twoHoursResult = ogttResults.find((r) =>
       r.testName.includes("2 Hour")
     );
-
-    console.log("Fasting:", fastingResult);
-    console.log("1 Hour:", oneHourResult);
-    console.log("2 Hours:", twoHoursResult);
 
     const fastingValue = fastingResult?.value || "";
     const oneHourValue = oneHourResult?.value || "";
@@ -227,7 +217,7 @@ export default function ReportDetailsPage() {
           <Badge variant="outline" className="text-lg px-3 py-1">
             OGTT
           </Badge>
-          <div className=" font-medium text-lg">
+          <div className="font-medium text-md">
             Oral Glucose Tolerance Test
           </div>
         </div>
@@ -613,17 +603,17 @@ export default function ReportDetailsPage() {
 
     return (
       <div key={testCode}>
-        <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
+        <h1 className=" font-medium text-lg text-center mb-3 border-black border-b">
           {testName}
         </h1>
         <table className="w-full border-collapse">
           <thead>
             <tr className="border-b">
-              <th className="text-left p-4">Test</th>
-              <th className="text-left p-4">Value</th>
-              {!hideunits && <th className="text-left p-4">Units</th>}
+              <th className="text-left p-1">Test</th>
+              <th className="text-left p-1">Value</th>
+              {!hideunits && <th className="text-left p-1">Units</th>}
               {!hideReferenceRange && (
-                <th className="text-left p-4">Reference Range</th>
+                <th className="text-left p-1">Reference Range</th>
               )}
             </tr>
           </thead>
@@ -634,7 +624,7 @@ export default function ReportDetailsPage() {
               const displayName = result.testName;
               return (
                 <tr key={`${testCode}-${index}`} className="border-b">
-                  <td className="p-4">
+                  <td className="p-1">
                     <div className="flex items-center gap-2">
                       <span className="font-medium">{displayName}</span>
                     </div>
@@ -663,12 +653,12 @@ export default function ReportDetailsPage() {
                     </div>
                   </td>
                   {!hideunits && (
-                    <td className="p-4">
+                    <td className="p-1">
                       <div className="text-lg">{result.unit}</div>
                     </td>
                   )}
                   {!hideReferenceRange && (
-                    <td className="p-4">
+                    <td className="p-1">
                       <div className="text-md">
                         {(() => {
                           // Check if referenceRange is an object with nested values (like Man/Woman)
@@ -1070,11 +1060,11 @@ export default function ReportDetailsPage() {
           </CardHeader>
 
           <CardContent className="space-y-3 p-3">
-<div className="bg-gray-50">
-  <div className="space-y-1 border-t-2 border-black">
+<div className="">
+  <div className="space-y-1 border-t border-black">
     <div className="grid grid-cols-2">
       <div className="flex">
-        <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left uppercase">
+        <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
           Patient Name
         </span>
         <span className="text-sm text-gray-900 uppercase">
@@ -1082,7 +1072,7 @@ export default function ReportDetailsPage() {
         </span>
       </div>
       <div className="flex">
-        <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left uppercase">
+        <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
           Report ID
         </span>
         <span className="text-sm text-gray-900 uppercase">
@@ -1092,7 +1082,7 @@ export default function ReportDetailsPage() {
     </div>
     <div className="grid grid-cols-2">
       <div className="flex">
-        <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left uppercase">
+        <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
           Age
         </span>
         <span className="text-sm text-gray-900 uppercase">
@@ -1100,7 +1090,7 @@ export default function ReportDetailsPage() {
         </span>
       </div>
       <div className="flex">
-        <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left uppercase">
+        <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
           Patient ID
         </span>
         <span className="text-sm text-gray-900 uppercase">
@@ -1110,7 +1100,7 @@ export default function ReportDetailsPage() {
     </div>
     <div className="grid grid-cols-2">
       <div className="flex">
-        <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left uppercase">
+        <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
           Gender
         </span>
         <span className="text-sm text-gray-900 uppercase">
@@ -1118,7 +1108,7 @@ export default function ReportDetailsPage() {
         </span>
       </div>
       <div className="flex">
-        <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left uppercase">
+        <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
           Report Date
         </span>
         <span className="text-sm text-gray-900 uppercase">
@@ -1129,7 +1119,7 @@ export default function ReportDetailsPage() {
     </div>
     <div className="grid grid-cols-2">
       <div className="flex">
-        <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left uppercase">
+        <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
           Phone
         </span>
         <span className="text-sm text-gray-900 uppercase">
@@ -1137,7 +1127,7 @@ export default function ReportDetailsPage() {
         </span>
       </div>
       <div className="flex">
-        <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left uppercase">
+        <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
           Ref By
         </span>
         <span className="text-sm text-gray-900 uppercase">
@@ -1145,7 +1135,7 @@ export default function ReportDetailsPage() {
         </span>
       </div>
     </div>
-    <div className="border-t-2 border-black"></div>
+    <div className="border-t border-black"></div>
   </div>
 </div>
 
