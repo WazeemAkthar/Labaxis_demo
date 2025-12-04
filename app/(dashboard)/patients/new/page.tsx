@@ -48,9 +48,7 @@ export default function NewPatientPage() {
     setSaving(true)
 
     try {
-      console.log("[v0] Starting patient creation with data:", formData)
       const dataManager = DataManager.getInstance()
-      console.log("[v0] DataManager instance obtained")
 
       const nameParts = formData.fullName.trim().split(" ")
       const firstName = nameParts[0] || ""
@@ -68,13 +66,12 @@ export default function NewPatientPage() {
         name: "",
       })
 
-      console.log("[v0] Patient created successfully:", patient)
 
       alert(`Patient ${formData.fullName} has been successfully registered with ID: ${patient.id}`)
 
       setTimeout(() => {
-        router.push("/patients")
-      }, 100)
+  router.push(`/reports/new?patientId=${patient.id}`)
+}, 100)
     } catch (error) {
       console.error("[v0] Error saving patient:", error)
       alert("Error saving patient. Please try again.")
@@ -84,7 +81,7 @@ export default function NewPatientPage() {
   }
 
   const isFormValid = () => {
-    return formData.fullName.trim() && formData.age && formData.gender
+    return formData.fullName.trim() && formData.gender
   }
 
   if (loading || authLoading) {
@@ -157,7 +154,7 @@ export default function NewPatientPage() {
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="age" className="text-slate-700 font-medium">
-                      Age <span className="text-red-500">*</span>
+                      Age
                     </Label>
                     <Input
                       id="age"
@@ -167,7 +164,6 @@ export default function NewPatientPage() {
                       value={formData.age}
                       onChange={(e) => handleInputChange("age", e.target.value)}
                       placeholder="Enter age"
-                      required
                       className="border-teal-200 focus:border-teal-500 focus:ring-teal-500 h-11"
                     />
                   </div>
