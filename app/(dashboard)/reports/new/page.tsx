@@ -152,6 +152,7 @@ export default function NewReportPage() {
   const [ppbsValues, setPpbsValues] = useState<any>(null);
   const [bssValues, setBssValues] = useState<any[]>([]);
   const [testCatalog, setTestCatalog] = useState<any[]>([]);
+  const [patientSearchTerm, setPatientSearchTerm] = useState("");
 
   const hasUFRTest = useDirectTestSelection
     ? selectedTests.includes("UFR")
@@ -213,6 +214,7 @@ export default function NewReportPage() {
     setOgttValues(null);
     setPpbsValues(null);
     setBssValues([]);
+    setPatientSearchTerm("");
   };
 
   const handleInvoiceChange = async (invoiceId: string) => {
@@ -1034,24 +1036,50 @@ if (bssValues && hasBSSTest && bssValues.length > 0) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="patient">Patient *</Label>
-              <Select
-                key={selectedPatient?.id || "no-patient"}
-                value={selectedPatient?.id || ""}
-                onValueChange={handlePatientChange}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a patient" />
-                </SelectTrigger>
-                <SelectContent>
-                  {patients.map((patient) => (
-                    <SelectItem key={patient.id} value={patient.id}>
-                      {patient.firstName} {patient.lastName} ({patient.id})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+  <Label htmlFor="patient">Patient *</Label>
+  <Select
+    key={selectedPatient?.id || "no-patient"}
+    value={selectedPatient?.id || ""}
+    onValueChange={handlePatientChange}
+  >
+    <SelectTrigger>
+      <SelectValue placeholder="Select a patient" />
+    </SelectTrigger>
+    <SelectContent>
+      <div className="p-2 sticky top-0 bg-background z-10">
+        <Input
+          placeholder="Search by name or ID..."
+          className="h-8"
+          value={patientSearchTerm}
+          onChange={(e) => setPatientSearchTerm(e.target.value)}
+          onClick={(e) => e.stopPropagation()}
+        />
+      </div>
+      {patients
+        .filter((patient) => {
+          const searchLower = patientSearchTerm.toLowerCase();
+          const fullName = `${patient.firstName} ${patient.lastName}`.toLowerCase();
+          const id = patient.id.toLowerCase();
+          return fullName.includes(searchLower) || id.includes(searchLower);
+        })
+        .map((patient) => (
+          <SelectItem key={patient.id} value={patient.id}>
+            {patient.firstName} {patient.lastName} ({patient.id})
+          </SelectItem>
+        ))}
+      {patients.filter((patient) => {
+        const searchLower = patientSearchTerm.toLowerCase();
+        const fullName = `${patient.firstName} ${patient.lastName}`.toLowerCase();
+        const id = patient.id.toLowerCase();
+        return fullName.includes(searchLower) || id.includes(searchLower);
+      }).length === 0 && (
+        <div className="p-2 text-center text-sm text-muted-foreground">
+          No patients found
+        </div>
+      )}
+    </SelectContent>
+  </Select>
+</div>
 
             {selectedPatient && (
               <div className="space-y-4">
