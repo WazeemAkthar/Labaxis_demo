@@ -66,23 +66,22 @@ export function FBCReportCard({ onValuesChange }: FBCReportCardProps) {
     const pcv = field === 'pcv' ? parseFloat(value) : parseFloat(newValues.pcv)
     const wbc = field === 'wbc' ? parseFloat(value) : parseFloat(newValues.wbc)
 
-    const updatedValues = {
-      ...newValues,
-      mcv: (pcv && rbc && !isNaN(pcv) && !isNaN(rbc) && rbc !== 0) ? (pcv / rbc).toFixed(1) : '',
-      mch: (hb && rbc && !isNaN(hb) && !isNaN(rbc) && rbc !== 0) ? (hb / rbc).toFixed(1) : '',
-      mchc: (hb && pcv && !isNaN(hb) && !isNaN(pcv) && pcv !== 0) ? (hb / pcv).toFixed(1) : '',
-      neutrophilsAbs: (wbc && newValues.neutrophils && !isNaN(wbc) && !isNaN(parseFloat(newValues.neutrophils))) ? 
-        ((parseFloat(newValues.neutrophils) / 100) * wbc).toFixed(2) : '',
-      lymphocytesAbs: (wbc && newValues.lymphocytes && !isNaN(wbc) && !isNaN(parseFloat(newValues.lymphocytes))) ? 
-        ((parseFloat(newValues.lymphocytes) / 100) * wbc).toFixed(2) : '',
-      eosinophilsAbs: (wbc && newValues.eosinophils && !isNaN(wbc) && !isNaN(parseFloat(newValues.eosinophils))) ? 
-        ((parseFloat(newValues.eosinophils) / 100) * wbc).toFixed(2) : '',
-      monocytesAbs: (wbc && newValues.monocytes && !isNaN(wbc) && !isNaN(parseFloat(newValues.monocytes))) ? 
-        ((parseFloat(newValues.monocytes) / 100) * wbc).toFixed(2) : '',
-      basophilsAbs: (wbc && newValues.basophils && !isNaN(wbc) && !isNaN(parseFloat(newValues.basophils))) ? 
-        ((parseFloat(newValues.basophils) / 100) * wbc).toFixed(2) : '',
-    }
-
+   const updatedValues = {
+  ...newValues,
+  mcv: (pcv && rbc && !isNaN(pcv) && !isNaN(rbc) && rbc !== 0) ? ((pcv / rbc) * 10).toFixed(1) : '',
+  mch: (hb && rbc && !isNaN(hb) && !isNaN(rbc) && rbc !== 0) ? ((hb / rbc) * 10).toFixed(1) : '',
+  mchc: (hb && pcv && !isNaN(hb) && !isNaN(pcv) && pcv !== 0) ? ((hb / pcv) * 100).toFixed(1) : '',
+  neutrophilsAbs: (wbc && newValues.neutrophils && !isNaN(wbc) && !isNaN(parseFloat(newValues.neutrophils))) ? 
+    ((parseFloat(newValues.neutrophils) / 100) * wbc).toFixed(2) : '',
+  lymphocytesAbs: (wbc && newValues.lymphocytes && !isNaN(wbc) && !isNaN(parseFloat(newValues.lymphocytes))) ? 
+    ((parseFloat(newValues.lymphocytes) / 100) * wbc).toFixed(2) : '',
+  eosinophilsAbs: (wbc && newValues.eosinophils && !isNaN(wbc) && !isNaN(parseFloat(newValues.eosinophils))) ? 
+    ((parseFloat(newValues.eosinophils) / 100) * wbc).toFixed(2) : '',
+  monocytesAbs: (wbc && newValues.monocytes && !isNaN(wbc) && !isNaN(parseFloat(newValues.monocytes))) ? 
+    ((parseFloat(newValues.monocytes) / 100) * wbc).toFixed(2) : '',
+  basophilsAbs: (wbc && newValues.basophils && !isNaN(wbc) && !isNaN(parseFloat(newValues.basophils))) ? 
+    ((parseFloat(newValues.basophils) / 100) * wbc).toFixed(2) : '',
+}
     onValuesChange(updatedValues)
   }
 
@@ -94,20 +93,20 @@ export function FBCReportCard({ onValuesChange }: FBCReportCardProps) {
     const wbc = parseFloat(values.wbc)
 
     return {
-      mcv: (pcv && rbc && !isNaN(pcv) && !isNaN(rbc) && rbc !== 0) ? (pcv / rbc).toFixed(1) : '',
-      mch: (hb && rbc && !isNaN(hb) && !isNaN(rbc) && rbc !== 0) ? (hb / rbc).toFixed(1) : '',
-      mchc: (hb && pcv && !isNaN(hb) && !isNaN(pcv) && pcv !== 0) ? (hb / pcv).toFixed(1) : '',
-      neutrophilsAbs: (wbc && values.neutrophils && !isNaN(wbc) && !isNaN(parseFloat(values.neutrophils))) ? 
-        ((parseFloat(values.neutrophils) / 100) * wbc).toFixed(2) : '',
-      lymphocytesAbs: (wbc && values.lymphocytes && !isNaN(wbc) && !isNaN(parseFloat(values.lymphocytes))) ? 
-        ((parseFloat(values.lymphocytes) / 100) * wbc).toFixed(2) : '',
-      eosinophilsAbs: (wbc && values.eosinophils && !isNaN(wbc) && !isNaN(parseFloat(values.eosinophils))) ? 
-        ((parseFloat(values.eosinophils) / 100) * wbc).toFixed(2) : '',
-      monocytesAbs: (wbc && values.monocytes && !isNaN(wbc) && !isNaN(parseFloat(values.monocytes))) ? 
-        ((parseFloat(values.monocytes) / 100) * wbc).toFixed(2) : '',
-      basophilsAbs: (wbc && values.basophils && !isNaN(wbc) && !isNaN(parseFloat(values.basophils))) ? 
-        ((parseFloat(values.basophils) / 100) * wbc).toFixed(2) : '',
-    }
+  mcv: (pcv && rbc && !isNaN(pcv) && !isNaN(rbc) && rbc !== 0) ? ((pcv / rbc) * 10).toFixed(1) : '',
+  mch: (hb && rbc && !isNaN(hb) && !isNaN(rbc) && rbc !== 0) ? ((hb / rbc) * 10).toFixed(1) : '',
+  mchc: (hb && pcv && !isNaN(hb) && !isNaN(pcv) && pcv !== 0) ? ((hb / pcv) * 100).toFixed(1) : '',
+  neutrophilsAbs: (wbc && values.neutrophils && !isNaN(wbc) && !isNaN(parseFloat(values.neutrophils))) ? 
+    ((parseFloat(values.neutrophils) / 100) * wbc).toFixed(2) : '',
+  lymphocytesAbs: (wbc && values.lymphocytes && !isNaN(wbc) && !isNaN(parseFloat(values.lymphocytes))) ? 
+    ((parseFloat(values.lymphocytes) / 100) * wbc).toFixed(2) : '',
+  eosinophilsAbs: (wbc && values.eosinophils && !isNaN(wbc) && !isNaN(parseFloat(values.eosinophils))) ? 
+    ((parseFloat(values.eosinophils) / 100) * wbc).toFixed(2) : '',
+  monocytesAbs: (wbc && values.monocytes && !isNaN(wbc) && !isNaN(parseFloat(values.monocytes))) ? 
+    ((parseFloat(values.monocytes) / 100) * wbc).toFixed(2) : '',
+  basophilsAbs: (wbc && values.basophils && !isNaN(wbc) && !isNaN(parseFloat(values.basophils))) ? 
+    ((parseFloat(values.basophils) / 100) * wbc).toFixed(2) : '',
+}
   }
 
   const derivedValues = calculateDerivedValues()
