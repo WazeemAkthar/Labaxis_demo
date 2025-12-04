@@ -626,11 +626,11 @@ export default function ReportDetailsPage() {
                 <tr key={`${testCode}-${index}`} className="border-b">
                   <td className="p-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium">{displayName}</span>
+                      <span className="">{displayName}</span>
                     </div>
                   </td>
-                  <td className="p-4">
-                    <div className="text-lg">
+                  <td className="p-1">
+                    <div className="">
                       {isVDRL ||
                       isHIV ||
                       isHCG ||
@@ -654,12 +654,12 @@ export default function ReportDetailsPage() {
                   </td>
                   {!hideunits && (
                     <td className="p-1">
-                      <div className="text-lg">{result.unit}</div>
+                      <div className="">{result.unit}</div>
                     </td>
                   )}
                   {!hideReferenceRange && (
                     <td className="p-1">
-                      <div className="text-md">
+                      <div className="">
                         {(() => {
                           // Check if referenceRange is an object with nested values (like Man/Woman)
                           try {
@@ -847,14 +847,13 @@ export default function ReportDetailsPage() {
           }
           .space-y-6 > div:not(.mt-8) th {
             background-color: #f8f9fa !important;
-            font-weight: bold !important;
-            font-size: 16px !important;
+            font-weight: 600 !important;
+            // font-size: 16px !important;
             text-align: center !important;
             padding: 0px !important;
           }
           .space-y-6 > div:not(.mt-8) td {
-            font-family: Menlo, Monaco, Consolas, "Liberation Mono",
-              "Courier New", monospace;
+            
           }
 
           .space-y-6 > div:not(.mt-8) th:first-child,
@@ -962,16 +961,23 @@ export default function ReportDetailsPage() {
           hr,
           .border-t,
           .border-b {
-            border-color: #d1d5db !important;
+            // border-color: #d1d5db !important;
             margin: 1px 0 !important;
           }
 
-          .text-center.text-sm.text-muted-foreground {
+         .text-center.text-sm.text-muted-foreground {
             font-size: 8px !important;
             color: #9ca3af !important;
             margin-top: 12px !important;
             padding-top: 8px !important;
             border-top: 1px solid #e0e0e0 !important;
+          }
+
+          /* Patient header information with Courier New font */
+          .space-y-1.border-t.border-black.font-mono,
+          .space-y-1.border-t.border-black.font-mono * {
+            font-family: "Courier New", Courier, monospace !important;
+            color: #000000 !important;
           }
 
           .recharts-responsive-container {
@@ -1004,6 +1010,11 @@ export default function ReportDetailsPage() {
     .ogtt-section table td {
       border-bottom: 0.5px solid #e5e7eb !important; /* Thinner border */
     }
+      .font-bold,
+.font-semibold,
+.font-medium {
+  font-weight: 500 !important;
+}
         }
       `}</style>
       <div className="space-y-6">
@@ -1061,7 +1072,7 @@ export default function ReportDetailsPage() {
 
           <CardContent className="space-y-3 p-3">
 <div className="">
-  <div className="space-y-1 border-t border-black">
+  <div className="space-y-1 border-t border-black font-mono">
     <div className="grid grid-cols-2">
       <div className="flex">
         <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
@@ -1167,13 +1178,13 @@ export default function ReportDetailsPage() {
               <>
                 <Separator />
                 <div>
-                  <h3 className="font-semibold mb-2">Doctor's Remarks:</h3>
+                  <h3 className="font-semibold mb-2">Remarks:</h3>
                   <p className="text-sm">{report.doctorRemarks}</p>
                 </div>
               </>
             )}
 
-            <p className="font-normal text-center text-lg text-black">
+            <p className="font-normal text-center text-md">
               -- End of Report --
             </p>
           </CardContent>

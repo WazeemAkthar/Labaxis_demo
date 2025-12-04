@@ -589,11 +589,10 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
             <div className="space-y-4">
               <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
                 <p>
-                  <strong>METHOD: </strong> QUANTITITIVE TURBIDIMETRY
+                  METHOD: QUANTITITIVE TURBIDIMETRY
                 </p>
                 <p>
-                  <strong>Fully automated Bio chemistry analyzer </strong> -
-                  “SELECTRA ProM“
+                  Fully automated Bio chemistry analyzer - “SELECTRA ProM“
                 </p>
               </div>
             </div>
@@ -1444,31 +1443,33 @@ case "urine albumin with creatinine ratio":
     return null;
   }
 
+   const hideTitle = ['crp', 'c-reactive protein', 'c reactive protein'];
+  const shouldHideTitle = hideTitle.includes(testCode.toLowerCase());
+
   return (
     <div
-      className={`mt-6 border-2 border-gray-200 rounded-lg p-4 bg-gray-50 ${className}`}
+      className={`mt-6 p-4 ${className}`}
     >
-      <h4 className="font-bold text-lg mb-4 text-gray-800 border-b-2 border-gray-300 pb-2">
-        {details.title}
-      </h4>
+      {!shouldHideTitle && (
+        <h4 className="font-bold text-lg mb-4 text-gray-800 border-b-2 border-gray-300 pb-2">
+          {details.title}
+        </h4>
+      )}
       <div className="text-gray-700">{details.content}</div>
 
 
 {/* Print-specific styles */}
 <style jsx global>{`
   @media print {
-    /* Additional details section styling for print */
-    .mt-6.border-2.border-gray-200.rounded-lg.p-4.bg-gray-50 {
+   /* Additional details section styling for print */
+    .mt-6.p-4 {
       margin-top: 8px !important;
-      border: 1px solid #666 !important;
-      background-color: #f8f9fa !important;
       padding: 8px !important;
-      border-radius: 4px !important;
       page-break-inside: avoid !important;
     }
 
     /* Title styling - more specific selector */
-    .mt-6.border-2 h4.font-bold.text-lg.mb-4 {
+    .mt-6 h4.font-bold.text-lg.mb-4 {
       font-size: 11px !important;
       margin-bottom: 6px !important;
       color: #333 !important;
