@@ -851,6 +851,7 @@ export default function ReportDetailsPage() {
             // font-size: 16px !important;
             text-align: center !important;
             padding: 0px !important;
+            border-bottom: 1px solid #000 !important;
           }
           .space-y-6 > div:not(.mt-8) td {
             
@@ -1184,7 +1185,7 @@ export default function ReportDetailsPage() {
               </>
             )}
 
-            <p className="font-normal text-center text-md">
+            <p className="font-normal text-center text-lg">
               -- End of Report --
             </p>
           </CardContent>

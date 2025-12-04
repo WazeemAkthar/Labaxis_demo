@@ -2,7 +2,7 @@
 
 import type React from "react";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -132,6 +132,7 @@ async function getTestDetails(
 
 export default function NewReportPage() {
   const router = useRouter();
+  const searchParams = useSearchParams(); 
   const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -180,26 +181,37 @@ export default function NewReportPage() {
       false;
 
   useEffect(() => {
-    if (authLoading) return;
+  if (authLoading) return;
 
-    if (!user) {
-      router.push("/");
-      return;
-    }
-    // Load data
-    async function loadData() {
-      const dataManager = DataManager.getInstance();
-      const patientsData = await dataManager.getPatients();
-      const invoicesData = await dataManager.getInvoices();
-      const catalogData = await dataManager.getTestCatalog();
-      setTestCatalog(catalogData);
-      setPatients(patientsData);
-      setInvoices(invoicesData);
-      setLoading(false);
-    }
+  if (!user) {
+    router.push("/");
+    return;
+  }
+  
+  // Load data
+  async function loadData() {
+    const dataManager = DataManager.getInstance();
+    const patientsData = await dataManager.getPatients();
+    const invoicesData = await dataManager.getInvoices();
+    const catalogData = await dataManager.getTestCatalog();
+    setTestCatalog(catalogData);
+    setPatients(patientsData);
+    setInvoices(invoicesData);
+    setLoading(false);
 
-    loadData();
-  }, [user, authLoading, router]);
+    // Auto-select patient from query parameter (moved inside loadData)
+    const patientIdParam = searchParams.get('patientId');
+    if (patientIdParam) {
+      const patient = patientsData.find((p: Patient) => p.id === patientIdParam);
+      if (patient) {
+        setSelectedPatient(patient);
+        console.log(`Auto-selected patient: ${patient.firstName} ${patient.lastName}`);
+      }
+    }
+  }
+
+  loadData();
+}, [user, authLoading, router, searchParams]);
 
   const handlePatientChange = (patientId: string) => {
     const patient = patients.find((p) => p.id === patientId);
