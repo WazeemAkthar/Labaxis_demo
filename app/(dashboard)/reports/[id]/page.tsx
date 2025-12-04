@@ -227,9 +227,9 @@ export default function ReportDetailsPage() {
           <Badge variant="outline" className="text-lg px-3 py-1">
             OGTT
           </Badge>
-          <span className="font-semibold text-lg">
+          <div className="font-semibold text-lg">
             Oral Glucose Tolerance Test
-          </span>
+          </div>
         </div>
 
         <div className="overflow-x-auto mb-6">
@@ -708,259 +708,259 @@ const renderBSSResults = (bssResults: any[]) => {
 
   return (
     <div>
-      <style jsx global>{`
-        @media print {
-          body {
-            font-size: 8px;
-            margin: 0;
-            padding: 0;
-          }
-          .table-row {
-            padding: 0px !important;
-            margin: 0px !important;
-          }
-          .no-print {
-            display: none !important;
-          }
-          .print-break {
-            page-break-after: always;
-          }
-          @page {
-            margin: 15px;
-            size: A4;
-          }
+   <style jsx global>{`
+  @media print {
+    body {
+      font-size: 8px;
+      margin: 0;
+      padding: 0;
+    }
+    .table-row {
+      padding: 0px !important;
+      margin: 0px !important;
+    }
+    .no-print {
+      display: none !important;
+    }
+    .print-break {
+      page-break-after: always;
+    }
+    @page {
+      margin: 15px;
+      size: A4;
+    }
 
-          [class*="CardHeader"] {
-            display: none !important;
-          }
-          header {
-            display: none !important;
-          }
-          .display {
-            display: none !important;
-          }
-          .print\\:shadow-none > div:first-child {
-            display: none !important;
-          }
+    [class*="CardHeader"] {
+      display: none !important;
+    }
+    header {
+      display: none !important;
+    }
+    .display {
+      display: none !important;
+    }
+    .print\\:shadow-none > div:first-child {
+      display: none !important;
+    }
 
-          .print\\:shadow-none {
-            box-shadow: none !important;
-            border: none !important;
-          }
+    .print\\:shadow-none {
+      box-shadow: none !important;
+      border: none !important;
+    }
 
-          .max-w-4xl.mx-auto.print\\:max-w-none {
-            border: none !important;
-            box-shadow: none !important;
-          }
+    .max-w-4xl.mx-auto.print\\:max-w-none {
+      border: none !important;
+      box-shadow: none !important;
+    }
 
-          .space-y-6 {
-            border: none !important;
-          }
+    .space-y-6 {
+      border: none !important;
+    }
 
-          [class*="CardContent"] {
-            border: none !important;
-          }
+    [class*="CardContent"] {
+      border: none !important;
+    }
 
-          .bg-gray-50.p-4.rounded-sm.border {
-            background-color: #f9fafb !important;
-            padding: 6px !important;
-            margin-bottom: 8px !important;
-          }
+    .bg-gray-50.p-4.rounded-sm.border {
+      background-color: #f9fafb !important;
+      padding: 6px !important;
+      margin-bottom: 8px !important;
+    }
 
-          h3 {
-            font-size: 11px;
-            font-weight: bold;
-            margin-bottom: 2px;
-            margin-top: 2px;
-            color: #374151;
-          }
+    h3 {
+      font-size: 11px;
+      font-weight: bold;
+      margin-bottom: 2px;
+      margin-top: 2px;
+      color: #374151;
+    }
 
-          h1.font-semibold.text-xl.text-center {
-            display: block !important;
-            font-size: 16px !important;
-            font-weight: 900 !important;
-            text-align: center !important;
-            margin-bottom: 8px !important;
-            border-bottom: 2px solid #000 !important;
-            padding-bottom: 4px !important;
-          }
+    h1.font-semibold.text-xl.text-center {
+      display: block !important;
+      font-size: 16px !important;
+      font-weight: 900 !important;
+      text-align: center !important;
+      margin-bottom: 8px !important;
+      border-bottom: 2px solid #000 !important;
+      padding-bottom: 4px !important;
+    }
 
-          .border.rounded-lg .flex.items-center.gap-2 {
-            justify-content: center !important;
-            margin-bottom: 4px !important;
-            margin-top: 2px !important;
-            width: 100% !important;
-          }
+    .border.rounded-lg .flex.items-center.gap-2 {
+      justify-content: center !important;
+      margin-bottom: 4px !important;
+      margin-top: 2px !important;
+      width: 100% !important;
+    }
 
-          .border.rounded-lg .flex.items-center.gap-2 > [class*="Badge"],
-          .border.rounded-lg .flex.items-center.gap-2 > [class*="badge"],
-          .border.rounded-lg .flex.items-center.gap-2 > *:first-child {
-            display: none !important;
-          }
+    .border.rounded-lg .flex.items-center.gap-2 > [class*="Badge"],
+    .border.rounded-lg .flex.items-center.gap-2 > [class*="badge"],
+    .border.rounded-lg .flex.items-center.gap-2 > *:first-child {
+      display: none !important;
+    }
 
-          .border.rounded-lg
-            .flex.items-center.gap-2
-            > span:not([class*="badge"]):not([class*="Badge"]) {
-            font-size: 16px !important;
-            font-weight: 900 !important;
-            text-align: center !important;
-            background-color: #f3f4f6 !important;
-            border-radius: 3px !important;
-            letter-spacing: 0.5px !important;
-          }
+    .border.rounded-lg
+      .flex.items-center.gap-2
+      > span:not([class*="badge"]):not([class*="Badge"]) {
+      font-size: 16px !important;
+      font-weight: 900 !important;
+      text-align: center !important;
+      background-color: #f3f4f6 !important;
+      border-radius: 3px !important;
+      letter-spacing: 0.5px !important;
+    }
 
-          table {
-            font-size: 14px;
-            border-collapse: collapse;
-            width: 100%;
-            margin-bottom: 2px;
-          }
-          th,
-          td {
-            vertical-align: middle;
-          }
-          th {
-            background-color: #f8f9fa !important;
-            font-weight: bold !important;
-            font-size: 16px !important;
-            text-align: center !important;
-            padding: 0px !important;
-          }
-          td {
-            font-family: Menlo, Monaco, Consolas, "Liberation Mono",
-              "Courier New", monospace;
-          }
+    /* SCOPED TABLE STYLES - Only for report tables, not TestAdditionalDetails */
+    .space-y-6 > div:not(.mt-8) table {
+      font-size: 14px;
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 2px;
+    }
+    .space-y-6 > div:not(.mt-8) th,
+    .space-y-6 > div:not(.mt-8) td {
+      vertical-align: middle;
+    }
+    .space-y-6 > div:not(.mt-8) th {
+      background-color: #f8f9fa !important;
+      font-weight: bold !important;
+      font-size: 16px !important;
+      text-align: center !important;
+      padding: 0px !important;
+    }
+    .space-y-6 > div:not(.mt-8) td {
+      font-family: Menlo, Monaco, Consolas, "Liberation Mono",
+        "Courier New", monospace;
+    }
 
-          th:first-child,
-          td:first-child {
-            text-align: left !important;
-            width: 30%;
-            padding: 0px !important;
-          }
-          th:nth-child(2),
-          td:nth-child(2) {
-            text-align: center !important;
-            width: 15%;        
-            padding: 0px !important;
-          }
-          th:nth-child(3),
-          td:nth-child(3) {
-            text-align: center !important;
-            width: 15%;
-            padding: 0px !important;
-          }
-          th:nth-child(4),
-          td:nth-child(4) {
-            text-align: center !important;
-            width: 25%;
-            padding: 0px !important;
-          }
-          th:nth-child(5),
-          td:nth-child(5) {
-            text-align: center !important;
-            width: 15%;
-            padding: 0px !important;
-          }
+    .space-y-6 > div:not(.mt-8) th:first-child,
+    .space-y-6 > div:not(.mt-8) td:first-child {
+      text-align: left !important;
+      width: 30%;
+      padding: 0px !important;
+    }
+    .space-y-6 > div:not(.mt-8) th:nth-child(2),
+    .space-y-6 > div:not(.mt-8) td:nth-child(2) {
+      text-align: center !important;
+      width: 15%;
+      padding: 0px !important;
+    }
+    .space-y-6 > div:not(.mt-8) th:nth-child(3),
+    .space-y-6 > div:not(.mt-8) td:nth-child(3) {
+      text-align: center !important;
+      width: 15%;
+      padding: 0px !important;
+    }
+    .space-y-6 > div:not(.mt-8) th:nth-child(4),
+    .space-y-6 > div:not(.mt-8) td:nth-child(4) {
+      text-align: center !important;
+      width: 25%;
+      padding: 0px !important;
+    }
+    .space-y-6 > div:not(.mt-8) th:nth-child(5),
+    .space-y-6 > div:not(.mt-8) td:nth-child(5) {
+      text-align: center !important;
+      width: 15%;
+      padding: 0px !important;
+    }
 
-          .border.rounded-lg h4 {
-            display: block !important;
-            font-size: 16px !important;
-            font-weight: bold !important;
-            margin: 2px 0 2px 0 !important;
-            color: #374151 !important;
-            background-color: #f3f4f6 !important;
-            padding: 6px 0px !important;
-            border-radius: 2px !important;
-            text-align: left !important;
-          }
+    .border.rounded-lg h4 {
+      display: block !important;
+      font-size: 16px !important;
+      font-weight: bold !important;
+      margin: 2px 0 2px 0 !important;
+      color: #374151 !important;
+      background-color: #f3f4f6 !important;
+      padding: 6px 0px !important;
+      border-radius: 2px !important;
+      text-align: left !important;
+    }
 
-          .border.rounded-lg .mb-6:nth-child(4) table thead {
-            display: none !important;
-          }
+    .border.rounded-lg .mb-6:nth-child(4) table thead {
+      display: none !important;
+    }
 
-          .border.rounded-lg .mb-6:nth-child(6) table thead {
-            display: none !important;
-          }
+    .border.rounded-lg .mb-6:nth-child(6) table thead {
+      display: none !important;
+    }
 
-          .border.rounded-lg .mb-6 + hr + .mb-6 table thead,
-          .border.rounded-lg .mb-6 + hr + .mb-6 + hr + .mb-6 table thead {
-            display: none !important;
-          }
+    .border.rounded-lg .mb-6 + hr + .mb-6 table thead,
+    .border.rounded-lg .mb-6 + hr + .mb-6 + hr + .mb-6 table thead {
+      display: none !important;
+    }
 
-          .border.rounded-lg hr {
-            display: none !important;
-          }
+    .border.rounded-lg hr {
+      display: none !important;
+    }
 
-          .border.rounded-lg .mb-6:not(:first-child) {
-            margin-bottom: 0 !important;
-          }
+    .border.rounded-lg .mb-6:not(:first-child) {
+      margin-bottom: 0 !important;
+    }
 
-          .border.rounded-lg {
-            border: none !important;
-            border-radius: 0 !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            background: transparent !important;
-          }
+    .border.rounded-lg {
+      border: none !important;
+      border-radius: 0 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      background: transparent !important;
+    }
 
-          .badge,
-          [class*="badge"] {
-            font-size: 14px !important;
-            padding: 4px 8px !important;
-            background-color: #f3f4f6 !important;
-            border: 1px solid #e5e7eb !important;
-            color: #374151 !important;
-            border-radius: 3px !important;
-          }
+    .badge,
+    [class*="badge"] {
+      font-size: 14px !important;
+      padding: 4px 8px !important;
+      background-color: #f3f4f6 !important;
+      border: 1px solid #e5e7eb !important;
+      color: #374151 !important;
+      border-radius: 3px !important;
+    }
 
-          [class*="bg-red"],
-          [class*="destructive"] {
-            background-color: #ef4444 !important;
-            color: #ffffff !important;
-            font-size: 14px !important;
-            padding: 4px 8px !important;
-            font-weight: bold !important;
-            border-radius: 3px !important;
-          }
+    [class*="bg-red"],
+    [class*="destructive"] {
+      background-color: #ef4444 !important;
+      color: #ffffff !important;
+      font-size: 14px !important;
+      padding: 4px 8px !important;
+      font-weight: bold !important;
+      border-radius: 3px !important;
+    }
 
-          .text-muted-foreground {
-            color: #6b7280 !important;
-            font-size: 8px !important;
-            text: left !important;
-          }
-          .font-medium,
-          .font-semibold {
-            font-weight: bold !important;
-          }
+    .text-muted-foreground {
+      color: #6b7280 !important;
+      font-size: 8px !important;
+      text: left !important;
+    }
+    .font-medium,
+    .font-semibold {
+      font-weight: bold !important;
+    }
 
-          hr,
-          .border-t,
-          .border-b {
-            border-color: #d1d5db !important;
-            margin: 1px 0 !important;
-          }
+    hr,
+    .border-t,
+    .border-b {
+      border-color: #d1d5db !important;
+      margin: 1px 0 !important;
+    }
 
-          .text-center.text-sm.text-muted-foreground {
-            font-size: 8px !important;
-            color: #9ca3af !important;
-            margin-top: 12px !important;
-            padding-top: 8px !important;
-            border-top: 1px solid #e0e0e0 !important;
-          }
+    .text-center.text-sm.text-muted-foreground {
+      font-size: 8px !important;
+      color: #9ca3af !important;
+      margin-top: 12px !important;
+      padding-top: 8px !important;
+      border-top: 1px solid #e0e0e0 !important;
+    }
 
-          .recharts-responsive-container {
-            page-break-inside: avoid !important;
-            display: block !important;
-            margin-top: 20px !important;
-            margin-bottom: 20px !important;
-          }
+    .recharts-responsive-container {
+      page-break-inside: avoid !important;
+      display: block !important;
+      margin-top: 20px !important;
+      margin-bottom: 20px !important;
+    }
 
-          .space-y-4 {
-            display: block !important;
-          }
-        }
-}
-      `}</style>
+    .space-y-4 {
+      display: block !important;
+    }
+  }
+`}</style>
       <div className="space-y-6">
         <div className="flex items-center gap-4 no-print">
           <Button asChild variant="outline" size="icon">

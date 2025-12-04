@@ -652,7 +652,7 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
               </div>
 
               <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
-                <p className="text-xs">
+                <p>
                   <strong>METHOD: </strong> QUANTITITIVE TURBIDIMETRY
                 </p>
                 <p>
@@ -1517,57 +1517,79 @@ case "urine albumin with creatinine ratio":
       </h4>
       <div className="text-gray-700">{details.content}</div>
 
-      {/* Print-specific styles */}
-      <style jsx>{`
-        @media print {
-          /* Additional details section styling for print */
-          .mt-6.border-2.border-gray-200 {
-            margin-top: 8px !important;
-            border: 1px solid #666 !important;
-            background-color: #f8f9fa !important;
-            padding: 8px !important;
-            border-radius: 4px !important;
-            page-break-inside: avoid !important;
-          }
 
-          /* Title styling */
-          h4.font-bold.text-lg {
-            font-size: 14px !important;
-            margin-bottom: 6px !important;
-            color: #333 !important;
-            border-bottom: 1px solid #666 !important;
-            padding-bottom: 3px !important;
-          }
+{/* Print-specific styles */}
+<style jsx global>{`
+  @media print {
+    /* Additional details section styling for print */
+    .mt-6.border-2.border-gray-200.rounded-lg.p-4.bg-gray-50 {
+      margin-top: 8px !important;
+      border: 1px solid #666 !important;
+      background-color: #f8f9fa !important;
+      padding: 8px !important;
+      border-radius: 4px !important;
+      page-break-inside: avoid !important;
+    }
 
-          /* Text content */
-          .text-sm {
-            font-size: 10px !important;
-            line-height: 1.4 !important;
-          }
+    /* Title styling - more specific selector */
+    .mt-6.border-2 h4.font-bold.text-lg.mb-4 {
+      font-size: 11px !important;
+      margin-bottom: 6px !important;
+      color: #333 !important;
+      border-bottom: 1px solid #666 !important;
+      padding-bottom: 3px !important;
+      font-weight: bold !important;
+    }
 
-          /* Table styling */
-          table {
-            font-size: 9px !important;
-            border-collapse: collapse !important;
-          }
+    /* All text in TestAdditionalDetails */
+    .mt-6.border-2 .text-sm,
+    .mt-6.border-2 .text-xs,
+    .mt-6.border-2 p,
+    .mt-6.border-2 strong,
+    .mt-6.border-2 li,
+    .mt-6.border-2 div {
+      font-size: 9px !important;
+      line-height: 1.4 !important;
+    }
 
-          th,
-          td {
-            padding: 2px 4px !important;
-            border: 1px solid #666 !important;
-          }
+    /* Table styling in TestAdditionalDetails */
+    .mt-6.border-2 table {
+      font-size: 9px !important;
+      border-collapse: collapse !important;
+      width: 100% !important;
+    }
 
-          th {
-            background-color: #e9ecef !important;
-            font-weight: bold !important;
-          }
+    .mt-6.border-2 th,
+    .mt-6.border-2 td {
+      padding: 2px 4px !important;
+      border: 1px solid #666 !important;
+      font-size: 9px !important;
+      line-height: 1.3 !important;
+    }
 
-          /* Ensure proper spacing */
-          .space-y-4 > * + * {
-            margin-top: 6px !important;
-          }
-        }
-      `}</style>
+    .mt-6.border-2 th {
+      background-color: #e9ecef !important;
+      font-weight: bold !important;
+      font-size: 9px !important;
+    }
+
+    /* Info boxes in TestAdditionalDetails */
+    .mt-6.border-2 .bg-blue-50,
+    .mt-6.border-2 .bg-yellow-50 {
+      padding: 4px !important;
+    }
+
+    .mt-6.border-2 .bg-blue-50 *,
+    .mt-6.border-2 .bg-yellow-50 * {
+      font-size: 9px !important;
+    }
+
+    /* Ensure proper spacing */
+    .mt-6.border-2 .space-y-4 > * + * {
+      margin-top: 6px !important;
+    }
+  }
+`}</style>
     </div>
   );
 };

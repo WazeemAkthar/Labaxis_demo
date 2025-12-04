@@ -84,7 +84,7 @@ export default function NewPatientPage() {
   }
 
   const isFormValid = () => {
-    return formData.fullName.trim() && formData.age && formData.gender && formData.phone.trim()
+    return formData.fullName.trim() && formData.age && formData.gender
   }
 
   if (loading || authLoading) {
@@ -198,7 +198,7 @@ export default function NewPatientPage() {
                 
                 <div className="space-y-2">
                   <Label htmlFor="phone" className="text-slate-700 font-medium">
-                    Phone Number <span className="text-red-500">*</span>
+                    Phone Number
                   </Label>
                   <Input
                     id="phone"
@@ -206,7 +206,6 @@ export default function NewPatientPage() {
                     value={formData.phone}
                     onChange={(e) => handleInputChange("phone", e.target.value)}
                     placeholder="Enter phone number"
-                    required
                     className="border-cyan-200 focus:border-cyan-500 focus:ring-cyan-500 h-11"
                   />
                 </div>
