@@ -405,7 +405,7 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                 <table className="w-full border-collapse border border-gray-300 text-sm">
                   <tbody>
                     <tr>
-                      <td className="border border-gray-300 p-2">60 - 110</td>
+                      <td className="border border-gray-300 p-2">60 - 115</td>
                       <td className="border border-gray-300 p-2 font-medium">
                         Normal
                       </td>
@@ -587,70 +587,6 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
           title: "C-Reactive Protein Interpretation",
           content: (
             <div className="space-y-4">
-              <div>
-                <p className="text-sm mb-3 leading-relaxed">
-                  CRP is an acute-phase protein that rises rapidly during
-                  inflammation, infection, or tissue injury. Values ≤ 6 mg/l are
-                  considered negative, indicating minimal inflammation.
-                </p>
-              </div>
-
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-300 text-sm">
-                  <thead>
-                    <tr className="bg-gray-50">
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
-                        CRP Level (mg/l)
-                      </th>
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
-                        Result
-                      </th>
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
-                        Clinical Significance
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="border border-gray-300 p-2">≤ 6</td>
-                      <td className="border border-gray-300 p-2 font-medium text-green-600">
-                        NEGATIVE
-                      </td>
-                      <td className="border border-gray-300 p-2">
-                        Normal - No significant inflammation
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-300 p-2">6-10</td>
-                      <td className="border border-gray-300 p-2 font-medium text-yellow-600">
-                        MILD ELEVATION
-                      </td>
-                      <td className="border border-gray-300 p-2">
-                        Minor inflammation or infection
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-300 p-2">10-50</td>
-                      <td className="border border-gray-300 p-2 font-medium text-orange-600">
-                        MODERATE ELEVATION
-                      </td>
-                      <td className="border border-gray-300 p-2">
-                        Active inflammation/infection
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-300 p-2">&gt; 50</td>
-                      <td className="border border-gray-300 p-2 font-medium text-red-600">
-                        SEVERE ELEVATION
-                      </td>
-                      <td className="border border-gray-300 p-2">
-                        Severe infection/inflammation
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
               <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
                 <p>
                   <strong>METHOD: </strong> QUANTITITIVE TURBIDIMETRY

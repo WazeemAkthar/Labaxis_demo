@@ -1070,84 +1070,84 @@ export default function ReportDetailsPage() {
           </CardHeader>
 
           <CardContent className="space-y-3 p-3">
-            <div className="bg-gray-50">
-              <div className="space-y-2 border-t-2 border-black">
-                <div className="grid grid-cols-2">
-                  <div className="flex">
-                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">
-                      Patient Name
-                    </span>
-                    <span className="text-sm text-gray-900">
-                      :&nbsp;&nbsp;&nbsp;{report.patientName}
-                    </span>
-                  </div>
-                  <div className="flex">
-                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">
-                      Report ID
-                    </span>
-                    <span className="text-sm text-gray-900">
-                      :&nbsp;&nbsp;&nbsp;{report.id}
-                    </span>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2">
-                  <div className="flex">
-                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">
-                      Age
-                    </span>
-                    <span className="text-sm text-gray-900">
-                      :&nbsp;&nbsp;&nbsp;{patient?.age} years
-                    </span>
-                  </div>
-                  <div className="flex">
-                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">
-                      Patient ID
-                    </span>
-                    <span className="text-sm text-gray-900">
-                      :&nbsp;&nbsp;&nbsp;{report.patientId}
-                    </span>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2">
-                  <div className="flex">
-                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">
-                      Gender
-                    </span>
-                    <span className="text-sm text-gray-900">
-                      :&nbsp;&nbsp;&nbsp;{patient?.gender}
-                    </span>
-                  </div>
-                  <div className="flex">
-                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">
-                      Report Date
-                    </span>
-                    <span className="text-sm text-gray-900">
-                      :&nbsp;&nbsp;&nbsp;
-                      {new Date(report.createdAt).toLocaleDateString()}
-                    </span>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2">
-                  <div className="flex">
-                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">
-                      Phone
-                    </span>
-                    <span className="text-sm text-gray-900">
-                      :&nbsp;&nbsp;&nbsp;{patient?.phone}
-                    </span>
-                  </div>
-                  <div className="flex">
-                    <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left">
-                      Ref By
-                    </span>
-                    <span className="text-sm text-gray-900">
-                      :&nbsp;&nbsp;&nbsp;{patient?.doctorName}
-                    </span>
-                  </div>
-                </div>
-                <div className="border-t-2 border-black"></div>
-              </div>
-            </div>
+<div className="bg-gray-50">
+  <div className="space-y-1 border-t-2 border-black">
+    <div className="grid grid-cols-2">
+      <div className="flex">
+        <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left uppercase">
+          Patient Name
+        </span>
+        <span className="text-sm text-gray-900 uppercase">
+          :&nbsp;&nbsp;&nbsp;{report.patientName}
+        </span>
+      </div>
+      <div className="flex">
+        <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left uppercase">
+          Report ID
+        </span>
+        <span className="text-sm text-gray-900 uppercase">
+          :&nbsp;&nbsp;&nbsp;{report.id}
+        </span>
+      </div>
+    </div>
+    <div className="grid grid-cols-2">
+      <div className="flex">
+        <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left uppercase">
+          Age
+        </span>
+        <span className="text-sm text-gray-900 uppercase">
+          :&nbsp;&nbsp;&nbsp;{patient?.age} years
+        </span>
+      </div>
+      <div className="flex">
+        <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left uppercase">
+          Patient ID
+        </span>
+        <span className="text-sm text-gray-900 uppercase">
+          :&nbsp;&nbsp;&nbsp;{report.patientId}
+        </span>
+      </div>
+    </div>
+    <div className="grid grid-cols-2">
+      <div className="flex">
+        <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left uppercase">
+          Gender
+        </span>
+        <span className="text-sm text-gray-900 uppercase">
+          :&nbsp;&nbsp;&nbsp;{patient?.gender}
+        </span>
+      </div>
+      <div className="flex">
+        <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left uppercase">
+          Report Date
+        </span>
+        <span className="text-sm text-gray-900 uppercase">
+          :&nbsp;&nbsp;&nbsp;
+          {new Date(report.createdAt).toLocaleDateString()}
+        </span>
+      </div>
+    </div>
+    <div className="grid grid-cols-2">
+      <div className="flex">
+        <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left uppercase">
+          Phone
+        </span>
+        <span className="text-sm text-gray-900 uppercase">
+          :&nbsp;&nbsp;&nbsp;{patient?.phone}
+        </span>
+      </div>
+      <div className="flex">
+        <span className="text-sm text-gray-600 font-bold w-32 flex-shrink-0 text-left uppercase">
+          Ref By
+        </span>
+        <span className="text-sm text-gray-900 uppercase">
+          :&nbsp;&nbsp;&nbsp;{patient?.doctorName}
+        </span>
+      </div>
+    </div>
+    <div className="border-t-2 border-black"></div>
+  </div>
+</div>
 
             <div>
               {renderTestResults(report.results)}
