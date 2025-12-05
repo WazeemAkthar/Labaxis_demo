@@ -1059,77 +1059,77 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
           content: (
             <div className="space-y-4">
               <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-300 text-sm">
+                <table className="w-[70%] border-collapse border border-gray-300 text-sm">
                   <thead>
                     <tr className="bg-gray-50">
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Demographic
                       </th>
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Expected Values (ng/dL)
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="border border-gray-300 p-2">Newborn</td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">Newborn</td>
+                      <td className="border border-gray-300 px-2">
                         0.89 - 2.45
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         6 days - 3 months
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         0.89 - 2.40
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         4 - 6 months
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         0.93 - 1.97
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         7 - 11 months
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         0.92 - 1.97
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         1 - 6 years
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         0.93 - 1.79
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         7 - 11 years
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         0.97 - 1.65
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         12 - 20 years
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         0.98 - 1.68
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Adults (21+ years)
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         0.92 - 1.68
                       </td>
                     </tr>
@@ -1208,69 +1208,69 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
           content: (
             <div className="space-y-4">
               <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-300 text-sm">
+                <table className="w-[70%] border-collapse border border-gray-300 text-sm">
                   <thead>
                     <tr className="bg-gray-50">
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Demographic
                       </th>
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Expected Values (pg/mL)
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="border border-gray-300 p-2">Newborn</td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">Newborn</td>
+                      <td className="border border-gray-300 px-2">
                         1.73 – 6.30 pg/ml
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         6 days - 3 months
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         1.95 – 6.04 pg/ml
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         4 days - 12 months
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         2.15 – 5.83 pg/ml
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         1 - 6 years
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         2.41 – 5.50 pg/ml
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         7 - 11 years
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         2.53 - 5.22 pg/ml
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         12 - 20 years
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         2.56 – 5.01 pg/ml
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Adults (21+ years)
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         2.00 – 4.40 pg/ml
                       </td>
                     </tr>
@@ -1491,11 +1491,11 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
   return (
     <div className={`mt-6 p-4 ${className}`} style={{ fontFamily: "'Courier New', Courier, monospace" }}>
       {!shouldHideTitle && (
-        <h4 className="font-bold text-xl mb-4 text-gray-800 border-b border-gray-300 pb-2">
+        <h4 className="font-bold text-xl mb-4 text-gray-800 border-b border-gray-900">
           {details.title}
         </h4>
       )}
-      <div className="text-gray-700">{details.content}</div>
+      <div className="text-gray-700 mt-2">{details.content}</div>
 
       {/* Print-specific styles */}
       <style jsx global>{`
