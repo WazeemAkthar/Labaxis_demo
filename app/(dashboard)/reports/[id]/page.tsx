@@ -212,7 +212,7 @@ export default function ReportDetailsPage() {
     );
 
     return (
-      <div key="OGTT" className="border rounded-lg p-6 ogtt-section">
+      <div key="OGTT" className="border rounded-lg p-6 ogtt-section" style={{ fontFamily: "'Courier New', Courier, monospace" }}>
         <div className="flex items-center gap-2 mb-6">
           <Badge variant="outline" className="text-lg px-3 py-1">
             OGTT
@@ -274,7 +274,7 @@ export default function ReportDetailsPage() {
 
   const renderPPBSResults = (ppbsResults: any[]) => {
     return (
-      <div key="PPBS" className="border rounded-lg p-6">
+      <div key="PPBS" className="border rounded-lg p-6" style={{ fontFamily: "'Courier New', Courier, monospace" }}>
         <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
           Post Prandial Blood Sugar
         </h1>
@@ -317,7 +317,7 @@ export default function ReportDetailsPage() {
 
   const renderBSSResults = (bssResults: any[]) => {
     return (
-      <div key="BSS" className="border rounded-lg p-6">
+      <div key="BSS" className="border rounded-lg p-6" style={{ fontFamily: "'Courier New', Courier, monospace" }}>
         <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
           Blood for BSS
         </h1>
@@ -394,7 +394,7 @@ export default function ReportDetailsPage() {
     );
 
     const renderTable = (results: any[], title?: string) => (
-      <div className="mb-6">
+      <div className="mb-6" style={{ fontFamily: "'Courier New', Courier, monospace" }}>
         {title && (
           <h4 className="font-semibold text-xl text-left text-muted-foreground mb-3 underline">
             {title}
@@ -427,7 +427,7 @@ export default function ReportDetailsPage() {
                 const statusDisplay = getStatusDisplay(status);
 
                 return (
-                  <tr key={index} className="border-0 font-mono p-0 table-row">
+                  <tr key={index} className="border-0 font-mono p-0 table-row" style={{ fontFamily: "'Courier New', Courier, monospace" }}>
                     <td className="py-0 font-mono">{result.testName}</td>
                     <td className="text-right py-0 font-mono">
                       {result.value}
@@ -456,7 +456,7 @@ export default function ReportDetailsPage() {
     );
 
     return (
-      <div key="FBC" className="border rounded-lg p-6">
+      <div key="FBC" className="border rounded-lg p-6" style={{ fontFamily: "'Courier New', Courier, monospace" }}>
         <div className="flex items-center gap-2 mb-6">
           <Badge variant="outline" className="text-lg px-3 py-1">
             FBC
@@ -507,7 +507,7 @@ export default function ReportDetailsPage() {
     );
 
     const renderTable = (results: any[], title?: string) => (
-      <div className="mb-6">
+      <div className="mb-6" style={{ fontFamily: "'Courier New', Courier, monospace" }}>
         {title && (
           <h4 className="font-semibold text-xl text-left text-muted-foreground mb-3 underline">
             {title}
@@ -537,7 +537,7 @@ export default function ReportDetailsPage() {
     );
 
     return (
-      <div key="UFR" className="border rounded-lg p-6">
+      <div key="UFR" className="border rounded-lg p-6" style={{ fontFamily: "'Courier New', Courier, monospace" }}>
         <div className="flex items-center gap-2 mb-6">
           <Badge variant="outline" className="text-lg px-3 py-1">
             UFR
@@ -602,7 +602,7 @@ export default function ReportDetailsPage() {
       isWIDAL;
 
     return (
-      <div key={testCode}>
+      <div key={testCode} style={{ fontFamily: "'Courier New', Courier, monospace" }}>
         <h1 className=" font-medium text-lg text-center mb-3 border-black border-b">
           {testName}
         </h1>
