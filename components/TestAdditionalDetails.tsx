@@ -18,74 +18,77 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
         return {
           title: "Recommended and High-Risk Plasma Lipid Concentrations",
           content: (
-       <div className="space-y-4 font-mono tracking-wide text-sm">
-  {/* Header Title */}
-  <p className="font-semibold underline underline-offset-4">
-    RECOMMENDED AND HIGH RISK PLASMA LIPID CONCENTRATIONS
-  </p>
+            <div
+              className="space-y-4 font-mono tracking-wide text-sm"
+              style={{ fontFamily: "'Courier New', Courier, monospace" }}
+            >
+              {/* Table */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr>
+                      <th className="p-2 text-left font-black underline ">
+                        CHEMISTRY
+                      </th>
+                      <th className="p-2 text-center font-black underline">
+                        DESIRABLE LEVELS
+                      </th>
+                      <th className="p-2 text-center font-black underline">
+                        BORDERLINE LEVELS
+                      </th>
+                      <th className="p-2 text-center font-black underline">
+                        HIGH LEVELS
+                      </th>
+                    </tr>
+                  </thead>
 
-  {/* Spacing */}
-  <div className="h-2"></div>
+                  <tbody>
+                    <tr>
+                      <td className="text-black">Total Cholesterol</td>
+                      <td className=" text-center text-black">&lt; 200 mg/dl</td>
+                      <td className=" text-center text-black">200 – 235 mg/dl</td>
+                      <td className=" text-center text-black">&gt; 235 mg/dl</td>
+                    </tr>
 
-  {/* Table */}
-  <div className="overflow-x-auto">
-    <table className="w-full text-sm">
-      <thead>
-        <tr>
-          <th className="p-2 text-left font-semibold underline">CHEMISTRY</th>
-          <th className="p-2 text-center font-semibold underline">DESIRABLE LEVELS</th>
-          <th className="p-2 text-center font-semibold underline">BORDERLINE LEVELS</th>
-          <th className="p-2 text-center font-semibold underline">HIGH LEVELS</th>
-        </tr>
-      </thead>
+                    <tr>
+                      <td className="text-black">HDL Cholesterol</td>
+                      <td className=" text-center text-black">≥ 45 mg/dl</td>
+                      <td className=" text-center text-black">35 – 45 mg/dl</td>
+                      <td className=" text-center text-black">&lt; 35 mg/dl</td>
+                    </tr>
 
-      <tbody>
-        <tr>
-          <td className="p-2">Total Cholesterol</td>
-          <td className="p-2 text-center">&lt; 200 mg/dl</td>
-          <td className="p-2 text-center">200 – 235 mg/dl</td>
-          <td className="p-2 text-center">&gt; 235 mg/dl</td>
-        </tr>
+                    <tr>
+                      <td className="text-black">Triglycerides</td>
+                      <td className="text-center text-black">&lt; 150 mg/dl</td>
+                      <td className=" text-center text-black">150 – 200 mg/dl</td>
+                      <td className=" text-center text-black">&gt; 200 mg/dl</td>
+                    </tr>
 
-        <tr>
-          <td className="p-2">HDL Cholesterol</td>
-          <td className="p-2 text-center">≥ 45 mg/dl</td>
-          <td className="p-2 text-center">35 – 45 mg/dl</td>
-          <td className="p-2 text-center">&lt; 35 mg/dl</td>
-        </tr>
+                    <tr>
+                      <td className="text-black">LDL Cholesterol</td>
+                      <td className=" text-center text-black">&lt; 150 mg/dl</td>
+                      <td className=" text-center text-black">150 – 190 mg/dl</td>
+                      <td className=" text-center text-black">&gt; 190 mg/dl</td>
+                    </tr>
 
-        <tr>
-          <td className="p-2">Triglycerides</td>
-          <td className="p-2 text-center">&lt; 150 mg/dl</td>
-          <td className="p-2 text-center">150 – 200 mg/dl</td>
-          <td className="p-2 text-center">&gt; 200 mg/dl</td>
-        </tr>
+                    <tr>
+                      <td className="text-black">Total Cholesterol / HDL</td>
+                      <td className=" text-center text-black">&lt; 3.5</td>
+                      <td className=" text-center text-black">3.5 – 6.0</td>
+                      <td className=" text-center text-black">&gt; 6.0</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
 
-        <tr>
-          <td className="p-2">LDL Cholesterol</td>
-          <td className="p-2 text-center">&lt; 150 mg/dl</td>
-          <td className="p-2 text-center">150 – 190 mg/dl</td>
-          <td className="p-2 text-center">&gt; 190 mg/dl</td>
-        </tr>
-
-        <tr>
-          <td className="p-2">Total Cholesterol / HDL</td>
-          <td className="p-2 text-center">&lt; 3.5</td>
-          <td className="p-2 text-center">3.5 – 6.0</td>
-          <td className="p-2 text-center">&gt; 6.0</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  {/* Footer Note */}
-  <div className="mt-4">
-    <p className="text-xs">
-      ❖ Fully automated Bio chemistry analyzer – <strong>SELECTRA ProM</strong>
-    </p>
-  </div>
-</div>
-
+              {/* Footer Note */}
+              <div className="mt-4">
+                <p className="text-xs text-black">
+                  ❖ Fully automated Bio chemistry analyzer –{" "}
+                  <strong>SELECTRA ProM</strong>
+                </p>
+              </div>
+            </div>
           ),
         };
 
@@ -95,73 +98,73 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
         return {
           title: "HbA1c Reference Values (According to NGSP/DCCT Guidelines)",
           content: (
-            <div className="space-y-4">
-              <p className="text-sm mb-3 leading-relaxed">
+            <div
+              className="space-y-3"
+              style={{ fontFamily: "'Courier New', Courier, monospace" }}
+            >
+              <p className="text-sm leading-relaxed text-gray-900">
                 HbA1c reflects the average blood glucose levels over the past
                 2–3 months. It is an essential marker for diabetes diagnosis and
                 monitoring glycemic control.
               </p>
-
               <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-300 text-sm">
+                <table className="w-full border-collapse border border-gray-700 text-sm">
                   <thead>
-                    <tr className="bg-gray-50">
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                    <tr className="bg-gray-100">
+                      <th className="border border-gray-700 px-2 py-1 text-left font-bold text-gray-900">
                         Category
                       </th>
-                      <th className="border border-gray-300 p-2 text-center font-semibold">
+                      <th className="border border-gray-700 px-2 py-1 text-center font-bold text-gray-900">
                         HbA1c (%)
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="border border-gray-300 p-2 font-medium">
+                      <td className="border border-gray-700 px-2 py-1 font-medium text-gray-900">
                         Non-Diabetics
                       </td>
-                      <td className="border border-gray-300 p-2 text-center">
+                      <td className="border border-gray-700 px-2 py-1 text-center text-gray-900">
                         4.6 – 6.2
                       </td>
                     </tr>
-
                     <tr className="bg-gray-100">
                       <td
-                        className="border border-gray-300 p-2 font-semibold"
+                        className="border border-gray-700 px-2 py-1 font-bold text-gray-900"
                         colSpan={2}
                       >
                         Diabetics
                       </td>
                     </tr>
-
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-700 px-2 py-1 text-gray-900">
                         Good Control
                       </td>
-                      <td className="border border-gray-300 p-2 text-center">
+                      <td className="border border-gray-700 px-2 py-1 text-center text-gray-900">
                         &lt; 7.0
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-700 px-2 py-1 text-gray-900">
                         Moderate Control
                       </td>
-                      <td className="border border-gray-300 p-2 text-center">
+                      <td className="border border-gray-700 px-2 py-1 text-center text-gray-900">
                         7.0 – 8.0
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-700 px-2 py-1 text-gray-900">
                         Poor Control
                       </td>
-                      <td className="border border-gray-300 p-2 text-center">
+                      <td className="border border-gray-700 px-2 py-1 text-center text-gray-900">
                         8.0 – 10.0
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-700 px-2 py-1 text-gray-900">
                         Very Poor Control
                       </td>
-                      <td className="border border-gray-300 p-2 text-center">
+                      <td className="border border-gray-700 px-2 py-1 text-center text-gray-900">
                         &gt; 10.0
                       </td>
                     </tr>
@@ -411,7 +414,7 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">110 - 125</td>
+                      <td className="border border-gray-300 p-2">115 - 125</td>
                       <td className="border border-gray-300 p-2 font-medium">
                         Impaired
                       </td>
@@ -588,12 +591,8 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
           content: (
             <div className="space-y-4">
               <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
-                <p>
-                  METHOD: QUANTITITIVE TURBIDIMETRY
-                </p>
-                <p>
-                  Fully automated Bio chemistry analyzer - “SELECTRA ProM“
-                </p>
+                <p>METHOD: QUANTITITIVE TURBIDIMETRY</p>
+                <p>Fully automated Bio chemistry analyzer - “SELECTRA ProM“</p>
               </div>
             </div>
           ),
@@ -997,39 +996,53 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                   <tbody>
                     <tr>
                       <td className="border border-gray-300 p-2">Adult Male</td>
-                      <td className="border border-gray-300 p-2">20 - 400 ng/mL</td>
+                      <td className="border border-gray-300 p-2">
+                        20 - 400 ng/mL
+                      </td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         Adult Female (&lt;50 Years)
                       </td>
-                      <td className="border border-gray-300 p-2">8 - 140 ng/mL</td>
+                      <td className="border border-gray-300 p-2">
+                        8 - 140 ng/mL
+                      </td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         Adult Female (≥50 Years)
                       </td>
-                      <td className="border border-gray-300 p-2">20 - 400 ng/mL</td>
+                      <td className="border border-gray-300 p-2">
+                        20 - 400 ng/mL
+                      </td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">Newborn</td>
-                      <td className="border border-gray-300 p-2">25 - 200 ng/mL</td>
+                      <td className="border border-gray-300 p-2">
+                        25 - 200 ng/mL
+                      </td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">1 Month</td>
-                      <td className="border border-gray-300 p-2">200 - 600 ng/mL</td>
+                      <td className="border border-gray-300 p-2">
+                        200 - 600 ng/mL
+                      </td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         2 - 5 Months
                       </td>
-                      <td className="border border-gray-300 p-2">50 - 200 ng/mL</td>
+                      <td className="border border-gray-300 p-2">
+                        50 - 200 ng/mL
+                      </td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         6 - 15 Months
                       </td>
-                      <td className="border border-gray-300 p-2">7 - 140 ng/mL</td>
+                      <td className="border border-gray-300 p-2">
+                        7 - 140 ng/mL
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -1209,43 +1222,57 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                   <tbody>
                     <tr>
                       <td className="border border-gray-300 p-2">Newborn</td>
-                      <td className="border border-gray-300 p-2">1.73 – 6.30 pg/ml</td>
+                      <td className="border border-gray-300 p-2">
+                        1.73 – 6.30 pg/ml
+                      </td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         6 days - 3 months
                       </td>
-                      <td className="border border-gray-300 p-2">1.95 – 6.04 pg/ml</td>
+                      <td className="border border-gray-300 p-2">
+                        1.95 – 6.04 pg/ml
+                      </td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         4 days - 12 months
                       </td>
-                      <td className="border border-gray-300 p-2">2.15 – 5.83 pg/ml</td>
+                      <td className="border border-gray-300 p-2">
+                        2.15 – 5.83 pg/ml
+                      </td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         1 - 6 years
                       </td>
-                      <td className="border border-gray-300 p-2">2.41 – 5.50 pg/ml</td>
+                      <td className="border border-gray-300 p-2">
+                        2.41 – 5.50 pg/ml
+                      </td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         7 - 11 years
                       </td>
-                      <td className="border border-gray-300 p-2">2.53 - 5.22 pg/ml</td>
+                      <td className="border border-gray-300 p-2">
+                        2.53 - 5.22 pg/ml
+                      </td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         12 - 20 years
                       </td>
-                      <td className="border border-gray-300 p-2">2.56 – 5.01 pg/ml</td>
+                      <td className="border border-gray-300 p-2">
+                        2.56 – 5.01 pg/ml
+                      </td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-2">
                         Adults (21+ years)
                       </td>
-                      <td className="border border-gray-300 p-2">2.00 – 4.40 pg/ml</td>
+                      <td className="border border-gray-300 p-2">
+                        2.00 – 4.40 pg/ml
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -1259,58 +1286,62 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
             </div>
           ),
         };
-case "bun":
-case "blood urea nitrogen":
-  return {
-    title: "Blood Urea Nitrogen (BUN) Reference Range",
-    content: (
-      <div className="space-y-4">
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse border border-gray-300 text-sm">
-            <thead>
-              <tr className="bg-gray-50">
-                <th className="border border-gray-300 p-2 text-left font-semibold">
-                  Demographic
-                </th>
-                <th className="border border-gray-300 p-2 text-left font-semibold">
-                  Reference Range (mg/dL)
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="border border-gray-300 p-2">
-                  Adults (18 – 60 Years)
-                </td>
-                <td className="border border-gray-300 p-2">6 – 20</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-300 p-2">
-                  Adults (60 – 90 Years)
-                </td>
-                <td className="border border-gray-300 p-2">8 – 23</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-300 p-2">Infants (&lt;1 Year)</td>
-                <td className="border border-gray-300 p-2">4 – 19</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-300 p-2">Infants / Children</td>
-                <td className="border border-gray-300 p-2">5 – 18</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
-          <p className="text-xs">
-            <strong>Method:</strong> Enzymatic Urease Method
-          </p>
-        </div>
-      </div>
-    ),
-  };
+      case "bun":
+      case "blood urea nitrogen":
+        return {
+          title: "Blood Urea Nitrogen (BUN) Reference Range",
+          content: (
+            <div className="space-y-4">
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse border border-gray-300 text-sm">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                        Demographic
+                      </th>
+                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                        Reference Range (mg/dL)
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        Adults (18 – 60 Years)
+                      </td>
+                      <td className="border border-gray-300 p-2">6 – 20</td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        Adults (60 – 90 Years)
+                      </td>
+                      <td className="border border-gray-300 p-2">8 – 23</td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        Infants (&lt;1 Year)
+                      </td>
+                      <td className="border border-gray-300 p-2">4 – 19</td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        Infants / Children
+                      </td>
+                      <td className="border border-gray-300 p-2">5 – 18</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
+                <p className="text-xs">
+                  <strong>Method:</strong> Enzymatic Urease Method
+                </p>
+              </div>
+            </div>
+          ),
+        };
 
-  case "crp":
+      case "crp":
       case "c reactive protein":
         return {
           title: "C-Reactive Protein (CRP) Clinical Guidelines",
@@ -1370,72 +1401,83 @@ case "blood urea nitrogen":
           ),
         };
 
-case "pt":
-case "prothrombin time":
-  return {
-    title: "Prothrombin Time (PT) Clinical Guidelines",
-    content: (
-      <div className="space-y-4">
-        <div>
-          <p className="text-sm mb-3 leading-relaxed">
-            This test measures the activity of extrinsic coagulation pathway (Factor II, V, VII, X)
-          </p>
-          <p className="text-sm leading-relaxed">
-            <strong>ISI Value: 1.15</strong>
-          </p>
-        </div>
-      </div>
-    ),
-  };
+      case "pt":
+      case "prothrombin time":
+        return {
+          title: "Prothrombin Time (PT) Clinical Guidelines",
+          content: (
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm mb-3 leading-relaxed">
+                  This test measures the activity of extrinsic coagulation
+                  pathway (Factor II, V, VII, X)
+                </p>
+                <p className="text-sm leading-relaxed">
+                  <strong>ISI Value: 1.15</strong>
+                </p>
+              </div>
+            </div>
+          ),
+        };
 
-  case "uacr":
-case "urine albumin with creatinine ratio":
-  return {
-    title: "Urine Albumin with Creatinine Ratio (UACR) Clinical Guidelines",
-    content: (
-      <div className="space-y-4">
-        <div>
-          <p className="text-sm mb-3 leading-relaxed">
-            The UACR is used to detect early kidney damage, especially in diabetic or hypertensive patients.
-          </p>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse border border-gray-300 text-sm">
-            <thead>
-              <tr className="bg-gray-50">
-                <th className="border border-gray-300 p-2 text-left font-semibold">
-                  Category
-                </th>
-                <th className="border border-gray-300 p-2 text-left font-semibold">
-                  Reference Range (mg of Alb/g of Cre)
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="border border-gray-300 p-2">Normal</td>
-                <td className="border border-gray-300 p-2">&lt; 30 mg of Alb/g of Cre</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-300 p-2">Microalbuminuria</td>
-                <td className="border border-gray-300 p-2">30 – 300 mg of Alb/g of Cre</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-300 p-2">Albuminuria</td>
-                <td className="border border-gray-300 p-2">&gt; 300 mg of Alb/g of Cre</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    ),
-  };
+      case "uacr":
+      case "urine albumin with creatinine ratio":
+        return {
+          title:
+            "Urine Albumin with Creatinine Ratio (UACR) Clinical Guidelines",
+          content: (
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm mb-3 leading-relaxed">
+                  The UACR is used to detect early kidney damage, especially in
+                  diabetic or hypertensive patients.
+                </p>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse border border-gray-300 text-sm">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                        Category
+                      </th>
+                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                        Reference Range (mg of Alb/g of Cre)
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="border border-gray-300 p-2">Normal</td>
+                      <td className="border border-gray-300 p-2">
+                        &lt; 30 mg of Alb/g of Cre
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        Microalbuminuria
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        30 – 300 mg of Alb/g of Cre
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-300 p-2">
+                        Albuminuria
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        &gt; 300 mg of Alb/g of Cre
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ),
+        };
       default:
         return null;
     }
   };
-
-
 
   const details = getAdditionalDetails(testCode);
 
@@ -1443,90 +1485,87 @@ case "urine albumin with creatinine ratio":
     return null;
   }
 
-   const hideTitle = ['crp', 'c-reactive protein', 'c reactive protein'];
+  const hideTitle = ["crp", "c-reactive protein", "c reactive protein"];
   const shouldHideTitle = hideTitle.includes(testCode.toLowerCase());
 
   return (
-    <div
-      className={`mt-6 p-4 ${className}`}
-    >
+    <div className={`mt-6 p-4 ${className}`} style={{ fontFamily: "'Courier New', Courier, monospace" }}>
       {!shouldHideTitle && (
-        <h4 className="font-bold text-lg mb-4 text-gray-800 border-b-2 border-gray-300 pb-2">
+        <h4 className="font-bold text-xl mb-4 text-gray-800 border-b border-gray-300 pb-2">
           {details.title}
         </h4>
       )}
       <div className="text-gray-700">{details.content}</div>
 
+      {/* Print-specific styles */}
+      <style jsx global>{`
+        @media print {
+          /* Additional details section styling for print */
+          .mt-6.p-4 {
+            margin-top: 8px !important;
+            padding: 8px !important;
+            page-break-inside: avoid !important;
+          }
 
-{/* Print-specific styles */}
-<style jsx global>{`
-  @media print {
-   /* Additional details section styling for print */
-    .mt-6.p-4 {
-      margin-top: 8px !important;
-      padding: 8px !important;
-      page-break-inside: avoid !important;
-    }
+          /* Title styling - more specific selector */
+          .mt-6 h4.font-bold.text-lg.mb-4 {
+            font-size: 11px !important;
+            margin-bottom: 6px !important;
+            color: #333 !important;
+            border-bottom: 1px solid #666 !important;
+            padding-bottom: 3px !important;
+            font-weight: bold !important;
+          }
 
-    /* Title styling - more specific selector */
-    .mt-6 h4.font-bold.text-lg.mb-4 {
-      font-size: 11px !important;
-      margin-bottom: 6px !important;
-      color: #333 !important;
-      border-bottom: 1px solid #666 !important;
-      padding-bottom: 3px !important;
-      font-weight: bold !important;
-    }
+          /* All text in TestAdditionalDetails */
+          .mt-6.border-2 .text-sm,
+          .mt-6.border-2 .text-xs,
+          .mt-6.border-2 p,
+          .mt-6.border-2 strong,
+          .mt-6.border-2 li,
+          .mt-6.border-2 div {
+            font-size: 9px !important;
+            line-height: 1.4 !important;
+          }
 
-    /* All text in TestAdditionalDetails */
-    .mt-6.border-2 .text-sm,
-    .mt-6.border-2 .text-xs,
-    .mt-6.border-2 p,
-    .mt-6.border-2 strong,
-    .mt-6.border-2 li,
-    .mt-6.border-2 div {
-      font-size: 9px !important;
-      line-height: 1.4 !important;
-    }
+          /* Table styling in TestAdditionalDetails */
+          .mt-6.border-2 table {
+            font-size: 9px !important;
+            border-collapse: collapse !important;
+            width: 100% !important;
+          }
 
-    /* Table styling in TestAdditionalDetails */
-    .mt-6.border-2 table {
-      font-size: 9px !important;
-      border-collapse: collapse !important;
-      width: 100% !important;
-    }
+          .mt-6.border-2 th,
+          .mt-6.border-2 td {
+            padding: 2px 4px !important;
+            border: 1px solid #666 !important;
+            font-size: 9px !important;
+            line-height: 1.3 !important;
+          }
 
-    .mt-6.border-2 th,
-    .mt-6.border-2 td {
-      padding: 2px 4px !important;
-      border: 1px solid #666 !important;
-      font-size: 9px !important;
-      line-height: 1.3 !important;
-    }
+          .mt-6.border-2 th {
+            background-color: #e9ecef !important;
+            font-weight: bold !important;
+            font-size: 9px !important;
+          }
 
-    .mt-6.border-2 th {
-      background-color: #e9ecef !important;
-      font-weight: bold !important;
-      font-size: 9px !important;
-    }
+          /* Info boxes in TestAdditionalDetails */
+          .mt-6.border-2 .bg-blue-50,
+          .mt-6.border-2 .bg-yellow-50 {
+            padding: 4px !important;
+          }
 
-    /* Info boxes in TestAdditionalDetails */
-    .mt-6.border-2 .bg-blue-50,
-    .mt-6.border-2 .bg-yellow-50 {
-      padding: 4px !important;
-    }
+          .mt-6.border-2 .bg-blue-50 *,
+          .mt-6.border-2 .bg-yellow-50 * {
+            font-size: 9px !important;
+          }
 
-    .mt-6.border-2 .bg-blue-50 *,
-    .mt-6.border-2 .bg-yellow-50 * {
-      font-size: 9px !important;
-    }
-
-    /* Ensure proper spacing */
-    .mt-6.border-2 .space-y-4 > * + * {
-      margin-top: 6px !important;
-    }
-  }
-`}</style>
+          /* Ensure proper spacing */
+          .mt-6.border-2 .space-y-4 > * + * {
+            margin-top: 6px !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };
