@@ -1194,7 +1194,7 @@ export default function ReportDetailsPage() {
               </>
             )}
 
-            <p className="font-normal text-center text-lg">
+            <p className="font-normal text-center text-xs">
               -- End of Report --
             </p>
           </CardContent>
