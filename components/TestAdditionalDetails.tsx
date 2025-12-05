@@ -188,69 +188,69 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
               </p>
 
               <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-300 text-sm">
+                <table className="w-[70%] border-collapse border border-gray-300 text-sm">
                   <thead>
                     <tr className="bg-gray-50">
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         AGE
                       </th>
-                      <th className="border border-gray-300 p-2 text-center font-semibold">
+                      <th className="border border-gray-300 px-2 text-center font-semibold">
                         NORMAL RANGE (µIU/ml)
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         &lt; 3 Days
                       </td>
-                      <td className="border border-gray-300 p-2 text-center">
+                      <td className="border border-gray-300 px-2 text-center">
                         0.68 – 29.0 µIU/ml
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         4 – 30 Days
                       </td>
-                      <td className="border border-gray-300 p-2 text-center">
+                      <td className="border border-gray-300 px-2 text-center">
                         0.51 – 11.0 µIU/ml
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         1 – 12 Months
                       </td>
-                      <td className="border border-gray-300 p-2 text-center">
+                      <td className="border border-gray-300 px-2 text-center">
                         0.55 – 6.7 µIU/ml
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         1 – 6 Years
                       </td>
-                      <td className="border border-gray-300 p-2 text-center">
+                      <td className="border border-gray-300 px-2 text-center">
                         0.45 – 6.0 µIU/ml
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         6 – 12 Years
                       </td>
-                      <td className="border border-gray-300 p-2 text-center">
+                      <td className="border border-gray-300 px-2 text-center">
                         0.61 – 5.2 µIU/ml
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         12 – 16 Years
                       </td>
-                      <td className="border border-gray-300 p-2 text-center">
+                      <td className="border border-gray-300 px-2 text-center">
                         0.36 – 4.7 µIU/ml
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">Adults</td>
-                      <td className="border border-gray-300 p-2 text-center">
+                      <td className="border border-gray-300 px-2">Adults</td>
+                      <td className="border border-gray-300 px-2 text-center">
                         0.27 – 4.2 µIU/ml
                       </td>
                     </tr>
@@ -258,33 +258,33 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                     {/* Pregnancy Section */}
                     <tr className="bg-gray-100">
                       <td
-                        className="border border-gray-300 p-2 font-semibold"
+                        className="border border-gray-300 px-2 font-semibold"
                         colSpan={2}
                       >
                         Pregnancy
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         1st Trimester
                       </td>
-                      <td className="border border-gray-300 p-2 text-center">
+                      <td className="border border-gray-300 px-2 text-center">
                         0.33 – 4.59 µIU/ml
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         2nd Trimester
                       </td>
-                      <td className="border border-gray-300 p-2 text-center">
+                      <td className="border border-gray-300 px-2 text-center">
                         0.35 – 4.10 µIU/ml
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         3rd Trimester
                       </td>
-                      <td className="border border-gray-300 p-2 text-center">
+                      <td className="border border-gray-300 px-2 text-center">
                         0.21 – 3.15 µIU/ml
                       </td>
                     </tr>
