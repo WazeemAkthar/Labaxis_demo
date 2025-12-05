@@ -77,6 +77,11 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                       <td className=" text-center text-black">3.5 – 6.0</td>
                       <td className=" text-center text-black">&gt; 6.0</td>
                     </tr>
+
+                    <tr>
+                      <td className="text-black">Non-HDL Cholesterol</td>
+                      <td className=" text-center text-black">&lt; 130 mg/dl</td>
+                    </tr>
                   </tbody>
                 </table>
               </div>

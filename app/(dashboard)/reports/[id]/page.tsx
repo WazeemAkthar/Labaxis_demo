@@ -147,7 +147,6 @@ export default function ReportDetailsPage() {
   };
 
   const renderTestResults = (results: any[]) => {
-
     const groupedResults = results.reduce((groups, result) => {
       const testCode = result.testCode;
       if (!groups[testCode]) {
@@ -156,7 +155,6 @@ export default function ReportDetailsPage() {
       groups[testCode].push(result);
       return groups;
     }, {} as Record<string, any[]>);
-
 
     return (
       <div className="space-y-6">
@@ -187,7 +185,6 @@ export default function ReportDetailsPage() {
   };
 
   const renderOGTTResults = (ogttResults: any[]) => {
-
     const fastingResult = ogttResults.find((r) =>
       r.testName.includes("Fasting")
     );
@@ -212,14 +209,16 @@ export default function ReportDetailsPage() {
     );
 
     return (
-      <div key="OGTT" className="border rounded-lg p-6 ogtt-section" style={{ fontFamily: "'Courier New', Courier, monospace" }}>
+      <div
+        key="OGTT"
+        className="border rounded-lg p-6 ogtt-section"
+        style={{ fontFamily: "'Courier New', Courier, monospace" }}
+      >
         <div className="flex items-center gap-2 mb-6">
           <Badge variant="outline" className="text-lg px-3 py-1">
             OGTT
           </Badge>
-          <div className="font-medium text-md">
-            Oral Glucose Tolerance Test
-          </div>
+          <div className="font-medium text-md">Oral Glucose Tolerance Test</div>
         </div>
 
         <div className="overflow-x-auto mb-6">
@@ -274,7 +273,11 @@ export default function ReportDetailsPage() {
 
   const renderPPBSResults = (ppbsResults: any[]) => {
     return (
-      <div key="PPBS" className="border rounded-lg p-6" style={{ fontFamily: "'Courier New', Courier, monospace" }}>
+      <div
+        key="PPBS"
+        className="border rounded-lg p-6"
+        style={{ fontFamily: "'Courier New', Courier, monospace" }}
+      >
         <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
           Post Prandial Blood Sugar
         </h1>
@@ -317,7 +320,11 @@ export default function ReportDetailsPage() {
 
   const renderBSSResults = (bssResults: any[]) => {
     return (
-      <div key="BSS" className="border rounded-lg p-6" style={{ fontFamily: "'Courier New', Courier, monospace" }}>
+      <div
+        key="BSS"
+        className="border rounded-lg p-6"
+        style={{ fontFamily: "'Courier New', Courier, monospace" }}
+      >
         <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
           Blood for BSS
         </h1>
@@ -394,7 +401,10 @@ export default function ReportDetailsPage() {
     );
 
     const renderTable = (results: any[], title?: string) => (
-      <div className="mb-6" style={{ fontFamily: "'Courier New', Courier, monospace" }}>
+      <div
+        className="mb-6"
+        style={{ fontFamily: "'Courier New', Courier, monospace" }}
+      >
         {title && (
           <h4 className="font-semibold text-xl text-left text-muted-foreground mb-3 underline">
             {title}
@@ -427,7 +437,11 @@ export default function ReportDetailsPage() {
                 const statusDisplay = getStatusDisplay(status);
 
                 return (
-                  <tr key={index} className="border-0 font-mono p-0 table-row" style={{ fontFamily: "'Courier New', Courier, monospace" }}>
+                  <tr
+                    key={index}
+                    className="border-0 font-mono p-0 table-row"
+                    style={{ fontFamily: "'Courier New', Courier, monospace" }}
+                  >
                     <td className="py-0 font-mono">{result.testName}</td>
                     <td className="text-right py-0 font-mono">
                       {result.value}
@@ -456,7 +470,11 @@ export default function ReportDetailsPage() {
     );
 
     return (
-      <div key="FBC" className="border rounded-lg p-6" style={{ fontFamily: "'Courier New', Courier, monospace" }}>
+      <div
+        key="FBC"
+        className="border rounded-lg p-6"
+        style={{ fontFamily: "'Courier New', Courier, monospace" }}
+      >
         <div className="flex items-center gap-2 mb-6">
           <Badge variant="outline" className="text-lg px-3 py-1">
             FBC
@@ -507,7 +525,10 @@ export default function ReportDetailsPage() {
     );
 
     const renderTable = (results: any[], title?: string) => (
-      <div className="mb-6" style={{ fontFamily: "'Courier New', Courier, monospace" }}>
+      <div
+        className="mb-6"
+        style={{ fontFamily: "'Courier New', Courier, monospace" }}
+      >
         {title && (
           <h4 className="font-semibold text-xl text-left text-muted-foreground mb-3 underline">
             {title}
@@ -537,7 +558,11 @@ export default function ReportDetailsPage() {
     );
 
     return (
-      <div key="UFR" className="border rounded-lg p-6" style={{ fontFamily: "'Courier New', Courier, monospace" }}>
+      <div
+        key="UFR"
+        className="border rounded-lg p-6"
+        style={{ fontFamily: "'Courier New', Courier, monospace" }}
+      >
         <div className="flex items-center gap-2 mb-6">
           <Badge variant="outline" className="text-lg px-3 py-1">
             UFR
@@ -574,6 +599,7 @@ export default function ReportDetailsPage() {
     const isDNS1 = testCode === "DNS1";
     const isWIDAL = testCode === "WIDAL";
     const isUACR = testCode === "UACR";
+    const isLIPID = testCode === "LIPID";
     const hideReferenceRange =
       isESR ||
       isTSH ||
@@ -590,7 +616,8 @@ export default function ReportDetailsPage() {
       isUKB ||
       isDNS1 ||
       isWIDAL ||
-      isUACR;
+      isUACR ||
+      isLIPID;
     const hideunits =
       isHIV ||
       isHCG ||
@@ -602,7 +629,10 @@ export default function ReportDetailsPage() {
       isWIDAL;
 
     return (
-      <div key={testCode} style={{ fontFamily: "'Courier New', Courier, monospace" }}>
+      <div
+        key={testCode}
+        style={{ fontFamily: "'Courier New', Courier, monospace" }}
+      >
         <h1 className="text-lg text-center mb-3 font-bold border-black border-b">
           {testName}
         </h1>
@@ -854,7 +884,6 @@ export default function ReportDetailsPage() {
             border-bottom: 1px solid #000 !important;
           }
           .space-y-6 > div:not(.mt-8) td {
-            
           }
 
           .space-y-6 > div:not(.mt-8) th:first-child,
@@ -966,7 +995,7 @@ export default function ReportDetailsPage() {
             margin: 1px 0 !important;
           }
 
-         .text-center.text-sm.text-muted-foreground {
+          .text-center.text-sm.text-muted-foreground {
             font-size: 8px !important;
             color: #9ca3af !important;
             margin-top: 12px !important;
@@ -991,31 +1020,31 @@ export default function ReportDetailsPage() {
           .space-y-4 {
             display: block !important;
           }
-            .ogtt-section .flex.items-center.gap-2 {
-      margin-bottom: 8px !important;
-    }
+          .ogtt-section .flex.items-center.gap-2 {
+            margin-bottom: 8px !important;
+          }
 
-    .ogtt-section .flex.items-center.gap-2 > [class*="Badge"],
-    .ogtt-section .flex.items-center.gap-2 > [class*="badge"] {
-      display: none !important;
-    }
+          .ogtt-section .flex.items-center.gap-2 > [class*="Badge"],
+          .ogtt-section .flex.items-center.gap-2 > [class*="badge"] {
+            display: none !important;
+          }
 
-    .ogtt-section .flex.items-center.gap-2 > .font-semibold {
-      font-size: 16px !important;
-      font-weight: 700 !important; /* Reduced from 900 */
-      text-align: center !important;
-      width: 100% !important;
-    }
+          .ogtt-section .flex.items-center.gap-2 > .font-semibold {
+            font-size: 16px !important;
+            font-weight: 700 !important; /* Reduced from 900 */
+            text-align: center !important;
+            width: 100% !important;
+          }
 
-    /* Reduce border thickness for OGTT table */
-    .ogtt-section table td {
-      border-bottom: 0.5px solid #e5e7eb !important; /* Thinner border */
-    }
-      .font-bold,
-.font-semibold,
-.font-medium {
-  font-weight: 500 !important;
-}
+          /* Reduce border thickness for OGTT table */
+          .ogtt-section table td {
+            border-bottom: 0.5px solid #e5e7eb !important; /* Thinner border */
+          }
+          .font-bold,
+          .font-semibold,
+          .font-medium {
+            font-weight: 500 !important;
+          }
         }
       `}</style>
       <div className="space-y-6">
@@ -1072,93 +1101,96 @@ export default function ReportDetailsPage() {
           </CardHeader>
 
           <CardContent className="space-y-3 p-3">
-<div className="">
-  <div className="space-y-1 border-t border-black font-mono">
-    <div className="grid grid-cols-2">
-      <div className="flex">
-        <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
-          Patient Name
-        </span>
-        <span className="text-sm text-gray-900 uppercase">
-          :&nbsp;&nbsp;&nbsp;{report.patientName}
-        </span>
-      </div>
-      <div className="flex">
-        <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
-          Report ID
-        </span>
-        <span className="text-sm text-gray-900 uppercase">
-          :&nbsp;&nbsp;&nbsp;{report.id}
-        </span>
-      </div>
-    </div>
-    <div className="grid grid-cols-2">
-  <div className="flex">
-    <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
-      Age
-    </span>
-    <span className="text-sm text-gray-900 uppercase">
-      :&nbsp;&nbsp;&nbsp;
-      {patient?.age && patient.age > 0 ? `${patient.age} years` : ''}
-      {patient?.ageMonths && patient.ageMonths > 0 
-        ? (patient?.age && patient.age > 0 ? ` ${patient.ageMonths} months` : `${patient.ageMonths} months`)
-        : ''
-      }
-      {(!patient?.age || patient.age === 0) && (!patient?.ageMonths || patient.ageMonths === 0) 
-        ? 'N/A' 
-        : ''
-      }
-    </span>
-  </div>
-  <div className="flex">
-    <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
-      Patient ID
-    </span>
-    <span className="text-sm text-gray-900 uppercase">
-      :&nbsp;&nbsp;&nbsp;{report.patientId}
-    </span>
-  </div>
-</div>
-    <div className="grid grid-cols-2">
-      <div className="flex">
-        <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
-          Gender
-        </span>
-        <span className="text-sm text-gray-900 uppercase">
-          :&nbsp;&nbsp;&nbsp;{patient?.gender}
-        </span>
-      </div>
-      <div className="flex">
-        <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
-          Report Date
-        </span>
-        <span className="text-sm text-gray-900 uppercase">
-          :&nbsp;&nbsp;&nbsp;
-          {new Date(report.createdAt).toLocaleDateString()}
-        </span>
-      </div>
-    </div>
-    <div className="grid grid-cols-2">
-      <div className="flex">
-        <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
-          Phone
-        </span>
-        <span className="text-sm text-gray-900 uppercase">
-          :&nbsp;&nbsp;&nbsp;{patient?.phone}
-        </span>
-      </div>
-      <div className="flex">
-        <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
-          Ref By
-        </span>
-        <span className="text-sm text-gray-900 uppercase">
-          :&nbsp;&nbsp;&nbsp;{patient?.doctorName}
-        </span>
-      </div>
-    </div>
-    <div className="border-t border-black"></div>
-  </div>
-</div>
+            <div className="">
+              <div className="space-y-1 border-t border-black font-mono">
+                <div className="grid grid-cols-2">
+                  <div className="flex">
+                    <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
+                      Patient Name
+                    </span>
+                    <span className="text-sm text-gray-900 uppercase">
+                      :&nbsp;&nbsp;&nbsp;{report.patientName}
+                    </span>
+                  </div>
+                  <div className="flex">
+                    <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
+                      Report ID
+                    </span>
+                    <span className="text-sm text-gray-900 uppercase">
+                      :&nbsp;&nbsp;&nbsp;{report.id}
+                    </span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2">
+                  <div className="flex">
+                    <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
+                      Age
+                    </span>
+                    <span className="text-sm text-gray-900 uppercase">
+                      :&nbsp;&nbsp;&nbsp;
+                      {patient?.age && patient.age > 0
+                        ? `${patient.age} years`
+                        : ""}
+                      {patient?.ageMonths && patient.ageMonths > 0
+                        ? patient?.age && patient.age > 0
+                          ? ` ${patient.ageMonths} months`
+                          : `${patient.ageMonths} months`
+                        : ""}
+                      {(!patient?.age || patient.age === 0) &&
+                      (!patient?.ageMonths || patient.ageMonths === 0)
+                        ? "N/A"
+                        : ""}
+                    </span>
+                  </div>
+                  <div className="flex">
+                    <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
+                      Patient ID
+                    </span>
+                    <span className="text-sm text-gray-900 uppercase">
+                      :&nbsp;&nbsp;&nbsp;{report.patientId}
+                    </span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2">
+                  <div className="flex">
+                    <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
+                      Gender
+                    </span>
+                    <span className="text-sm text-gray-900 uppercase">
+                      :&nbsp;&nbsp;&nbsp;{patient?.gender}
+                    </span>
+                  </div>
+                  <div className="flex">
+                    <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
+                      Report Date
+                    </span>
+                    <span className="text-sm text-gray-900 uppercase">
+                      :&nbsp;&nbsp;&nbsp;
+                      {new Date(report.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2">
+                  <div className="flex">
+                    <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
+                      Phone
+                    </span>
+                    <span className="text-sm text-gray-900 uppercase">
+                      :&nbsp;&nbsp;&nbsp;{patient?.phone}
+                    </span>
+                  </div>
+                  <div className="flex">
+                    <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
+                      Ref By
+                    </span>
+                    <span className="text-sm text-gray-900 uppercase">
+                      :&nbsp;&nbsp;&nbsp;{patient?.doctorName}
+                    </span>
+                  </div>
+                </div>
+                <div className="border-t border-black"></div>
+              </div>
+            </div>
 
             <div>
               {renderTestResults(report.results)}
