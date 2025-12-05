@@ -1491,7 +1491,7 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
   return (
     <div className={`mt-6 p-4 ${className}`} style={{ fontFamily: "'Courier New', Courier, monospace" }}>
       {!shouldHideTitle && (
-        <h4 className="font-bold text-xl mb-4 text-gray-800 border-b border-gray-900">
+        <h4 className="font-medium text-lg mb-4 text-gray-800 border-b border-gray-900">
           {details.title}
         </h4>
       )}

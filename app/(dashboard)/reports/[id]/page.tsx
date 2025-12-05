@@ -603,7 +603,7 @@ export default function ReportDetailsPage() {
 
     return (
       <div key={testCode} style={{ fontFamily: "'Courier New', Courier, monospace" }}>
-        <h1 className=" font-medium text-lg text-center mb-3 border-black border-b">
+        <h1 className="text-lg text-center mb-3 font-bold border-black border-b">
           {testName}
         </h1>
         <table className="w-full border-collapse">
