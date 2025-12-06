@@ -59,7 +59,32 @@ export function FBCReportCard({ onValuesChange }: FBCReportCardProps) {
 const updateValue = (field: keyof FBCValues, value: string) => {
   const newValues = { ...values, [field]: value }
   setValues(newValues)
-  onValuesChange(newValues)
+  
+  // Calculate derived values based on the new values
+  const hb = field === 'hemoglobin' ? parseFloat(value) : parseFloat(newValues.hemoglobin)
+  const rbc = field === 'rbc' ? parseFloat(value) : parseFloat(newValues.rbc)
+  const pcv = field === 'pcv' ? parseFloat(value) : parseFloat(newValues.pcv)
+  const wbc = field === 'wbc' ? parseFloat(value) : parseFloat(newValues.wbc)
+
+  const updatedValues = {
+    ...newValues,
+    mcv: (pcv && rbc && !isNaN(pcv) && !isNaN(rbc) && rbc !== 0) ? ((pcv / rbc) * 10).toFixed(1) : '',
+    mch: (hb && rbc && !isNaN(hb) && !isNaN(rbc) && rbc !== 0) ? ((hb / rbc) * 10).toFixed(1) : '',
+    mchc: (hb && pcv && !isNaN(hb) && !isNaN(pcv) && pcv !== 0) ? ((hb / pcv) * 100).toFixed(1) : '',
+    neutrophilsAbs: (wbc && newValues.neutrophils && !isNaN(wbc) && !isNaN(parseFloat(newValues.neutrophils))) ? 
+      ((parseFloat(newValues.neutrophils) / 100) * wbc).toFixed(2) : '',
+    lymphocytesAbs: (wbc && newValues.lymphocytes && !isNaN(wbc) && !isNaN(parseFloat(newValues.lymphocytes))) ? 
+      ((parseFloat(newValues.lymphocytes) / 100) * wbc).toFixed(2) : '',
+    eosinophilsAbs: (wbc && newValues.eosinophils && !isNaN(wbc) && !isNaN(parseFloat(newValues.eosinophils))) ? 
+      ((parseFloat(newValues.eosinophils) / 100) * wbc).toFixed(2) : '',
+    monocytesAbs: (wbc && newValues.monocytes && !isNaN(wbc) && !isNaN(parseFloat(newValues.monocytes))) ? 
+      ((parseFloat(newValues.monocytes) / 100) * wbc).toFixed(2) : '',
+    basophilsAbs: (wbc && newValues.basophils && !isNaN(wbc) && !isNaN(parseFloat(newValues.basophils))) ? 
+      ((parseFloat(newValues.basophils) / 100) * wbc).toFixed(2) : '',
+  }
+  
+  // Pass calculated values to parent, but don't store them in local state
+  onValuesChange(updatedValues)
 }
 
   // Calculate derived values for display

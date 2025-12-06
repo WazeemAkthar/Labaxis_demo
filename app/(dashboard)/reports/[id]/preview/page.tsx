@@ -1154,7 +1154,9 @@ export default function PDFPreviewPage() {
                   <span className="text-sm text-gray-900 uppercase">
                     :&nbsp;&nbsp;&nbsp;
                     {(() => {
-                      const date = new Date(report.createdAt);
+                      const date = new Date(
+                        report.reportDate || report.createdAt
+                      );
                       const day = String(date.getDate()).padStart(2, "0");
                       const month = String(date.getMonth() + 1).padStart(
                         2,

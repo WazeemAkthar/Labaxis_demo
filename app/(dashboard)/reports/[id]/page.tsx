@@ -757,9 +757,9 @@ export default function ReportDetailsPage() {
             margin: 0;
             padding: 0;
           }
-              .printingreport {
-    margin-top: 2.18in !important;
-  }
+          .printingreport {
+            margin-top: 2.18in !important;
+          }
 
           .table-row {
             padding: 0px !important;
@@ -1152,13 +1152,15 @@ export default function ReportDetailsPage() {
                     </span>
                   </div>
                   <div className="flex">
-                    <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
+                    <span className="text-sm text-gray-900 w-32 shrink-0 text-left uppercase">
                       Report Date
                     </span>
                     <span className="text-sm text-gray-900 uppercase">
                       :&nbsp;&nbsp;&nbsp;
                       {(() => {
-                        const date = new Date(report.createdAt);
+                        const date = new Date(
+                          report.reportDate || report.createdAt
+                        );
                         const day = String(date.getDate()).padStart(2, "0");
                         const month = String(date.getMonth() + 1).padStart(
                           2,
