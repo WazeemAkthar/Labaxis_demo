@@ -132,7 +132,7 @@ async function getTestDetails(
 
 export default function NewReportPage() {
   const router = useRouter();
-  const searchParams = useSearchParams(); 
+  const searchParams = useSearchParams();
   const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -154,6 +154,9 @@ export default function NewReportPage() {
   const [bssValues, setBssValues] = useState<any[]>([]);
   const [testCatalog, setTestCatalog] = useState<any[]>([]);
   const [patientSearchTerm, setPatientSearchTerm] = useState("");
+  const [reportDate, setReportDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
 
   const hasUFRTest = useDirectTestSelection
     ? selectedTests.includes("UFR")
@@ -181,37 +184,41 @@ export default function NewReportPage() {
       false;
 
   useEffect(() => {
-  if (authLoading) return;
+    if (authLoading) return;
 
-  if (!user) {
-    router.push("/");
-    return;
-  }
-  
-  // Load data
-  async function loadData() {
-    const dataManager = DataManager.getInstance();
-    const patientsData = await dataManager.getPatients();
-    const invoicesData = await dataManager.getInvoices();
-    const catalogData = await dataManager.getTestCatalog();
-    setTestCatalog(catalogData);
-    setPatients(patientsData);
-    setInvoices(invoicesData);
-    setLoading(false);
+    if (!user) {
+      router.push("/");
+      return;
+    }
 
-    // Auto-select patient from query parameter (moved inside loadData)
-    const patientIdParam = searchParams.get('patientId');
-    if (patientIdParam) {
-      const patient = patientsData.find((p: Patient) => p.id === patientIdParam);
-      if (patient) {
-        setSelectedPatient(patient);
-        console.log(`Auto-selected patient: ${patient.firstName} ${patient.lastName}`);
+    // Load data
+    async function loadData() {
+      const dataManager = DataManager.getInstance();
+      const patientsData = await dataManager.getPatients();
+      const invoicesData = await dataManager.getInvoices();
+      const catalogData = await dataManager.getTestCatalog();
+      setTestCatalog(catalogData);
+      setPatients(patientsData);
+      setInvoices(invoicesData);
+      setLoading(false);
+
+      // Auto-select patient from query parameter (moved inside loadData)
+      const patientIdParam = searchParams.get("patientId");
+      if (patientIdParam) {
+        const patient = patientsData.find(
+          (p: Patient) => p.id === patientIdParam
+        );
+        if (patient) {
+          setSelectedPatient(patient);
+          console.log(
+            `Auto-selected patient: ${patient.firstName} ${patient.lastName}`
+          );
+        }
       }
     }
-  }
 
-  loadData();
-}, [user, authLoading, router, searchParams]);
+    loadData();
+  }, [user, authLoading, router, searchParams]);
 
   const handlePatientChange = (patientId: string) => {
     const patient = patients.find((p) => p.id === patientId);
@@ -247,52 +254,52 @@ export default function NewReportPage() {
       const initialResults: ReportResult[] = [];
 
       invoice.lineItems.forEach((item) => {
-  const test = testCatalog.find((t) => t.code === item.testCode);
-  const referenceRanges = test?.referenceRange || {};
+        const test = testCatalog.find((t) => t.code === item.testCode);
+        const referenceRanges = test?.referenceRange || {};
 
-  // Handle FBC, LIPID, UFR, OGTT, PPBS, BSS specially - don't create individual result entries
-  if (
-    item.testCode === "FBC" ||
-    item.testCode === "LIPID" ||
-    item.testCode === "UFR" ||
-    item.testCode === "OGTT" ||
-    item.testCode === "PPBS" ||
-    item.testCode === "BSS"
-  ) {
-    return;
-  }
+        // Handle FBC, LIPID, UFR, OGTT, PPBS, BSS specially - don't create individual result entries
+        if (
+          item.testCode === "FBC" ||
+          item.testCode === "LIPID" ||
+          item.testCode === "UFR" ||
+          item.testCode === "OGTT" ||
+          item.testCode === "PPBS" ||
+          item.testCode === "BSS"
+        ) {
+          return;
+        }
 
-  // For multi-component tests, create separate result entries for each component
-  if (Object.keys(referenceRanges).length > 1) {
-    Object.entries(referenceRanges).forEach(([component, range]) => {
-      const componentUnit =
-        test?.unitPerTest?.[component] || test?.unit || "";
+        // For multi-component tests, create separate result entries for each component
+        if (Object.keys(referenceRanges).length > 1) {
+          Object.entries(referenceRanges).forEach(([component, range]) => {
+            const componentUnit =
+              test?.unitPerTest?.[component] || test?.unit || "";
 
-      initialResults.push({
-        testCode: item.testCode,
-        testName: component, // ✅ USE ONLY THE COMPONENT NAME
-        value: "",
-        unit: componentUnit,
-        referenceRange: String(range),
-        comments: "",
-        isQualitative: test?.isQualitative || false,
+            initialResults.push({
+              testCode: item.testCode,
+              testName: component, // ✅ USE ONLY THE COMPONENT NAME
+              value: "",
+              unit: componentUnit,
+              referenceRange: String(range),
+              comments: "",
+              isQualitative: test?.isQualitative || false,
+            });
+          });
+        } else {
+          // For single-component tests - use the reference range key
+          const firstRange = Object.entries(referenceRanges)[0];
+          const componentName = firstRange ? firstRange[0] : item.testName;
+
+          initialResults.push({
+            testCode: item.testCode,
+            testName: componentName, // ✅ USE THE REFERENCE RANGE KEY
+            value: "",
+            unit: test?.unit || "",
+            referenceRange: firstRange ? String(firstRange[1]) : "",
+            comments: "",
+          });
+        }
       });
-    });
-  } else {
-    // For single-component tests - use the reference range key
-    const firstRange = Object.entries(referenceRanges)[0];
-    const componentName = firstRange ? firstRange[0] : item.testName;
-    
-    initialResults.push({
-      testCode: item.testCode,
-      testName: componentName, // ✅ USE THE REFERENCE RANGE KEY
-      value: "",
-      unit: test?.unit || "",
-      referenceRange: firstRange ? String(firstRange[1]) : "",
-      comments: "",
-    });
-  }
-});
 
       setResults(initialResults);
     }
@@ -374,63 +381,65 @@ export default function NewReportPage() {
     const initialResults: ReportResult[] = [];
 
     testCodes.forEach((testCode) => {
-  const test = testCatalog.find((t) => t.code === testCode);
-  const referenceRanges = test?.referenceRange || {};
+      const test = testCatalog.find((t) => t.code === testCode);
+      const referenceRanges = test?.referenceRange || {};
 
-  // Handle FBC, LIPID, UFR, OGTT, PPBS, BSS specially - don't create individual result entries
-  if (
-    testCode === "FBC" ||
-    testCode === "LIPID" ||
-    testCode === "UFR" ||
-    testCode === "OGTT" ||
-    testCode === "PPBS" ||
-    testCode === "BSS"
-  ) {
-    return;
-  }
+      // Handle FBC, LIPID, UFR, OGTT, PPBS, BSS specially - don't create individual result entries
+      if (
+        testCode === "FBC" ||
+        testCode === "LIPID" ||
+        testCode === "UFR" ||
+        testCode === "OGTT" ||
+        testCode === "PPBS" ||
+        testCode === "BSS"
+      ) {
+        return;
+      }
 
-  // For multi-component tests, create separate result entries for each component
-  if (Object.keys(referenceRanges).length > 1) {
-    Object.entries(referenceRanges).forEach(([component, range]) => {
-      const componentUnit =
-        test?.unitPerTest?.[component] || test?.unit || "";
+      // For multi-component tests, create separate result entries for each component
+      if (Object.keys(referenceRanges).length > 1) {
+        Object.entries(referenceRanges).forEach(([component, range]) => {
+          const componentUnit =
+            test?.unitPerTest?.[component] || test?.unit || "";
 
-      initialResults.push({
-        testCode: testCode,
-        testName: component, // ✅ USE ONLY THE COMPONENT NAME
-        value: "",
-        unit: componentUnit,
-        referenceRange: String(range),
-        comments: "",
-      });
+          initialResults.push({
+            testCode: testCode,
+            testName: component, // ✅ USE ONLY THE COMPONENT NAME
+            value: "",
+            unit: componentUnit,
+            referenceRange: String(range),
+            comments: "",
+          });
+        });
+      } else {
+        // For single-component tests - use the reference range key
+        const firstRange = Object.entries(referenceRanges)[0];
+        const componentName = firstRange
+          ? firstRange[0]
+          : test?.name || testCode;
+
+        // Handle nested reference ranges (like Man/Woman for Haemoglobin)
+        let referenceRangeValue = "";
+        if (firstRange) {
+          const rangeValue = firstRange[1];
+          if (typeof rangeValue === "object" && rangeValue !== null) {
+            // Store as JSON string for nested objects
+            referenceRangeValue = JSON.stringify(rangeValue);
+          } else {
+            referenceRangeValue = String(rangeValue);
+          }
+        }
+
+        initialResults.push({
+          testCode: testCode, // ✅ Changed from item.testCode to testCode
+          testName: componentName,
+          value: "",
+          unit: test?.unit || "",
+          referenceRange: referenceRangeValue,
+          comments: "",
+        });
+      }
     });
-  } else {
-    // For single-component tests - use the reference range key
-    const firstRange = Object.entries(referenceRanges)[0];
-const componentName = firstRange ? firstRange[0] : (test?.name || testCode);
-
-// Handle nested reference ranges (like Man/Woman for Haemoglobin)
-let referenceRangeValue = "";
-if (firstRange) {
-  const rangeValue = firstRange[1];
-  if (typeof rangeValue === 'object' && rangeValue !== null) {
-    // Store as JSON string for nested objects
-    referenceRangeValue = JSON.stringify(rangeValue);
-  } else {
-    referenceRangeValue = String(rangeValue);
-  }
-}
-
-initialResults.push({
-  testCode: testCode,  // ✅ Changed from item.testCode to testCode
-  testName: componentName,
-  value: "",
-  unit: test?.unit || "",
-  referenceRange: referenceRangeValue,
-  comments: "",
-});
-  }
-});
 
     setResults(initialResults);
   };
@@ -476,7 +485,7 @@ initialResults.push({
             testName: "Hemoglobin",
             value: fbcValues.hemoglobin,
             unit: "g/dL",
-            referenceRange: "12.0-16.0",
+            referenceRange: "11.0 – 16.5",
             comments: "",
           },
           {
@@ -484,7 +493,7 @@ initialResults.push({
             testName: "RBC",
             value: fbcValues.rbc,
             unit: "x10⁶/μL",
-            referenceRange: "3.8-5.2",
+            referenceRange: "3.5 - 6.2",
             comments: "",
           },
           {
@@ -492,7 +501,7 @@ initialResults.push({
             testName: "PCV",
             value: fbcValues.pcv,
             unit: "%",
-            referenceRange: "36-46",
+            referenceRange: "36.0 – 54.0",
             comments: "",
           },
           {
@@ -500,7 +509,7 @@ initialResults.push({
             testName: "MCV",
             value: fbcValues.mcv,
             unit: "fL",
-            referenceRange: "80-100",
+            referenceRange: "80.0 – 100.0",
             comments: "",
           },
           {
@@ -508,7 +517,7 @@ initialResults.push({
             testName: "MCH",
             value: fbcValues.mch,
             unit: "pg",
-            referenceRange: "27-33",
+            referenceRange: "27.0 – 34.0",
             comments: "",
           },
           {
@@ -516,7 +525,7 @@ initialResults.push({
             testName: "MCHC",
             value: fbcValues.mchc,
             unit: "g/dL",
-            referenceRange: "32-36",
+            referenceRange: "32.0 – 36.0",
             comments: "",
           },
           {
@@ -524,7 +533,7 @@ initialResults.push({
             testName: "RDW-CV",
             value: fbcValues.rdwCv,
             unit: "%",
-            referenceRange: "11.5-14.5",
+            referenceRange: "11.0 – 16.0",
             comments: "",
           },
           {
@@ -532,7 +541,7 @@ initialResults.push({
             testName: "Platelets",
             value: fbcValues.platelets,
             unit: "x10³/μL",
-            referenceRange: "150-450",
+            referenceRange: "150 - 450",
             comments: "",
           },
           {
@@ -540,7 +549,7 @@ initialResults.push({
             testName: "WBC",
             value: fbcValues.wbc,
             unit: "x10³/μL",
-            referenceRange: "4.0-11.0",
+            referenceRange: "4.0 - 10.0",
             comments: "",
           },
           {
@@ -548,7 +557,7 @@ initialResults.push({
             testName: "Neutrophils",
             value: fbcValues.neutrophils,
             unit: "%",
-            referenceRange: "40-70",
+            referenceRange: "40.0 – 70.0",
             comments: "",
           },
           {
@@ -556,7 +565,7 @@ initialResults.push({
             testName: "Lymphocytes",
             value: fbcValues.lymphocytes,
             unit: "%",
-            referenceRange: "20-40",
+            referenceRange: "20.0 – 40.0",
             comments: "",
           },
           {
@@ -564,7 +573,7 @@ initialResults.push({
             testName: "Eosinophils",
             value: fbcValues.eosinophils,
             unit: "%",
-            referenceRange: "1-4",
+            referenceRange: "1.0 – 5.0",
             comments: "",
           },
           {
@@ -572,7 +581,7 @@ initialResults.push({
             testName: "Monocytes",
             value: fbcValues.monocytes,
             unit: "%",
-            referenceRange: "2-8",
+            referenceRange: "3.0 – 12.0",
             comments: "",
           },
           {
@@ -875,51 +884,58 @@ initialResults.push({
         allResults.push(...ogttResultsArray);
       }
 
-// Add PPBS results if available (MOVED OUTSIDE OF OGTT BLOCK)
-if (ppbsValues && hasPPBSTest && ppbsValues.value && ppbsValues.value.trim() !== "") {
-  console.log("=== SAVING PPBS DATA ===");
-  console.log("ppbsValues:", ppbsValues);
-  
-  const referenceRange = ppbsValues.hourType === "After 1 Hour" ? "< 160" : "< 140";
-  
-  allResults.push({
-    testCode: "PPBS",
-    testName: "Post Prandial Blood Sugar",
-    value: ppbsValues.value,
-    unit: "mg/dL",
-    referenceRange: referenceRange,
-    comments: "",
-    mealType: ppbsValues.mealType,      // Store meal type separately
-    hourType: ppbsValues.hourType,      // Store hour type separately
-  });
-  
-  console.log("PPBS result added to allResults");
-}
+      // Add PPBS results if available (MOVED OUTSIDE OF OGTT BLOCK)
+      if (
+        ppbsValues &&
+        hasPPBSTest &&
+        ppbsValues.value &&
+        ppbsValues.value.trim() !== ""
+      ) {
+        console.log("=== SAVING PPBS DATA ===");
+        console.log("ppbsValues:", ppbsValues);
+
+        const referenceRange =
+          ppbsValues.hourType === "After 1 Hour" ? "< 160" : "< 140";
+
+        allResults.push({
+          testCode: "PPBS",
+          testName: "Post Prandial Blood Sugar",
+          value: ppbsValues.value,
+          unit: "mg/dL",
+          referenceRange: referenceRange,
+          comments: "",
+          mealType: ppbsValues.mealType, // Store meal type separately
+          hourType: ppbsValues.hourType, // Store hour type separately
+        });
+
+        console.log("PPBS result added to allResults");
+      }
 
       // Add BSS results if available (MOVED OUTSIDE OF OGTT BLOCK)
-if (bssValues && hasBSSTest && bssValues.length > 0) {
-  console.log("=== SAVING BSS DATA ===");
-  console.log("bssValues:", bssValues);
-  
-  bssValues.forEach((entry) => {
-    if (entry.value && entry.value.trim() !== "") {
-      const referenceRange = entry.hourType === "After 1 Hour" ? "< 160" : "< 140";
-      
-      allResults.push({
-        testCode: "BSS",
-        testName: "Post Prandial Blood Sugar",
-        value: entry.value,
-        unit: "mg/dL",
-        referenceRange: referenceRange,
-        comments: "",
-        mealType: entry.mealType,      // Store meal type separately
-        hourType: entry.hourType,      // Store hour type separately
-      });
-    }
-  });
-  
-  console.log("BSS results added to allResults");
-}
+      if (bssValues && hasBSSTest && bssValues.length > 0) {
+        console.log("=== SAVING BSS DATA ===");
+        console.log("bssValues:", bssValues);
+
+        bssValues.forEach((entry) => {
+          if (entry.value && entry.value.trim() !== "") {
+            const referenceRange =
+              entry.hourType === "After 1 Hour" ? "< 160" : "< 140";
+
+            allResults.push({
+              testCode: "BSS",
+              testName: "Post Prandial Blood Sugar",
+              value: entry.value,
+              unit: "mg/dL",
+              referenceRange: referenceRange,
+              comments: "",
+              mealType: entry.mealType, // Store meal type separately
+              hourType: entry.hourType, // Store hour type separately
+            });
+          }
+        });
+
+        console.log("BSS results added to allResults");
+      }
 
       if (allResults.length === 0) {
         console.error("No results to save!");
@@ -936,6 +952,7 @@ if (bssValues && hasBSSTest && bssValues.length > 0) {
         results: allResults,
         doctorRemarks,
         reviewedBy,
+        reportDate: reportDate, // Add this line
       });
 
       // Redirect to report details page
@@ -1048,50 +1065,57 @@ if (bssValues && hasBSSTest && bssValues.length > 0) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-  <Label htmlFor="patient">Patient *</Label>
-  <Select
-    key={selectedPatient?.id || "no-patient"}
-    value={selectedPatient?.id || ""}
-    onValueChange={handlePatientChange}
-  >
-    <SelectTrigger>
-      <SelectValue placeholder="Select a patient" />
-    </SelectTrigger>
-    <SelectContent>
-      <div className="p-2 sticky top-0 bg-background z-10">
-        <Input
-          placeholder="Search by name or ID..."
-          className="h-8"
-          value={patientSearchTerm}
-          onChange={(e) => setPatientSearchTerm(e.target.value)}
-          onClick={(e) => e.stopPropagation()}
-        />
-      </div>
-      {patients
-        .filter((patient) => {
-          const searchLower = patientSearchTerm.toLowerCase();
-          const fullName = `${patient.firstName} ${patient.lastName}`.toLowerCase();
-          const id = patient.id.toLowerCase();
-          return fullName.includes(searchLower) || id.includes(searchLower);
-        })
-        .map((patient) => (
-          <SelectItem key={patient.id} value={patient.id}>
-            {patient.firstName} {patient.lastName} ({patient.id})
-          </SelectItem>
-        ))}
-      {patients.filter((patient) => {
-        const searchLower = patientSearchTerm.toLowerCase();
-        const fullName = `${patient.firstName} ${patient.lastName}`.toLowerCase();
-        const id = patient.id.toLowerCase();
-        return fullName.includes(searchLower) || id.includes(searchLower);
-      }).length === 0 && (
-        <div className="p-2 text-center text-sm text-muted-foreground">
-          No patients found
-        </div>
-      )}
-    </SelectContent>
-  </Select>
-</div>
+              <Label htmlFor="patient">Patient *</Label>
+              <Select
+                key={selectedPatient?.id || "no-patient"}
+                value={selectedPatient?.id || ""}
+                onValueChange={handlePatientChange}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a patient" />
+                </SelectTrigger>
+                <SelectContent>
+                  <div className="p-2 sticky top-0 bg-background z-10">
+                    <Input
+                      placeholder="Search by name or ID..."
+                      className="h-8"
+                      value={patientSearchTerm}
+                      onChange={(e) => setPatientSearchTerm(e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                  {patients
+                    .filter((patient) => {
+                      const searchLower = patientSearchTerm.toLowerCase();
+                      const fullName =
+                        `${patient.firstName} ${patient.lastName}`.toLowerCase();
+                      const id = patient.id.toLowerCase();
+                      return (
+                        fullName.includes(searchLower) ||
+                        id.includes(searchLower)
+                      );
+                    })
+                    .map((patient) => (
+                      <SelectItem key={patient.id} value={patient.id}>
+                        {patient.firstName} {patient.lastName} ({patient.id})
+                      </SelectItem>
+                    ))}
+                  {patients.filter((patient) => {
+                    const searchLower = patientSearchTerm.toLowerCase();
+                    const fullName =
+                      `${patient.firstName} ${patient.lastName}`.toLowerCase();
+                    const id = patient.id.toLowerCase();
+                    return (
+                      fullName.includes(searchLower) || id.includes(searchLower)
+                    );
+                  }).length === 0 && (
+                    <div className="p-2 text-center text-sm text-muted-foreground">
+                      No patients found
+                    </div>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
 
             {selectedPatient && (
               <div className="space-y-4">
@@ -1152,7 +1176,7 @@ if (bssValues && hasBSSTest && bssValues.length > 0) {
             {selectedPatient &&
               (selectedInvoice ||
                 (useDirectTestSelection && selectedTests.length > 0)) && (
-                <div className="p-4 bg-muted/50 rounded-lg">
+                <div className="p-4 bg-muted/50 rounded-lg space-y-4">
                   <div className="grid gap-2 md:grid-cols-2">
                     <div>
                       <span className="text-sm text-muted-foreground">
@@ -1185,15 +1209,14 @@ if (bssValues && hasBSSTest && bssValues.length > 0) {
                     </div>
                     <div>
                       <span className="text-sm text-muted-foreground">
-                        Date:
+                        Report Date:
                       </span>
-                      <div className="font-medium">
-                        {selectedInvoice
-                          ? new Date(
-                              selectedInvoice.createdAt
-                            ).toLocaleDateString()
-                          : new Date().toLocaleDateString()}
-                      </div>
+                      <Input
+                        type="date"
+                        value={reportDate}
+                        onChange={(e) => setReportDate(e.target.value)}
+                        className="h-8 w-full max-w-[200px] font-medium"
+                      />
                     </div>
                   </div>
                 </div>
@@ -1413,56 +1436,66 @@ if (bssValues && hasBSSTest && bssValues.length > 0) {
                           </div>
 
                           <div className="space-y-2">
-  <Label
-    htmlFor={`range-${result.testCode}-${result.testName}-${index}`}
-  >
-    Reference Range
-  </Label>
-  <Input
-    id={`range-${result.testCode}-${result.testName}-${index}`}
-    value={(() => {
-      // Format nested reference ranges for display
-      try {
-        const parsed = typeof result.referenceRange === 'string' 
-          ? JSON.parse(result.referenceRange) 
-          : result.referenceRange;
-        
-        if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
-          return Object.entries(parsed)
-            .map(([key, value]) => `${key}: ${value}`)
-            .join(', ');
-        }
-        return result.referenceRange;
-      } catch {
-        return result.referenceRange;
-      }
-    })()}
-    onChange={(e) =>
-      updateResult(
-        result.testName,
-        "referenceRange",
-        e.target.value
-      )
-    }
-    placeholder={(() => {
-      // Format nested reference ranges for placeholder
-      try {
-        const parsed = typeof result.referenceRange === 'string' 
-          ? JSON.parse(result.referenceRange) 
-          : result.referenceRange;
-        
-        if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
-          return Object.entries(parsed)
-            .map(([key, value]) => `${key}: ${value}`)
-            .join(', ');
-        }
-        return `e.g. ${result.referenceRange}`;
-      } catch {
-        return `e.g. ${result.referenceRange}`;
-      }
-    })()}
-  />
-</div>
+                            <Label
+                              htmlFor={`range-${result.testCode}-${result.testName}-${index}`}
+                            >
+                              Reference Range
+                            </Label>
+                            <Input
+                              id={`range-${result.testCode}-${result.testName}-${index}`}
+                              value={(() => {
+                                // Format nested reference ranges for display
+                                try {
+                                  const parsed =
+                                    typeof result.referenceRange === "string"
+                                      ? JSON.parse(result.referenceRange)
+                                      : result.referenceRange;
+
+                                  if (
+                                    typeof parsed === "object" &&
+                                    parsed !== null &&
+                                    !Array.isArray(parsed)
+                                  ) {
+                                    return Object.entries(parsed)
+                                      .map(([key, value]) => `${key}: ${value}`)
+                                      .join(", ");
+                                  }
+                                  return result.referenceRange;
+                                } catch {
+                                  return result.referenceRange;
+                                }
+                              })()}
+                              onChange={(e) =>
+                                updateResult(
+                                  result.testName,
+                                  "referenceRange",
+                                  e.target.value
+                                )
+                              }
+                              placeholder={(() => {
+                                // Format nested reference ranges for placeholder
+                                try {
+                                  const parsed =
+                                    typeof result.referenceRange === "string"
+                                      ? JSON.parse(result.referenceRange)
+                                      : result.referenceRange;
+
+                                  if (
+                                    typeof parsed === "object" &&
+                                    parsed !== null &&
+                                    !Array.isArray(parsed)
+                                  ) {
+                                    return Object.entries(parsed)
+                                      .map(([key, value]) => `${key}: ${value}`)
+                                      .join(", ");
+                                  }
+                                  return `e.g. ${result.referenceRange}`;
+                                } catch {
+                                  return `e.g. ${result.referenceRange}`;
+                                }
+                              })()}
+                            />
+                          </div>
                         </div>
 
                         {!isQualitative && (

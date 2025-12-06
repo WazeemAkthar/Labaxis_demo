@@ -418,7 +418,11 @@ export default function PDFPreviewPage() {
       ].includes(result.testName)
     );
 
-    const renderTable = (results: any[], title?: string) => (
+    const renderTable = (
+      results: any[],
+      title?: string,
+      showHeader: boolean = true
+    ) => (
       <div
         className="mb-6"
         style={{ fontFamily: "'Courier New', Courier, monospace" }}
@@ -430,15 +434,17 @@ export default function PDFPreviewPage() {
         )}
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead>
-              <tr className="border-collapse border-t-2 border-b-2 border-gray-900">
-                <th className="text-left font-semibold">Parameter</th>
-                <th className="text-right font-semibold">Result</th>
-                <th className="text-right font-semibold">Units</th>
-                <th className="text-right font-semibold">Reference Range</th>
-                <th className="text-center font-semibold">Status</th>
-              </tr>
-            </thead>
+            {showHeader && (
+              <thead>
+                <tr className="border-collapse border-t-2 border-b-2 border-gray-900">
+                  <th className="text-left font-semibold">Parameter</th>
+                  <th className="text-right font-semibold">Result</th>
+                  <th className="text-right font-semibold">Units</th>
+                  <th className="text-right font-semibold">Reference Range</th>
+                  <th className="text-center font-semibold">Status</th>
+                </tr>
+              </thead>
+            )}
             <tbody>
               {results.map((result, index) => {
                 const status = checkValueStatus(
@@ -497,17 +503,17 @@ export default function PDFPreviewPage() {
           <h1 className="font-semibold text-lg">Full Blood Count</h1>
         </div>
 
-        {mainParams.length > 0 && renderTable(mainParams)}
+        {mainParams.length > 0 && renderTable(mainParams, undefined, true)}
         {mainParams.length > 0 && differentialCount.length > 0 && (
           <hr className="border-gray-200" />
         )}
         {differentialCount.length > 0 &&
-          renderTable(differentialCount, "Differential Count")}
+          renderTable(differentialCount, "Differential Count", false)}
         {differentialCount.length > 0 && absoluteCount.length > 0 && (
           <hr className="border-gray-200" />
         )}
         {absoluteCount.length > 0 &&
-          renderTable(absoluteCount, "Absolute Count")}
+          renderTable(absoluteCount, "Absolute Count", false)}
       </div>
     );
   };
@@ -539,7 +545,11 @@ export default function PDFPreviewPage() {
       ].includes(result.testName)
     );
 
-    const renderTable = (results: any[], title?: string) => (
+    const renderTable = (
+      results: any[],
+      title?: string,
+      showHeader: boolean = true
+    ) => (
       <div
         className="mb-6"
         style={{ fontFamily: "'Courier New', Courier, monospace" }}
@@ -550,22 +560,59 @@ export default function PDFPreviewPage() {
           </h4>
         )}
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-collapse border-t-2 border-b-2 border-gray-900">
-                <th className="text-left font-semibold">Description</th>
-                <th className="text-right font-semibold">Results</th>
-                <th className="text-right font-semibold">Units</th>
-              </tr>
-            </thead>
-            <tbody>
-              {results.map((result, index) => (
-                <tr key={index} className="border-0 font-mono p-0 table-row">
-                  <td className="py-0 font-mono">{result.testName}</td>
-                  <td className="text-right py-0 font-mono">{result.value}</td>
-                  <td className="text-right py-0 font-mono">{result.unit}</td>
+          <table className="w-full text-sm border-collapse">
+            {showHeader && (
+              <thead>
+                <tr className="border-collapse border-t-2 border-b-2 border-gray-900">
+                  <th className="text-left font-semibold py-1">Parameter</th>
+                  <th className="text-right font-semibold py-1">Result</th>
+                  <th className="text-right font-semibold py-1">Units</th>
+                  <th className="text-right font-semibold py-1">
+                    Reference Range
+                  </th>
+                  <th className="text-center font-semibold py-1">Status</th>
                 </tr>
-              ))}
+              </thead>
+            )}
+            <tbody>
+              {results.map((result, index) => {
+                const status = checkValueStatus(
+                  result.value,
+                  result.referenceRange
+                );
+                const getStatusDisplay = (status: string) => {
+                  if (status === "low")
+                    return { text: "L", color: "text-red-600" };
+                  if (status === "high")
+                    return { text: "H", color: "text-red-600" };
+                  return { text: "", color: "" };
+                };
+                const statusDisplay = getStatusDisplay(status);
+
+                return (
+                  <tr key={index} className="border-0 font-mono table-row">
+                    <td className="py-1 font-mono border-b border-gray-200">
+                      {result.testName}
+                    </td>
+                    <td className="text-right py-1 font-mono border-b border-gray-200">
+                      {result.value}
+                    </td>
+                    <td className="text-right py-1 font-mono border-b border-gray-200">
+                      {result.unit}
+                    </td>
+                    <td className="text-right py-1 font-mono border-b border-gray-200">
+                      {result.referenceRange}
+                    </td>
+                    <td className="text-center py-1 font-mono border-b border-gray-200">
+                      {statusDisplay.text && (
+                        <span className={`font-bold ${statusDisplay.color}`}>
+                          {statusDisplay.text}
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -578,7 +625,7 @@ export default function PDFPreviewPage() {
         className=""
         style={{ fontFamily: "'Courier New', Courier, monospace" }}
       >
-        <div className="flex items-center gap-2 mb-6">
+        <div className="flex items-center gap-2">
           <h1 className="font-semibold text-lg">Urine Full Report</h1>
         </div>
 
@@ -842,6 +889,20 @@ export default function PDFPreviewPage() {
             height: 20px;
             width: auto;
           }
+
+          .text-red-600 {
+            color: #dc2626 !important;
+            font-weight: bold !important;
+          }
+
+          /* Ensure table alignment */
+          .space-y-6 > div:not(.mt-8) table {
+            font-size: 14px;
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 2px;
+            table-layout: fixed; /* Add this for even column distribution */
+          }
         }
 
         @media print {
@@ -969,6 +1030,30 @@ export default function PDFPreviewPage() {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
+
+          .text-red-600 {
+            color: #dc2626 !important;
+            font-weight: bold !important;
+          }
+
+          [class*="bg-red"],
+          [class*="destructive"] {
+            background-color: transparent !important;
+            color: #ef4444 !important;
+            font-size: 14px !important;
+            padding: 0px !important;
+            font-weight: bold !important;
+            border-radius: 0px !important;
+          }
+
+          /* Ensure table alignment */
+          .space-y-6 > div:not(.mt-8) table {
+            font-size: 14px;
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 2px;
+            table-layout: fixed; /* Add this for even column distribution */
+          }
         }
       `}</style>
 
@@ -1069,7 +1154,9 @@ export default function PDFPreviewPage() {
                   <span className="text-sm text-gray-900 uppercase">
                     :&nbsp;&nbsp;&nbsp;
                     {(() => {
-                      const date = new Date(report.createdAt);
+                      const date = new Date(
+                        report.reportDate || report.createdAt
+                      );
                       const day = String(date.getDate()).padStart(2, "0");
                       const month = String(date.getMonth() + 1).padStart(
                         2,

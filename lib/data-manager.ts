@@ -75,6 +75,7 @@ export interface Report {
   doctorRemarks?: string;
   reviewedBy: string;
   createdAt: string;
+  reportDate?: string;
 }
 
 export class DataManager {

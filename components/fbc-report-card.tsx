@@ -56,34 +56,36 @@ export function FBCReportCard({ onValuesChange }: FBCReportCardProps) {
     basophilsAbs: "",
   })
 
-  const updateValue = (field: keyof FBCValues, value: string) => {
-    const newValues = { ...values, [field]: value }
-    setValues(newValues)
-    
-    // Calculate derived values and include them in the update
-    const hb = field === 'hemoglobin' ? parseFloat(value) : parseFloat(newValues.hemoglobin)
-    const rbc = field === 'rbc' ? parseFloat(value) : parseFloat(newValues.rbc)
-    const pcv = field === 'pcv' ? parseFloat(value) : parseFloat(newValues.pcv)
-    const wbc = field === 'wbc' ? parseFloat(value) : parseFloat(newValues.wbc)
+const updateValue = (field: keyof FBCValues, value: string) => {
+  const newValues = { ...values, [field]: value }
+  setValues(newValues)
+  
+  // Calculate derived values based on the new values
+  const hb = field === 'hemoglobin' ? parseFloat(value) : parseFloat(newValues.hemoglobin)
+  const rbc = field === 'rbc' ? parseFloat(value) : parseFloat(newValues.rbc)
+  const pcv = field === 'pcv' ? parseFloat(value) : parseFloat(newValues.pcv)
+  const wbc = field === 'wbc' ? parseFloat(value) : parseFloat(newValues.wbc)
 
-   const updatedValues = {
-  ...newValues,
-  mcv: (pcv && rbc && !isNaN(pcv) && !isNaN(rbc) && rbc !== 0) ? ((pcv / rbc) * 10).toFixed(1) : '',
-  mch: (hb && rbc && !isNaN(hb) && !isNaN(rbc) && rbc !== 0) ? ((hb / rbc) * 10).toFixed(1) : '',
-  mchc: (hb && pcv && !isNaN(hb) && !isNaN(pcv) && pcv !== 0) ? ((hb / pcv) * 100).toFixed(1) : '',
-  neutrophilsAbs: (wbc && newValues.neutrophils && !isNaN(wbc) && !isNaN(parseFloat(newValues.neutrophils))) ? 
-    ((parseFloat(newValues.neutrophils) / 100) * wbc).toFixed(2) : '',
-  lymphocytesAbs: (wbc && newValues.lymphocytes && !isNaN(wbc) && !isNaN(parseFloat(newValues.lymphocytes))) ? 
-    ((parseFloat(newValues.lymphocytes) / 100) * wbc).toFixed(2) : '',
-  eosinophilsAbs: (wbc && newValues.eosinophils && !isNaN(wbc) && !isNaN(parseFloat(newValues.eosinophils))) ? 
-    ((parseFloat(newValues.eosinophils) / 100) * wbc).toFixed(2) : '',
-  monocytesAbs: (wbc && newValues.monocytes && !isNaN(wbc) && !isNaN(parseFloat(newValues.monocytes))) ? 
-    ((parseFloat(newValues.monocytes) / 100) * wbc).toFixed(2) : '',
-  basophilsAbs: (wbc && newValues.basophils && !isNaN(wbc) && !isNaN(parseFloat(newValues.basophils))) ? 
-    ((parseFloat(newValues.basophils) / 100) * wbc).toFixed(2) : '',
-}
-    onValuesChange(updatedValues)
+  const updatedValues = {
+    ...newValues,
+    mcv: (pcv && rbc && !isNaN(pcv) && !isNaN(rbc) && rbc !== 0) ? ((pcv / rbc) * 10).toFixed(1) : '',
+    mch: (hb && rbc && !isNaN(hb) && !isNaN(rbc) && rbc !== 0) ? ((hb / rbc) * 10).toFixed(1) : '',
+    mchc: (hb && pcv && !isNaN(hb) && !isNaN(pcv) && pcv !== 0) ? ((hb / pcv) * 100).toFixed(1) : '',
+    neutrophilsAbs: (wbc && newValues.neutrophils && !isNaN(wbc) && !isNaN(parseFloat(newValues.neutrophils))) ? 
+      ((parseFloat(newValues.neutrophils) / 100) * wbc).toFixed(2) : '',
+    lymphocytesAbs: (wbc && newValues.lymphocytes && !isNaN(wbc) && !isNaN(parseFloat(newValues.lymphocytes))) ? 
+      ((parseFloat(newValues.lymphocytes) / 100) * wbc).toFixed(2) : '',
+    eosinophilsAbs: (wbc && newValues.eosinophils && !isNaN(wbc) && !isNaN(parseFloat(newValues.eosinophils))) ? 
+      ((parseFloat(newValues.eosinophils) / 100) * wbc).toFixed(2) : '',
+    monocytesAbs: (wbc && newValues.monocytes && !isNaN(wbc) && !isNaN(parseFloat(newValues.monocytes))) ? 
+      ((parseFloat(newValues.monocytes) / 100) * wbc).toFixed(2) : '',
+    basophilsAbs: (wbc && newValues.basophils && !isNaN(wbc) && !isNaN(parseFloat(newValues.basophils))) ? 
+      ((parseFloat(newValues.basophils) / 100) * wbc).toFixed(2) : '',
   }
+  
+  // Pass calculated values to parent, but don't store them in local state
+  onValuesChange(updatedValues)
+}
 
   // Calculate derived values for display
   const calculateDerivedValues = () => {
@@ -147,7 +149,7 @@ export function FBCReportCard({ onValuesChange }: FBCReportCardProps) {
                 onChange={(e) => updateValue("hemoglobin", e.target.value)}
                 placeholder="12.2"
               />
-              <div className="text-xs text-muted-foreground">g/dL (12.0-16.0)</div>
+              <div className="text-xs text-muted-foreground">g/dL (11.0 - 16.5)</div>
             </div>
 
             <div className="space-y-2">
@@ -160,7 +162,7 @@ export function FBCReportCard({ onValuesChange }: FBCReportCardProps) {
                 onChange={(e) => updateValue("rbc", e.target.value)}
                 placeholder="3.82"
               />
-              <div className="text-xs text-muted-foreground">x10⁶/μL (3.8-5.2)</div>
+              <div className="text-xs text-muted-foreground">x10⁶/μL (3.5 - 6.2)</div>
             </div>
 
             <div className="space-y-2">
@@ -173,7 +175,7 @@ export function FBCReportCard({ onValuesChange }: FBCReportCardProps) {
                 onChange={(e) => updateValue("pcv", e.target.value)}
                 placeholder="36.7"
               />
-              <div className="text-xs text-muted-foreground">% (36-46)</div>
+              <div className="text-xs text-muted-foreground">% (36.0 - 54.0)</div>
             </div>
 
             <div className="space-y-2">
@@ -187,7 +189,7 @@ export function FBCReportCard({ onValuesChange }: FBCReportCardProps) {
                 className="bg-muted"
                 readOnly
               />
-              <div className="text-xs text-muted-foreground">fL (80-100) - PCV/RBC</div>
+              <div className="text-xs text-muted-foreground">fL (80.0 - 100.0) - PCV/RBC</div>
             </div>
 
             <div className="space-y-2">
@@ -201,7 +203,7 @@ export function FBCReportCard({ onValuesChange }: FBCReportCardProps) {
                 className="bg-muted"
                 readOnly
               />
-              <div className="text-xs text-muted-foreground">pg (27-33) - Hb/RBC</div>
+              <div className="text-xs text-muted-foreground">pg (27.0 - 34.0) - Hb/RBC</div>
             </div>
 
             <div className="space-y-2">
@@ -215,7 +217,7 @@ export function FBCReportCard({ onValuesChange }: FBCReportCardProps) {
                 className="bg-muted"
                 readOnly
               />
-              <div className="text-xs text-muted-foreground">g/dL (32-36) - Hb/PCV</div>
+              <div className="text-xs text-muted-foreground">g/dL (32.0 - 36.0) - Hb/PCV</div>
             </div>
 
             <div className="space-y-2">
@@ -228,7 +230,7 @@ export function FBCReportCard({ onValuesChange }: FBCReportCardProps) {
                 onChange={(e) => updateValue("rdwCv", e.target.value)}
                 placeholder="14.5"
               />
-              <div className="text-xs text-muted-foreground">% (11.5-14.5)</div>
+              <div className="text-xs text-muted-foreground">% (11.0 - 16.0)</div>
             </div>
 
             <div className="space-y-2">
@@ -240,7 +242,7 @@ export function FBCReportCard({ onValuesChange }: FBCReportCardProps) {
                 onChange={(e) => updateValue("platelets", e.target.value)}
                 placeholder="306"
               />
-              <div className="text-xs text-muted-foreground">x10³/μL (150-450)</div>
+              <div className="text-xs text-muted-foreground">x10³/μL (150 - 450)</div>
             </div>
 
             <div className="space-y-2">
@@ -253,7 +255,7 @@ export function FBCReportCard({ onValuesChange }: FBCReportCardProps) {
                 onChange={(e) => updateValue("wbc", e.target.value)}
                 placeholder="5.9"
               />
-              <div className="text-xs text-muted-foreground">x10³/μL (4.0-11.0)</div>
+              <div className="text-xs text-muted-foreground">x10³/μL (4.0 - 10.0)</div>
             </div>
           </div>
         </div>
@@ -279,7 +281,7 @@ export function FBCReportCard({ onValuesChange }: FBCReportCardProps) {
                 onChange={(e) => updateValue("neutrophils", e.target.value)}
                 placeholder="%"
               />
-              <div className="text-xs text-muted-foreground">% (40-70)</div>
+              <div className="text-xs text-muted-foreground">% (40.0 - 70.0)</div>
             </div>
 
             <div className="space-y-2">
@@ -292,7 +294,7 @@ export function FBCReportCard({ onValuesChange }: FBCReportCardProps) {
                 onChange={(e) => updateValue("lymphocytes", e.target.value)}
                 placeholder="%"
               />
-              <div className="text-xs text-muted-foreground">% (20-40)</div>
+              <div className="text-xs text-muted-foreground">% (20.0 - 40.0)</div>
             </div>
 
             <div className="space-y-2">
@@ -305,7 +307,7 @@ export function FBCReportCard({ onValuesChange }: FBCReportCardProps) {
                 onChange={(e) => updateValue("eosinophils", e.target.value)}
                 placeholder="%"
               />
-              <div className="text-xs text-muted-foreground">% (1-4)</div>
+              <div className="text-xs text-muted-foreground">% (1.0 - 4.0)</div>
             </div>
 
             <div className="space-y-2">
@@ -318,7 +320,7 @@ export function FBCReportCard({ onValuesChange }: FBCReportCardProps) {
                 onChange={(e) => updateValue("monocytes", e.target.value)}
                 placeholder="%"
               />
-              <div className="text-xs text-muted-foreground">% (2-8)</div>
+              <div className="text-xs text-muted-foreground">% (3.0 - 12.0)</div>
             </div>
 
             <div className="space-y-2">
