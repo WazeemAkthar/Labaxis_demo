@@ -234,7 +234,7 @@ export default function PDFPreviewPage() {
         className="ogtt-section"
         style={{ fontFamily: "'Courier New', Courier, monospace" }}
       >
-        <div className="flex items-center gap-2 text-center justify-content-center">
+        <div className="flex items-center gap-2 justify-center">
           <div className="font-medium text-md text-black text-center">
             Oral Glucose Tolerance Test
           </div>
@@ -296,7 +296,7 @@ export default function PDFPreviewPage() {
         className=""
         style={{ fontFamily: "'Courier New', Courier, monospace" }}
       >
-        <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
+        <h1 className="font-semibold text-xl text-center border-black border-b-2">
           Post Prandial Blood Sugar
         </h1>
         <table className="w-full border-collapse">
@@ -349,31 +349,31 @@ export default function PDFPreviewPage() {
         <table className="w-full border-collapse">
           <thead>
             <tr className="border-b">
-              <th className="text-left p-4">Description</th>
-              <th className="text-left p-4">Result</th>
-              <th className="text-left p-4">Units</th>
-              <th className="text-left p-4">Reference Range</th>
+              <th className=" px-4">Description</th>
+              <th className=" px-4">Result</th>
+              <th className=" px-4">Units</th>
+              <th className=" px-4">Reference Range</th>
             </tr>
           </thead>
           <tbody>
             {bssResults.map((result, index) => (
               <tr key={index} className="border-b">
-                <td className="p-4">
+                <td className="px-1">
                   <div className="font-medium">{result.testName}</div>
                   {result.mealType && result.hourType && (
-                    <div className="text-md mt-1">
+                    <div className="text-xs">
                       ({result.mealType} / {result.hourType})
                     </div>
                   )}
                 </td>
-                <td className="p-4">
-                  <div className="text-lg">{result.value}</div>
+                <td className="px-1">
+                  <div className="text-md text-center">{result.value}</div>
                 </td>
-                <td className="p-4">
-                  <div className="text-lg">{result.unit}</div>
+                <td className="px-4">
+                  <div className="text-md">{result.unit}</div>
                 </td>
-                <td className="p-4">
-                  <div className="text-lg">{result.referenceRange}</div>
+                <td className="px-4">
+                  <div className="text-md">{result.referenceRange}</div>
                 </td>
               </tr>
             ))}
@@ -476,12 +476,9 @@ export default function PDFPreviewPage() {
                     </td>
                     <td className="text-center py-0 font-mono">
                       {statusDisplay.text && (
-                        <Badge
-                          variant={statusDisplay.variant}
-                          className="text-xs font-bold px-1 py-0 min-h-0 h-4"
-                        >
+                        <span className="text-xs font-bold text-red-600">
                           {statusDisplay.text}
-                        </Badge>
+                        </span>
                       )}
                     </td>
                   </tr>
@@ -499,7 +496,7 @@ export default function PDFPreviewPage() {
         className=""
         style={{ fontFamily: "'Courier New', Courier, monospace" }}
       >
-        <div className="flex items-center gap-2 text-center justify-content-center">
+        <div className="flex items-center gap-2 justify-center">
           <h1 className="font-semibold text-lg">Full Blood Count</h1>
         </div>
 
@@ -564,51 +561,24 @@ export default function PDFPreviewPage() {
             {showHeader && (
               <thead>
                 <tr className="border-collapse border-t-2 border-b-2 border-gray-900">
-                  <th className="text-left font-semibold py-1">Parameter</th>
-                  <th className="text-right font-semibold py-1">Result</th>
-                  <th className="text-right font-semibold py-1">Units</th>
-                  <th className="text-right font-semibold py-1">
-                    Reference Range
-                  </th>
-                  <th className="text-center font-semibold py-1">Status</th>
+                  <th className="text-left font-semibold px-1">Parameter</th>
+                  <th className="text-right font-semibold px-1">Result</th>
+                  <th className="text-right font-semibold px-1">Units</th>
                 </tr>
               </thead>
             )}
             <tbody>
               {results.map((result, index) => {
-                const status = checkValueStatus(
-                  result.value,
-                  result.referenceRange
-                );
-                const getStatusDisplay = (status: string) => {
-                  if (status === "low")
-                    return { text: "L", color: "text-red-600" };
-                  if (status === "high")
-                    return { text: "H", color: "text-red-600" };
-                  return { text: "", color: "" };
-                };
-                const statusDisplay = getStatusDisplay(status);
-
                 return (
                   <tr key={index} className="border-0 font-mono table-row">
-                    <td className="py-1 font-mono border-b border-gray-200">
+                    <td className="px-1 font-mono border-b border-gray-200">
                       {result.testName}
                     </td>
-                    <td className="text-right py-1 font-mono border-b border-gray-200">
+                    <td className="text-right px-1 font-mono border-b border-gray-200">
                       {result.value}
                     </td>
-                    <td className="text-right py-1 font-mono border-b border-gray-200">
+                    <td className="text-right px-1 font-mono border-b border-gray-200">
                       {result.unit}
-                    </td>
-                    <td className="text-right py-1 font-mono border-b border-gray-200">
-                      {result.referenceRange}
-                    </td>
-                    <td className="text-center py-1 font-mono border-b border-gray-200">
-                      {statusDisplay.text && (
-                        <span className={`font-bold ${statusDisplay.color}`}>
-                          {statusDisplay.text}
-                        </span>
-                      )}
                     </td>
                   </tr>
                 );
@@ -625,16 +595,17 @@ export default function PDFPreviewPage() {
         className=""
         style={{ fontFamily: "'Courier New', Courier, monospace" }}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-center">
           <h1 className="font-semibold text-lg">Urine Full Report</h1>
         </div>
 
-        {physicalChemical.length > 0 && renderTable(physicalChemical)}
+        {physicalChemical.length > 0 &&
+          renderTable(physicalChemical, undefined, true)}
         {physicalChemical.length > 0 && microscopic.length > 0 && (
-          <hr className="border-gray-200" />
+          <hr className="my-4 border-gray-200" />
         )}
         {microscopic.length > 0 &&
-          renderTable(microscopic, "Centrifuge Deposit")}
+          renderTable(microscopic, "Centrifuge Deposit", false)}
       </div>
     );
   };

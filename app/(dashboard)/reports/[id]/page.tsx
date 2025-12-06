@@ -318,31 +318,31 @@ export default function ReportDetailsPage() {
         <table className="w-full border-collapse">
           <thead>
             <tr className="border-b">
-              <th className="text-left p-4">Description</th>
-              <th className="text-left p-4">Result</th>
-              <th className="text-left p-4">Units</th>
-              <th className="text-left p-4">Reference Range</th>
+              <th className=" px-4">Description</th>
+              <th className=" px-4">Result</th>
+              <th className=" px-4">Units</th>
+              <th className=" px-4">Reference Range</th>
             </tr>
           </thead>
           <tbody>
             {bssResults.map((result, index) => (
               <tr key={index} className="border-b">
-                <td className="p-4">
+                <td className="px-1">
                   <div className="font-medium">{result.testName}</div>
                   {result.mealType && result.hourType && (
-                    <div className="text-md mt-1">
+                    <div className="text-xs">
                       ({result.mealType} / {result.hourType})
                     </div>
                   )}
                 </td>
-                <td className="p-4">
-                  <div className="text-lg">{result.value}</div>
+                <td className="px-1">
+                  <div className="text-md text-center">{result.value}</div>
                 </td>
-                <td className="p-4">
-                  <div className="text-lg">{result.unit}</div>
+                <td className="px-4">
+                  <div className="text-md">{result.unit}</div>
                 </td>
-                <td className="p-4">
-                  <div className="text-lg">{result.referenceRange}</div>
+                <td className="px-4">
+                  <div className="text-md">{result.referenceRange}</div>
                 </td>
               </tr>
             ))}
@@ -438,15 +438,12 @@ export default function ReportDetailsPage() {
                       {result.referenceRange}
                     </td>
                     <td className="text-center py-0 font-mono">
-                      {statusDisplay.text && (
-                        <Badge
-                          variant={statusDisplay.variant}
-                          className="text-xs font-bold px-1 py-0 min-h-0 h-4"
-                        >
-                          {statusDisplay.text}
-                        </Badge>
-                      )}
-                    </td>
+  {statusDisplay.text && (
+    <span className="text-xs font-bold text-red-600">
+      {statusDisplay.text}
+    </span>
+  )}
+</td>
                   </tr>
                 );
               })}

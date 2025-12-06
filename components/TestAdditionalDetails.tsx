@@ -379,18 +379,18 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
           content: (
             <div className="space-y-4">
               {/* Normal ESR Values */}
-              <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
+              <div className="mt-4 p-3  border-l-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                   <div>
-                    <h6 className="font-semibold">Male</h6>
-                    <ul className="list-disc list-inside space-y-1">
+                    <h6 className="font-black">Male</h6>
+                    <ul className="list-disc list-inside space-y-1 font-semibold">
                       <li>Age &lt; 50 : 0 – 15 mm (1st hour)</li>
                       <li>Age &gt; 50 : 0 – 20 mm (1st hour)</li>
                     </ul>
                   </div>
                   <div>
-                    <h6 className="font-semibold">Female</h6>
-                    <ul className="list-disc list-inside space-y-1">
+                    <h6 className="font-black">Female</h6>
+                    <ul className="list-disc list-inside space-y-1 font-semibold">
                       <li>Age &lt; 50 : 0 – 25 mm (1st hour)</li>
                       <li>Age &gt; 50 : 0 – 30 mm (1st hour)</li>
                     </ul>
