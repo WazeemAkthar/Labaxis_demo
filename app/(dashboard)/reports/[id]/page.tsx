@@ -328,9 +328,9 @@ export default function ReportDetailsPage() {
             {bssResults.map((result, index) => (
               <tr key={index} className="border-b">
                 <td className="px-1">
-                  <div className="font-medium">{result.testName}</div>
+                  <div className="font-medium text-[13px]">{result.testName}</div>
                   {result.mealType && result.hourType && (
-                    <div className="text-xs">
+                    <div className="text-[13px]">
                       ({result.mealType} / {result.hourType})
                     </div>
                   )}
