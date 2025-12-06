@@ -485,7 +485,7 @@ export default function NewReportPage() {
             testName: "Hemoglobin",
             value: fbcValues.hemoglobin,
             unit: "g/dL",
-            referenceRange: "12.0-16.0",
+            referenceRange: "11.0 – 16.5",
             comments: "",
           },
           {
@@ -493,7 +493,7 @@ export default function NewReportPage() {
             testName: "RBC",
             value: fbcValues.rbc,
             unit: "x10⁶/μL",
-            referenceRange: "3.8-5.2",
+            referenceRange: "3.5 - 6.2",
             comments: "",
           },
           {
@@ -501,7 +501,7 @@ export default function NewReportPage() {
             testName: "PCV",
             value: fbcValues.pcv,
             unit: "%",
-            referenceRange: "36-46",
+            referenceRange: "36.0 – 54.0",
             comments: "",
           },
           {
@@ -509,7 +509,7 @@ export default function NewReportPage() {
             testName: "MCV",
             value: fbcValues.mcv,
             unit: "fL",
-            referenceRange: "80-100",
+            referenceRange: "80.0 – 100.0",
             comments: "",
           },
           {
@@ -517,7 +517,7 @@ export default function NewReportPage() {
             testName: "MCH",
             value: fbcValues.mch,
             unit: "pg",
-            referenceRange: "27-33",
+            referenceRange: "27.0 – 34.0",
             comments: "",
           },
           {
@@ -525,7 +525,7 @@ export default function NewReportPage() {
             testName: "MCHC",
             value: fbcValues.mchc,
             unit: "g/dL",
-            referenceRange: "32-36",
+            referenceRange: "32.0 – 36.0",
             comments: "",
           },
           {
@@ -533,7 +533,7 @@ export default function NewReportPage() {
             testName: "RDW-CV",
             value: fbcValues.rdwCv,
             unit: "%",
-            referenceRange: "11.5-14.5",
+            referenceRange: "11.0 – 16.0",
             comments: "",
           },
           {
@@ -541,7 +541,7 @@ export default function NewReportPage() {
             testName: "Platelets",
             value: fbcValues.platelets,
             unit: "x10³/μL",
-            referenceRange: "150-450",
+            referenceRange: "150 - 450",
             comments: "",
           },
           {
@@ -549,7 +549,7 @@ export default function NewReportPage() {
             testName: "WBC",
             value: fbcValues.wbc,
             unit: "x10³/μL",
-            referenceRange: "4.0-11.0",
+            referenceRange: "4.0 - 10.0",
             comments: "",
           },
           {
@@ -557,7 +557,7 @@ export default function NewReportPage() {
             testName: "Neutrophils",
             value: fbcValues.neutrophils,
             unit: "%",
-            referenceRange: "40-70",
+            referenceRange: "40.0 – 70.0",
             comments: "",
           },
           {
@@ -565,7 +565,7 @@ export default function NewReportPage() {
             testName: "Lymphocytes",
             value: fbcValues.lymphocytes,
             unit: "%",
-            referenceRange: "20-40",
+            referenceRange: "20.0 – 40.0",
             comments: "",
           },
           {
@@ -573,7 +573,7 @@ export default function NewReportPage() {
             testName: "Eosinophils",
             value: fbcValues.eosinophils,
             unit: "%",
-            referenceRange: "1-4",
+            referenceRange: "1.0 – 5.0",
             comments: "",
           },
           {
@@ -581,7 +581,7 @@ export default function NewReportPage() {
             testName: "Monocytes",
             value: fbcValues.monocytes,
             unit: "%",
-            referenceRange: "2-8",
+            referenceRange: "3.0 – 12.0",
             comments: "",
           },
           {
