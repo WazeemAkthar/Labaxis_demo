@@ -28,94 +28,67 @@ export default function PDFPreviewPage() {
   >({});
 
   const [letterheadBase64, setLetterheadBase64] = useState<string>("");
+  const [letterheadWithSignatureBase64, setLetterheadWithSignatureBase64] =
+    useState<string>("");
   const [letterheadLoaded, setLetterheadLoaded] = useState(false);
   const [letterheadError, setLetterheadError] = useState<string>("");
-
-  const [signatureBase64, setSignatureBase64] = useState<string>("");
-  const [signatureLoaded, setSignatureLoaded] = useState(false);
+  const [showSignature, setShowSignature] = useState(true);
 
   useEffect(() => {
-    // Load letterhead image and convert to base64
-    const loadLetterheadAsBase64 = async () => {
+    // Load both letterhead images and convert to base64
+    const loadLetterheadsAsBase64 = async () => {
       try {
-        // First, try loading from public folder (most reliable in Next.js)
-        const publicPath = "/letterhead.png";
-
-        try {
-          const response = await fetch(publicPath);
-          if (response.ok) {
-            const blob = await response.blob();
-
-            return new Promise<void>((resolve, reject) => {
-              const reader = new FileReader();
-
-              reader.onloadend = () => {
-                const base64data = reader.result as string;
-                console.log("Base64 data length:", base64data.length);
-                console.log("Base64 preview:", base64data.substring(0, 50));
-                setLetterheadBase64(base64data);
-                setLetterheadLoaded(true);
-                setLetterheadError("");
-                console.log(
-                  "✅ Letterhead loaded successfully from public folder"
-                );
-                resolve();
-              };
-
-              reader.onerror = () => {
-                reject(new Error("FileReader error"));
-              };
-
-              reader.readAsDataURL(blob);
-            });
-          }
-        } catch (e) {
-          console.log("Failed to load from public folder:", e);
+        // Load letterhead without signature
+        const response1 = await fetch("/letterhead.png");
+        if (response1.ok) {
+          const blob1 = await response1.blob();
+          await new Promise<void>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              const base64data = reader.result as string;
+              setLetterheadBase64(base64data);
+              console.log("✅ Letterhead (without signature) loaded");
+              resolve();
+            };
+            reader.onerror = () => reject(new Error("FileReader error"));
+            reader.readAsDataURL(blob1);
+          });
         }
 
-        // If public folder fails, show error
-        throw new Error("Letterhead not found");
+        // Load letterhead with signature
+        const response2 = await fetch("/letterhead-with-signature.png");
+        if (response2.ok) {
+          const blob2 = await response2.blob();
+          await new Promise<void>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              const base64data = reader.result as string;
+              setLetterheadWithSignatureBase64(base64data);
+              console.log("✅ Letterhead (with signature) loaded");
+              resolve();
+            };
+            reader.onerror = () => reject(new Error("FileReader error"));
+            reader.readAsDataURL(blob2);
+          });
+        }
+
+        setLetterheadLoaded(true);
+        setLetterheadError("");
       } catch (error) {
-        console.error("❌ Could not load letterhead image:", error);
+        console.error("❌ Could not load letterhead images:", error);
         setLetterheadLoaded(false);
-        setLetterheadError("Place letterhead.png in /public folder");
+        setLetterheadError(
+          "Place letterhead.png and letterhead-with-signature.png in /public folder"
+        );
       }
     };
 
-    loadLetterheadAsBase64();
+    loadLetterheadsAsBase64();
   }, []);
 
   useEffect(() => {
     // Load signature image and convert to base64
-    const loadSignatureAsBase64 = async () => {
-      try {
-        const response = await fetch("/signature.png");
-        if (response.ok) {
-          const blob = await response.blob();
-
-          return new Promise<void>((resolve, reject) => {
-            const reader = new FileReader();
-
-            reader.onloadend = () => {
-              const base64data = reader.result as string;
-              console.log("✅ Signature loaded successfully");
-              setSignatureBase64(base64data);
-              setSignatureLoaded(true);
-              resolve();
-            };
-
-            reader.onerror = () => {
-              reject(new Error("FileReader error"));
-            };
-
-            reader.readAsDataURL(blob);
-          });
-        }
-      } catch (error) {
-        console.log("ℹ️ Signature image not found (optional)");
-        setSignatureLoaded(false);
-      }
-    };
+    const loadSignatureAsBase64 = async () => {};
 
     loadSignatureAsBase64();
   }, []);
@@ -258,7 +231,7 @@ export default function PDFPreviewPage() {
     return (
       <div
         key="OGTT"
-        className="border rounded-lg p-6 ogtt-section"
+        className="ogtt-section"
         style={{ fontFamily: "'Courier New', Courier, monospace" }}
       >
         <div className="flex items-center gap-2 mb-6">
@@ -321,7 +294,7 @@ export default function PDFPreviewPage() {
     return (
       <div
         key="PPBS"
-        className="border rounded-lg p-6"
+        className=""
         style={{ fontFamily: "'Courier New', Courier, monospace" }}
       >
         <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
@@ -368,7 +341,7 @@ export default function PDFPreviewPage() {
     return (
       <div
         key="BSS"
-        className="border rounded-lg p-6"
+        className=""
         style={{ fontFamily: "'Courier New', Courier, monospace" }}
       >
         <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
@@ -518,24 +491,21 @@ export default function PDFPreviewPage() {
     return (
       <div
         key="FBC"
-        className="border rounded-lg p-6"
+        className=""
         style={{ fontFamily: "'Courier New', Courier, monospace" }}
       >
-        <div className="flex items-center gap-2 mb-6">
-          <Badge variant="outline" className="text-lg px-3 py-1">
-            FBC
-          </Badge>
-          <span className="font-semibold text-lg">Full Blood Count</span>
+        <div className="flex items-center gap-2 text-center justify-content-center">
+          <h1 className="font-semibold text-lg">Full Blood Count</h1>
         </div>
 
         {mainParams.length > 0 && renderTable(mainParams)}
         {mainParams.length > 0 && differentialCount.length > 0 && (
-          <hr className="my-4 border-gray-200" />
+          <hr className="border-gray-200" />
         )}
         {differentialCount.length > 0 &&
           renderTable(differentialCount, "Differential Count")}
         {differentialCount.length > 0 && absoluteCount.length > 0 && (
-          <hr className="my-4 border-gray-200" />
+          <hr className="border-gray-200" />
         )}
         {absoluteCount.length > 0 &&
           renderTable(absoluteCount, "Absolute Count")}
@@ -606,19 +576,16 @@ export default function PDFPreviewPage() {
     return (
       <div
         key="UFR"
-        className="border rounded-lg p-6"
+        className=""
         style={{ fontFamily: "'Courier New', Courier, monospace" }}
       >
         <div className="flex items-center gap-2 mb-6">
-          <Badge variant="outline" className="text-lg px-3 py-1">
-            UFR
-          </Badge>
-          <span className="font-semibold text-lg">Urine Full Report</span>
+          <h1 className="font-semibold text-lg">Urine Full Report</h1>
         </div>
 
         {physicalChemical.length > 0 && renderTable(physicalChemical)}
         {physicalChemical.length > 0 && microscopic.length > 0 && (
-          <hr className="my-4 border-gray-200" />
+          <hr className="border-gray-200" />
         )}
         {microscopic.length > 0 &&
           renderTable(microscopic, "Centrifuge Deposit")}
@@ -830,7 +797,9 @@ export default function PDFPreviewPage() {
             width: 100%;
             height: 100%;
             background-image: ${letterheadLoaded
-              ? `url('${letterheadBase64}')`
+              ? showSignature
+                ? `url('${letterheadWithSignatureBase64}')`
+                : `url('${letterheadBase64}')`
               : "none"};
             background-size: 100% auto;
             background-repeat: no-repeat;
@@ -863,8 +832,16 @@ export default function PDFPreviewPage() {
           .pdf-page button:not(.action-buttons button) {
             display: none !important;
           }
+          .signature-container {
+            position: absolute;
+            bottom: -15mm;
+            right: 82mm;
+            z-index: 10;
+          }
+
           .signatureimg {
-            margin-right: 100px;
+            height: 20px;
+            width: auto;
           }
         }
 
@@ -876,9 +853,6 @@ export default function PDFPreviewPage() {
 
           body * {
             visibility: hidden;
-          }
-          .signatureimg {
-            margin-right: 100px;
           }
           .pdf-page,
           .pdf-page * {
@@ -906,7 +880,9 @@ export default function PDFPreviewPage() {
             width: 100%;
             height: 100%;
             background-image: ${letterheadLoaded
-              ? `url('${letterheadBase64}')`
+              ? showSignature
+                ? `url('${letterheadWithSignatureBase64}')`
+                : `url('${letterheadBase64}')`
               : "none"};
             background-size: 100% auto;
             background-repeat: no-repeat;
@@ -979,6 +955,21 @@ export default function PDFPreviewPage() {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
+
+          .signature-container {
+            position: absolute !important;
+            bottom: 15mm !important;
+            right: 15mm !important;
+            z-index: 10 !important;
+            visibility: visible !important;
+          }
+
+          .signatureimg {
+            height: 60px !important;
+            width: auto !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
         }
       `}</style>
 
@@ -991,9 +982,17 @@ export default function PDFPreviewPage() {
           <Download className="h-4 w-4 mr-2" />
           Save as PDF
         </Button>
+        {letterheadLoaded && letterheadWithSignatureBase64 && (
+          <Button
+            variant={showSignature ? "default" : "outline"}
+            onClick={() => setShowSignature(!showSignature)}
+          >
+            {showSignature ? "Hide Signature" : "Show Signature"}
+          </Button>
+        )}
         {letterheadLoaded && (
           <div className="text-green-600 text-sm bg-white px-3 py-2 rounded shadow max-w-xs">
-            ✅ Letterhead loaded
+            ✅ Letterheads loaded
           </div>
         )}
         {!letterheadLoaded && letterheadError && (
@@ -1070,7 +1069,16 @@ export default function PDFPreviewPage() {
                   </span>
                   <span className="text-sm text-gray-900 uppercase">
                     :&nbsp;&nbsp;&nbsp;
-                    {new Date(report.createdAt).toLocaleDateString()}
+                    {(() => {
+                      const date = new Date(report.createdAt);
+                      const day = String(date.getDate()).padStart(2, "0");
+                      const month = String(date.getMonth() + 1).padStart(
+                        2,
+                        "0"
+                      );
+                      const year = date.getFullYear();
+                      return `${day}/${month}/${year}`;
+                    })()}
                   </span>
                 </div>
               </div>
@@ -1128,19 +1136,6 @@ export default function PDFPreviewPage() {
             <p className="font-normal text-center text-xs">
               -- End of Report --
             </p>
-
-            {signatureLoaded && (
-              <div className="mt-8 flex justify-end">
-                <div className="text-center">
-                  <img
-                    src={signatureBase64}
-                    alt="Signature"
-                    className="h-16 w-auto mb-1 signatureimg"
-                    style={{ maxWidth: "150px" }}
-                  />
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>

@@ -127,9 +127,9 @@ export default function ReportDetailsPage() {
     };
   };
 
-const handleDownloadPDF = async () => {
-  router.push(`/reports/${reportId}/preview`);
-};
+  const handleDownloadPDF = async () => {
+    router.push(`/reports/${reportId}/preview`);
+  };
 
   const renderTestResults = (results: any[]) => {
     const groupedResults = results.reduce((groups, result) => {
@@ -1151,7 +1151,16 @@ const handleDownloadPDF = async () => {
                     </span>
                     <span className="text-sm text-gray-900 uppercase">
                       :&nbsp;&nbsp;&nbsp;
-                      {new Date(report.createdAt).toLocaleDateString()}
+                      {(() => {
+                        const date = new Date(report.createdAt);
+                        const day = String(date.getDate()).padStart(2, "0");
+                        const month = String(date.getMonth() + 1).padStart(
+                          2,
+                          "0"
+                        );
+                        const year = date.getFullYear();
+                        return `${day}/${month}/${year}`;
+                      })()}
                     </span>
                   </div>
                 </div>
