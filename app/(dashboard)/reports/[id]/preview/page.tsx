@@ -234,11 +234,10 @@ export default function PDFPreviewPage() {
         className="ogtt-section"
         style={{ fontFamily: "'Courier New', Courier, monospace" }}
       >
-        <div className="flex items-center gap-2 mb-6">
-          <Badge variant="outline" className="text-lg px-3 py-1">
-            OGTT
-          </Badge>
-          <div className="font-medium text-md">Oral Glucose Tolerance Test</div>
+        <div className="flex items-center gap-2 text-center justify-content-center">
+          <div className="font-medium text-md text-black text-center">
+            Oral Glucose Tolerance Test
+          </div>
         </div>
 
         <div className="overflow-x-auto mb-6">

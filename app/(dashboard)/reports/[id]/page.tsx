@@ -203,7 +203,9 @@ export default function ReportDetailsPage() {
           <Badge variant="outline" className="text-lg px-3 py-1">
             OGTT
           </Badge>
-          <div className="font-medium text-md">Oral Glucose Tolerance Test</div>
+          <div className="font-semibold text-lg ogtt-title-text">
+            Oral Glucose Tolerance Test
+          </div>
         </div>
 
         <div className="overflow-x-auto mb-6">
@@ -755,6 +757,10 @@ export default function ReportDetailsPage() {
             margin: 0;
             padding: 0;
           }
+              .printingreport {
+    margin-top: 2.18in !important;
+  }
+
           .table-row {
             padding: 0px !important;
             margin: 0px !important;
@@ -1015,7 +1021,7 @@ export default function ReportDetailsPage() {
           }
 
           .ogtt-section .flex.items-center.gap-2 > .font-semibold {
-            font-size: 16px !important;
+            font-size: 18px !important;
             font-weight: 700 !important; /* Reduced from 900 */
             text-align: center !important;
             width: 100% !important;
@@ -1085,7 +1091,7 @@ export default function ReportDetailsPage() {
             </div>
           </CardHeader>
 
-          <CardContent className="space-y-3 p-3">
+          <CardContent className="space-y-3 p-3 printingreport">
             <div className="">
               <div className="space-y-1 border-t border-black font-mono">
                 <div className="grid grid-cols-2">
