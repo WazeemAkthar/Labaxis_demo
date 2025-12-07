@@ -1,4 +1,4 @@
-// Firestore service layer to replace localStorage-based DataManager
+// Firestore service layer - FIXED for concurrent users with user tracking
 import {
   collection,
   doc,
@@ -12,8 +12,9 @@ import {
   Timestamp,
   writeBatch,
   setDoc,
+  where,
 } from "firebase/firestore";
-import { db } from "./firebase";
+import { db, auth } from "./firebase";
 import type {
   Patient,
   Invoice,
@@ -29,12 +30,64 @@ const COLLECTIONS = {
   TEST_CATALOG: "testCatalog",
 };
 
-// Helper to generate IDs
-function generateId(prefix: string, sequence: number): string {
+// ✅ Get current user's initials for ID prefix
+function getUserInitials(): string {
+  const user = auth.currentUser;
+  if (!user) return "USR";
+  
+  // Try to get initials from display name
+  if (user.displayName) {
+    const names = user.displayName.split(" ");
+    if (names.length >= 2) {
+      return (names[0][0] + names[names.length - 1][0]).toUpperCase();
+    }
+    return user.displayName.substring(0, 2).toUpperCase();
+  }
+  
+  // Fallback to first 2 chars of email
+  if (user.email) {
+    return user.email.substring(0, 2).toUpperCase();
+  }
+  
+  // Last resort: use UID first 2 chars
+  return user.uid.substring(0, 2).toUpperCase();
+}
+
+// ✅ Get current user ID
+function getCurrentUserId(): string {
+  return auth.currentUser?.uid || "anonymous";
+}
+
+// ✅ Get current user email
+function getCurrentUserEmail(): string {
+  return auth.currentUser?.email || "unknown@user.com";
+}
+
+// ✅ FIXED: Generate truly unique IDs with user identifier
+function generateUniqueId(prefix: string): string {
+  const now = new Date();
+  const dateStr = now.toISOString().split("T")[0].replace(/-/g, ""); // YYYYMMDD
+  const userInitials = getUserInitials(); // User's initials
+  const timestamp = Date.now(); // Milliseconds since epoch
+  const random = Math.random().toString(36).substr(2, 6).toUpperCase(); // Random string
+  
+  // Combine: PREFIX-YYYYMMDD-USERINITIALS-TIMESTAMP-RANDOM
+  // Example: REP-20241208-JD-1733678123456-A4B7XY
+  return `${prefix}-${dateStr}-${userInitials}-${timestamp}-${random}`;
+}
+
+// Alternative: Shorter version
+function generateShortUniqueId(prefix: string): string {
   const now = new Date();
   const dateStr = now.toISOString().split("T")[0].replace(/-/g, "");
-  const seq = String(sequence).padStart(4, "0");
-  return `${prefix}-${dateStr}-${seq}`;
+  const userInitials = getUserInitials();
+  
+  // Use last 6 digits of timestamp + 4 random chars
+  const timePart = String(Date.now()).slice(-6);
+  const randomPart = Math.random().toString(36).substr(2, 4).toUpperCase();
+  
+  // Example: REP-20241208-JD-678123-A4B7
+  return `${prefix}-${dateStr}-${userInitials}-${timePart}-${randomPart}`;
 }
 
 // ============= PATIENT METHODS =============
@@ -54,8 +107,7 @@ export async function getPatientById(id: string): Promise<Patient | null> {
 export async function addPatient(
   patient: Omit<Patient, "id" | "createdAt">
 ): Promise<Patient> {
-  const patients = await getPatients();
-  const id = generateId("PAT", patients.length + 1);
+  const id = generateShortUniqueId("PAT");
   const createdAt = new Date().toISOString();
 
   const newPatient: Patient = {
@@ -64,10 +116,28 @@ export async function addPatient(
     createdAt,
   };
 
-  await setDoc(doc(db, COLLECTIONS.PATIENTS, id), newPatient);
-  return newPatient;
-}
+  // ✅ Add retry logic for collisions
+  let retries = 3;
+  while (retries > 0) {
+    try {
+      await setDoc(doc(db, COLLECTIONS.PATIENTS, id), newPatient);
+      console.log(`✅ Patient created by ${getCurrentUserEmail()}: ${id}`);
+      return newPatient;
+    } catch (error: any) {
+      if (error.code === 'already-exists' && retries > 1) {
+        const newId = generateShortUniqueId("PAT");
+        newPatient.id = newId;
+        retries--;
+        console.warn(`⚠️ Patient ID collision detected, retrying: ${newId}`);
+      } else {
+        console.error(`❌ Error creating patient:`, error);
+        throw error;
+      }
+    }
+  }
 
+  throw new Error("Failed to create patient after multiple retries");
+}
 export async function updatePatient(
   id: string,
   updates: Partial<Patient>
@@ -98,8 +168,7 @@ export async function getInvoiceById(id: string): Promise<Invoice | null> {
 export async function addInvoice(
   invoice: Omit<Invoice, "id" | "createdAt">
 ): Promise<Invoice> {
-  const invoices = await getInvoices();
-  const id = generateId("INV", invoices.length + 1);
+  const id = generateShortUniqueId("INV");
   const createdAt = new Date().toISOString();
 
   const newInvoice: Invoice = {
@@ -108,8 +177,27 @@ export async function addInvoice(
     createdAt,
   };
 
-  await setDoc(doc(db, COLLECTIONS.INVOICES, id), newInvoice);
-  return newInvoice;
+  // ✅ Add retry logic for collisions
+  let retries = 3;
+  while (retries > 0) {
+    try {
+      await setDoc(doc(db, COLLECTIONS.INVOICES, id), newInvoice);
+      console.log(`✅ Invoice created by ${getCurrentUserEmail()}: ${id}`);
+      return newInvoice;
+    } catch (error: any) {
+      if (error.code === 'already-exists' && retries > 1) {
+        const newId = generateShortUniqueId("INV");
+        newInvoice.id = newId;
+        retries--;
+        console.warn(`⚠️ Invoice ID collision detected, retrying: ${newId}`);
+      } else {
+        console.error(`❌ Error creating invoice:`, error);
+        throw error;
+      }
+    }
+  }
+
+  throw new Error("Failed to create invoice after multiple retries");
 }
 
 export async function updateInvoice(
@@ -126,9 +214,32 @@ export async function deleteInvoice(id: string): Promise<void> {
 }
 
 // ============= REPORT METHODS =============
+
+// Enhanced Report interface with user tracking (extend in data-manager.ts)
+interface EnhancedReport extends Report {
+  createdByUserId?: string;
+  createdByUserEmail?: string;
+  lastModifiedByUserId?: string;
+  lastModifiedByUserEmail?: string;
+  lastModifiedAt?: string;
+}
+
 export async function getReports(): Promise<Report[]> {
   const reportsCol = collection(db, COLLECTIONS.REPORTS);
   const q = query(reportsCol, orderBy("createdAt", "desc"));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((doc) => ({ ...doc.data() } as Report));
+}
+
+// ✅ NEW: Get reports created by current user only
+export async function getMyReports(): Promise<Report[]> {
+  const userId = getCurrentUserId();
+  const reportsCol = collection(db, COLLECTIONS.REPORTS);
+  const q = query(
+    reportsCol, 
+    where("createdByUserId", "==", userId),
+    orderBy("createdAt", "desc")
+  );
   const snapshot = await getDocs(q);
   return snapshot.docs.map((doc) => ({ ...doc.data() } as Report));
 }
@@ -142,18 +253,42 @@ export async function getReportById(id: string): Promise<Report | null> {
 export async function addReport(
   report: Omit<Report, "id" | "createdAt">
 ): Promise<Report> {
-  const reports = await getReports();
-  const id = generateId("REP", reports.length + 1);
+  const id = generateShortUniqueId("REP");
   const createdAt = new Date().toISOString();
+  const userId = getCurrentUserId();
+  const userEmail = getCurrentUserEmail();
 
-  const newReport: Report = {
+  // ✅ Add user tracking metadata
+  const newReport: EnhancedReport = {
     ...report,
     id,
     createdAt,
+    createdByUserId: userId,
+    createdByUserEmail: userEmail,
   };
 
-  await setDoc(doc(db, COLLECTIONS.REPORTS, id), newReport);
-  return newReport;
+  // ✅ Add retry logic in case of extremely rare collisions
+  let retries = 3;
+  while (retries > 0) {
+    try {
+      await setDoc(doc(db, COLLECTIONS.REPORTS, id), newReport);
+      console.log(`✅ Report created by ${userEmail}: ${id}`);
+      return newReport as Report;
+    } catch (error: any) {
+      if (error.code === 'already-exists' && retries > 1) {
+        // Regenerate ID and retry
+        const newId = generateShortUniqueId("REP");
+        newReport.id = newId;
+        retries--;
+        console.warn(`⚠️ ID collision detected, retrying with new ID: ${newId}`);
+      } else {
+        console.error(`❌ Error creating report by ${userEmail}:`, error);
+        throw error;
+      }
+    }
+  }
+
+  throw new Error("Failed to create report after multiple retries");
 }
 
 export async function updateReport(
@@ -161,12 +296,26 @@ export async function updateReport(
   updates: Partial<Report>
 ): Promise<void> {
   const docRef = doc(db, COLLECTIONS.REPORTS, id);
-  await updateDoc(docRef, updates);
+  const userId = getCurrentUserId();
+  const userEmail = getCurrentUserEmail();
+  
+  // ✅ Add modification tracking
+  const enhancedUpdates = {
+    ...updates,
+    lastModifiedByUserId: userId,
+    lastModifiedByUserEmail: userEmail,
+    lastModifiedAt: new Date().toISOString(),
+  };
+  
+  await updateDoc(docRef, enhancedUpdates);
+  console.log(`✅ Report ${id} updated by ${userEmail}`);
 }
 
 export async function deleteReport(id: string): Promise<void> {
   const docRef = doc(db, COLLECTIONS.REPORTS, id);
+  const userEmail = getCurrentUserEmail();
   await deleteDoc(docRef);
+  console.log(`✅ Report ${id} deleted by ${userEmail}`);
 }
 
 // ============= TEST CATALOG METHODS =============
@@ -259,4 +408,26 @@ export async function initializeSampleData(): Promise<void> {
   }
 
   console.log("Sample data initialized successfully");
+}
+
+// ============= UTILITY FUNCTIONS =============
+
+// ✅ Get audit trail for a report
+export async function getReportAuditTrail(reportId: string): Promise<{
+  createdBy: string;
+  createdAt: string;
+  lastModifiedBy?: string;
+  lastModifiedAt?: string;
+} | null> {
+  const report = await getReportById(reportId);
+  if (!report) return null;
+  
+  const enhancedReport = report as EnhancedReport;
+  
+  return {
+    createdBy: enhancedReport.createdByUserEmail || "Unknown",
+    createdAt: report.createdAt,
+    lastModifiedBy: enhancedReport.lastModifiedByUserEmail,
+    lastModifiedAt: enhancedReport.lastModifiedAt,
+  };
 }

@@ -33,6 +33,7 @@ export interface TestCatalogItem {
   hasMultipleMealOptions?: boolean;
 }
 
+
 export interface InvoiceLineItem {
   testCode: string;
   testName: string;
@@ -40,6 +41,7 @@ export interface InvoiceLineItem {
   unitPrice: number;
   total: number;
 }
+
 
 export interface Invoice {
   status: string;
@@ -54,6 +56,7 @@ export interface Invoice {
   createdAt: string;
 }
 
+
 export interface ReportResult {
   testCode: string;
   testName: string;
@@ -66,6 +69,7 @@ export interface ReportResult {
   hourType?: string;   
 }
 
+// ✅ Enhanced Report interface with user tracking
 export interface Report {
   id: string;
   patientId: string;
@@ -76,11 +80,17 @@ export interface Report {
   reviewedBy: string;
   createdAt: string;
   reportDate?: string;
+  // ✅ User tracking fields
+  createdByUserId?: string;
+  createdByUserEmail?: string;
+  lastModifiedByUserId?: string;
+  lastModifiedByUserEmail?: string;
+  lastModifiedAt?: string;
 }
 
 export class DataManager {
   private static instance: DataManager;
-  private useFirestore: boolean = true; // Toggle to use Firestore or localStorage
+  private useFirestore: boolean = true;
 
   private constructor() {
     // Firestore initialization happens automatically
@@ -911,7 +921,7 @@ export class DataManager {
     ];
   }
 
-  // Patient methods - delegated to Firestore
+  // Patient methods
   async getPatients(): Promise<Patient[]> {
     return firestoreService.getPatients();
   }
@@ -932,7 +942,7 @@ export class DataManager {
     return firestoreService.deletePatient(id);
   }
 
-  // Invoice methods - delegated to Firestore
+  // Invoice methods
   async getInvoices(): Promise<Invoice[]> {
     return firestoreService.getInvoices();
   }
@@ -953,9 +963,14 @@ export class DataManager {
     return firestoreService.deleteInvoice(id);
   }
 
-  // Report methods - delegated to Firestore
+  // Report methods
   async getReports(): Promise<Report[]> {
     return firestoreService.getReports();
+  }
+
+  // ✅ NEW: Get only reports created by current user
+  async getMyReports(): Promise<Report[]> {
+    return firestoreService.getMyReports();
   }
 
   async addReport(report: Omit<Report, "id" | "createdAt">): Promise<Report> {
@@ -974,7 +989,17 @@ export class DataManager {
     return firestoreService.deleteReport(id);
   }
 
-  // Test catalog methods - delegated to Firestore
+  // ✅ NEW: Get audit trail for a report
+  async getReportAuditTrail(reportId: string): Promise<{
+    createdBy: string;
+    createdAt: string;
+    lastModifiedBy?: string;
+    lastModifiedAt?: string;
+  } | null> {
+    return firestoreService.getReportAuditTrail(reportId);
+  }
+
+  // Test catalog methods
   async getTestCatalog(): Promise<TestCatalogItem[]> {
     return firestoreService.getTestCatalog();
   }
@@ -1015,5 +1040,4 @@ export class DataManager {
     await firestoreService.initializeSampleData();
   }
 }
-
 
