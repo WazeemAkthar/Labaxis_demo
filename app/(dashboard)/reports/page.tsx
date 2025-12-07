@@ -241,15 +241,13 @@ export default function ReportsPage() {
                 <div className="bg-gradient-to-br from-teal-500 to-cyan-600 p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <h3 className="font-bold text-white text-lg">
-                        {report.id}
-                      </h3>
-                      {/* <div className="flex items-center gap-2 mt-1 text-teal-50">
-                        <User className="h-3 w-3" />
-                        <span className="text-sm font-medium">
+                      <div className="flex items-center gap-2 mt-1 text-teal-50">
+                        <User className="h-4 w-4" />
+                        <h3 className="font-bold text-lg ">
                           {report.patientName}
-                        </span>
-                      </div> */}
+                        </h3>
+                      </div>
+                      <span className="text-sm font-medium text-white">{report.id}</span>
                     </div>
                     <div className="bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1">
                       <span className="text-xs font-semibold text-white">
@@ -265,11 +263,11 @@ export default function ReportsPage() {
                 <CardContent className="p-4 space-y-3">
                   {/* Patient & Invoice Info */}
                   <div className="space-y-1.5">
-                    <div className="flex items-center gap-2 text-sm text-teal-700">
+                    {/* <div className="flex items-center gap-2 text-sm text-teal-700">
                       <User className="h-3 w-3" />
                       <span className="font-medium">Patient Name:</span>
                       <span className="text-teal-900">{report.patientName}</span>
-                    </div>
+                    </div> */}
                     <div className="flex items-center gap-2 text-sm text-teal-700">
                       <User className="h-3 w-3" />
                       <span className="font-medium">Patient ID:</span>
