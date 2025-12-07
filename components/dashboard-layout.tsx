@@ -17,6 +17,7 @@ const navigation = [
   { name: "Reports", href: "/reports", icon: Activity },
   { name: "Finance", href: "/finance", icon: DollarSign },
   { name: "Settings", href: "/settings", icon: Settings },
+  // { name: "Users", href: "/users", icon: Users },
 ]
 
 interface DashboardLayoutProps {
