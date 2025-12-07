@@ -595,9 +595,8 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
           title: "C-Reactive Protein Interpretation",
           content: (
             <div className="space-y-4">
-              <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
-                <p>METHOD: QUANTITITIVE TURBIDIMETRY</p>
-                <p>Fully automated Bio chemistry analyzer - “SELECTRA ProM“</p>
+              <div className="mt-4 p-3 border-l-4 text-[15px] ">
+                <p>METHOD: Quantitative Turbidimetry</p>
               </div>
             </div>
           ),
@@ -891,8 +890,8 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                 </table>
               </div>
 
-              <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
-                <p className="text-xs">
+              <div className="mt-4 p-3">
+                <p className="text-[15px]">
                   <strong>Note:</strong> Elevated levels may also occur due to
                   diet, medications, or chemotherapy.
                 </p>
@@ -971,7 +970,7 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
               </div>
 
               <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
-                <p className="text-xs">
+                <p className="text-[15px]">
                   <strong>Note:</strong> Results should be interpreted with a
                   repeat test if abnormal, considering lifestyle factors.
                 </p>

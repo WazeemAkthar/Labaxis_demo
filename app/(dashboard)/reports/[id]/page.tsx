@@ -328,7 +328,9 @@ export default function ReportDetailsPage() {
             {bssResults.map((result, index) => (
               <tr key={index} className="border-b">
                 <td className="px-1">
-                  <div className="font-medium text-[13px]">{result.testName}</div>
+                  <div className="font-medium text-[13px]">
+                    {result.testName}
+                  </div>
                   {result.mealType && result.hourType && (
                     <div className="text-[13px]">
                       ({result.mealType} / {result.hourType})
@@ -438,12 +440,12 @@ export default function ReportDetailsPage() {
                       {result.referenceRange}
                     </td>
                     <td className="text-center py-0 font-mono">
-  {statusDisplay.text && (
-    <span className="text-xs font-bold text-red-600">
-      {statusDisplay.text}
-    </span>
-  )}
-</td>
+                      {statusDisplay.text && (
+                        <span className="text-xs font-bold text-red-600">
+                          {statusDisplay.text}
+                        </span>
+                      )}
+                    </td>
                   </tr>
                 );
               })}
@@ -1093,7 +1095,7 @@ export default function ReportDetailsPage() {
               <div className="space-y-1 border-t border-black font-mono">
                 <div className="grid grid-cols-2">
                   <div className="flex">
-                    <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
+                    <span className="text-sm text-gray-900 w-32 shrink-0 text-left uppercase">
                       Patient Name
                     </span>
                     <span className="text-sm text-gray-900 uppercase">
@@ -1101,7 +1103,7 @@ export default function ReportDetailsPage() {
                     </span>
                   </div>
                   <div className="flex">
-                    <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
+                    <span className="text-sm text-gray-900 w-32 shrink-0 text-left uppercase">
                       Report ID
                     </span>
                     <span className="text-sm text-gray-900 uppercase">
@@ -1111,7 +1113,7 @@ export default function ReportDetailsPage() {
                 </div>
                 <div className="grid grid-cols-2">
                   <div className="flex">
-                    <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
+                    <span className="text-sm text-gray-900 w-32 shrink-0 text-left uppercase">
                       Age
                     </span>
                     <span className="text-sm text-gray-900 uppercase">
@@ -1131,7 +1133,7 @@ export default function ReportDetailsPage() {
                     </span>
                   </div>
                   <div className="flex">
-                    <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
+                    <span className="text-sm text-gray-900 w-32 shrink-0 text-left uppercase">
                       Patient ID
                     </span>
                     <span className="text-sm text-gray-900 uppercase">
@@ -1141,7 +1143,7 @@ export default function ReportDetailsPage() {
                 </div>
                 <div className="grid grid-cols-2">
                   <div className="flex">
-                    <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
+                    <span className="text-sm text-gray-900 w-32 shrink-0 text-left uppercase">
                       Gender
                     </span>
                     <span className="text-sm text-gray-900 uppercase">
@@ -1155,9 +1157,10 @@ export default function ReportDetailsPage() {
                     <span className="text-sm text-gray-900 uppercase">
                       :&nbsp;&nbsp;&nbsp;
                       {(() => {
-                        const date = new Date(
-                          report.reportDate || report.createdAt
-                        );
+                        // Always use reportDate first, fallback to createdAt only if reportDate is missing
+                        const dateString =
+                          report.reportDate || report.createdAt;
+                        const date = new Date(dateString);
                         const day = String(date.getDate()).padStart(2, "0");
                         const month = String(date.getMonth() + 1).padStart(
                           2,
@@ -1171,7 +1174,7 @@ export default function ReportDetailsPage() {
                 </div>
                 <div className="grid grid-cols-2">
                   <div className="flex">
-                    <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
+                    <span className="text-sm text-gray-900 w-32 shrink-0 text-left uppercase">
                       Phone
                     </span>
                     <span className="text-sm text-gray-900 uppercase">
@@ -1179,7 +1182,7 @@ export default function ReportDetailsPage() {
                     </span>
                   </div>
                   <div className="flex">
-                    <span className="text-sm text-gray-900 w-32 flex-shrink-0 text-left uppercase">
+                    <span className="text-sm text-gray-900 w-32 shrink-0 text-left uppercase">
                       Ref By
                     </span>
                     <span className="text-sm text-gray-900 uppercase">
