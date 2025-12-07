@@ -1013,6 +1013,7 @@ export class DataManager {
     const defaultTests = this.getDefaultTestCatalog();
     await firestoreService.initializeDefaultTests(defaultTests);
     await firestoreService.initializeSampleData();
-    console.log("Initialized Firestore with default data");
   }
 }
+
+
