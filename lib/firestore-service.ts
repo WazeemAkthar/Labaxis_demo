@@ -220,9 +220,26 @@ export async function getMyReports(): Promise<Report[]> {
 }
 
 export async function getReportById(id: string): Promise<Report | null> {
-  const docRef = doc(db, COLLECTIONS.REPORTS, id);
-  const docSnap = await getDoc(docRef);
-  return docSnap.exists() ? (docSnap.data() as Report) : null;
+  // ✅ Add validation
+  if (!id || typeof id !== 'string') {
+    console.error('Invalid report ID:', id);
+    return null;
+  }
+
+  // ✅ Check if db is initialized
+  if (!db) {
+    console.error('Firestore not initialized');
+    return null;
+  }
+
+  try {
+    const docRef = doc(db, COLLECTIONS.REPORTS, id);
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists() ? (docSnap.data() as Report) : null;
+  } catch (error) {
+    console.error('Error getting report by ID:', error);
+    return null;
+  }
 }
 
 export async function addReport(
@@ -394,6 +411,18 @@ export async function getReportAuditTrail(reportId: string): Promise<{
   lastModifiedBy?: string;
   lastModifiedAt?: string;
 } | null> {
+  // ✅ Add validation
+  if (!reportId || typeof reportId !== 'string') {
+    console.error('Invalid reportId provided to getReportAuditTrail:', reportId);
+    return null;
+  }
+
+  // ✅ Check if db is initialized
+  if (!db) {
+    console.error('Firestore not initialized');
+    return null;
+  }
+
   const report = await getReportById(reportId);
   if (!report) return null;
   
