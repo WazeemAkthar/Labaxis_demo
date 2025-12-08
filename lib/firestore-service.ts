@@ -30,27 +30,23 @@ const COLLECTIONS = {
   TEST_CATALOG: "testCatalog",
 };
 
-// ✅ Get current user's initials for ID prefix
-function getUserInitials(): string {
+// ✅ Get current user's initials for ID prefix (single letter)
+function getUserInitial(): string {
   const user = auth.currentUser;
-  if (!user) return "USR";
+  if (!user) return "U";
   
-  // Try to get initials from display name
+  // Try to get initial from display name
   if (user.displayName) {
-    const names = user.displayName.split(" ");
-    if (names.length >= 2) {
-      return (names[0][0] + names[names.length - 1][0]).toUpperCase();
-    }
-    return user.displayName.substring(0, 2).toUpperCase();
+    return user.displayName[0].toUpperCase();
   }
   
-  // Fallback to first 2 chars of email
+  // Fallback to first char of email
   if (user.email) {
-    return user.email.substring(0, 2).toUpperCase();
+    return user.email[0].toUpperCase();
   }
   
-  // Last resort: use UID first 2 chars
-  return user.uid.substring(0, 2).toUpperCase();
+  // Last resort: use UID first char
+  return user.uid[0].toUpperCase();
 }
 
 // ✅ Get current user ID
@@ -63,31 +59,45 @@ function getCurrentUserEmail(): string {
   return auth.currentUser?.email || "unknown@user.com";
 }
 
-// ✅ FIXED: Generate truly unique IDs with user identifier
-function generateUniqueId(prefix: string): string {
+// ✅ Generate clean, sequential-looking IDs that are still unique
+function generateCleanId(prefix: string): string {
   const now = new Date();
-  const dateStr = now.toISOString().split("T")[0].replace(/-/g, ""); // YYYYMMDD
-  const userInitials = getUserInitials(); // User's initials
-  const timestamp = Date.now(); // Milliseconds since epoch
-  const random = Math.random().toString(36).substr(2, 6).toUpperCase(); // Random string
   
-  // Combine: PREFIX-YYYYMMDD-USERINITIALS-TIMESTAMP-RANDOM
-  // Example: REP-20241208-JD-1733678123456-A4B7XY
-  return `${prefix}-${dateStr}-${userInitials}-${timestamp}-${random}`;
+  // Format: YYMMDD (6 digits for date)
+  const year = now.getFullYear().toString().slice(-2);
+  const month = (now.getMonth() + 1).toString().padStart(2, '0');
+  const day = now.getDate().toString().padStart(2, '0');
+  const dateStr = `${year}${month}${day}`;
+  
+  // Generate a 4-digit unique number using timestamp + random
+  // This gives us 0000-9999 range but ensures uniqueness
+  const timeComponent = Date.now() % 10000; // Last 4 digits of timestamp
+  const randomComponent = Math.floor(Math.random() * 100); // 00-99
+  const uniqueNum = ((timeComponent + randomComponent) % 10000).toString().padStart(4, '0');
+  
+  // Format: PREFIX-YYMMDD-NNNN
+  // Example: REP-241208-0547
+  return `${prefix}-${dateStr}-${uniqueNum}`;
 }
 
-// Alternative: Shorter version
+// Alternative: Even cleaner with just sequential number per day
 function generateShortUniqueId(prefix: string): string {
   const now = new Date();
-  const dateStr = now.toISOString().split("T")[0].replace(/-/g, "");
-  const userInitials = getUserInitials();
   
-  // Use last 6 digits of timestamp + 4 random chars
-  const timePart = String(Date.now()).slice(-6);
-  const randomPart = Math.random().toString(36).substr(2, 4).toUpperCase();
+  // Format: YYMMDD
+  const year = now.getFullYear().toString().slice(-2);
+  const month = (now.getMonth() + 1).toString().padStart(2, '0');
+  const day = now.getDate().toString().padStart(2, '0');
+  const dateStr = `${year}${month}${day}`;
   
-  // Example: REP-20241208-JD-678123-A4B7
-  return `${prefix}-${dateStr}-${userInitials}-${timePart}-${randomPart}`;
+  // Create unique 4-digit number from microseconds + random
+  const microTime = Date.now() % 10000;
+  const random = Math.floor(Math.random() * 100);
+  const seqNum = ((microTime + random) % 10000).toString().padStart(4, '0');
+  
+  // Format: PREFIX-YYMMDD-NNNN
+  // Example: REP-241208-0547, PAT-241208-1823, INV-241208-2156
+  return `${prefix}-${dateStr}-${seqNum}`;
 }
 
 // ============= PATIENT METHODS =============
@@ -116,28 +126,11 @@ export async function addPatient(
     createdAt,
   };
 
-  // ✅ Add retry logic for collisions
-  let retries = 3;
-  while (retries > 0) {
-    try {
-      await setDoc(doc(db, COLLECTIONS.PATIENTS, id), newPatient);
-      console.log(`✅ Patient created by ${getCurrentUserEmail()}: ${id}`);
-      return newPatient;
-    } catch (error: any) {
-      if (error.code === 'already-exists' && retries > 1) {
-        const newId = generateShortUniqueId("PAT");
-        newPatient.id = newId;
-        retries--;
-        console.warn(`⚠️ Patient ID collision detected, retrying: ${newId}`);
-      } else {
-        console.error(`❌ Error creating patient:`, error);
-        throw error;
-      }
-    }
-  }
-
-  throw new Error("Failed to create patient after multiple retries");
+  await setDoc(doc(db, COLLECTIONS.PATIENTS, id), newPatient);
+  console.log(`✅ Patient created by ${getCurrentUserEmail()}: ${id}`);
+  return newPatient;
 }
+
 export async function updatePatient(
   id: string,
   updates: Partial<Patient>
@@ -177,27 +170,9 @@ export async function addInvoice(
     createdAt,
   };
 
-  // ✅ Add retry logic for collisions
-  let retries = 3;
-  while (retries > 0) {
-    try {
-      await setDoc(doc(db, COLLECTIONS.INVOICES, id), newInvoice);
-      console.log(`✅ Invoice created by ${getCurrentUserEmail()}: ${id}`);
-      return newInvoice;
-    } catch (error: any) {
-      if (error.code === 'already-exists' && retries > 1) {
-        const newId = generateShortUniqueId("INV");
-        newInvoice.id = newId;
-        retries--;
-        console.warn(`⚠️ Invoice ID collision detected, retrying: ${newId}`);
-      } else {
-        console.error(`❌ Error creating invoice:`, error);
-        throw error;
-      }
-    }
-  }
-
-  throw new Error("Failed to create invoice after multiple retries");
+  await setDoc(doc(db, COLLECTIONS.INVOICES, id), newInvoice);
+  console.log(`✅ Invoice created by ${getCurrentUserEmail()}: ${id}`);
+  return newInvoice;
 }
 
 export async function updateInvoice(
