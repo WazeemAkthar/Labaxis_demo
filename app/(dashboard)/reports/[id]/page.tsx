@@ -158,6 +158,8 @@ export default function ReportDetailsPage() {
             return <div key={testCode}>{renderPPBSResults(resultsArray)}</div>;
           } else if (testCode === "BSS") {
             return <div key={testCode}>{renderBSSResults(resultsArray)}</div>;
+          } else if (testCode === "BGRh") {
+            return <div key={testCode}>{renderBGRhResults(resultsArray)}</div>;
           } else {
             return (
               <div key={testCode}>
@@ -581,6 +583,47 @@ export default function ReportDetailsPage() {
     );
   };
 
+  const renderBGRhResults = (bgrhResults: any[]) => {
+    const result = bgrhResults[0];
+    if (!result) return null;
+
+    return (
+      <div
+        key="BGRh"
+        className="border rounded-lg p-6"
+        style={{ fontFamily: "'Courier New', Courier, monospace" }}
+      >
+        <h1 className="font-semibold text-xl text-center mb-1 border-black border-b">
+          BLOOD GROUPING & Rh
+        </h1>
+        <div className="space-y-3 text-left mt-6">
+          <div className="flex justify-left items-center gap-3">
+            <span className="text-lg font-medium">Blood group</span>
+            <span className="text-lg">-</span>
+            <span
+              className={`text-2xl font-bold ${
+                isBoldValues ? "font-extrabold" : ""
+              }`}
+            >
+              {result.value}
+            </span>
+          </div>
+          <div className="flex justify-left items-center gap-3">
+            <span className="text-lg font-medium">Rhesus factor</span>
+            <span className="text-lg">-</span>
+            <span
+              className={`text-2xl font-bold ${
+                isBoldValues ? "font-extrabold" : ""
+              }`}
+            >
+              {result.comments}
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderRegularTestResults = (testCode: string, testResults: any[]) => {
     const testConfig = testConfigs[testCode];
     const testName = testConfig ? testConfig.name : testCode;
@@ -989,7 +1032,7 @@ export default function ReportDetailsPage() {
             font-size: 8px !important;
             text: left !important;
           }
-          .font-medium,
+          
           .font-semibold {
             font-weight: bold !important;
           }
@@ -1058,8 +1101,31 @@ export default function ReportDetailsPage() {
           }
           .font-bold,
           .font-semibold,
-          .font-medium {
             font-weight: 800 !important;
+          }
+
+          /* BGRh specific styles */
+          .border.rounded-lg
+            h1.font-semibold.text-xl.text-center.border-black.border-b-2 {
+            font-size: 18px !important;
+            font-weight: 700 !important;
+            text-align: center !important;
+            margin-bottom: 16px !important;
+            border-bottom: 2px solid #000 !important;
+            padding-bottom: 8px !important;
+          }
+
+          /* BGRh results layout */
+          [key="BGRh"] .space-y-3 {
+            margin-top: 24px !important;
+          }
+
+          [key="BGRh"] .flex.justify-center {
+            font-size: 16px !important;
+          }
+
+          [key="BGRh"] .text-2xl {
+            font-size: 24px !important;
           }
         }
       `}</style>
