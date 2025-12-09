@@ -38,6 +38,7 @@ import { LipidProfileReportCard } from "@/components/lipid-profile-report-card";
 import { OGTTGraph } from "@/components/ogtt-graph";
 import { PPBSReportCard } from "@/components/ppbs-report-card";
 import { BSSReportCard } from "@/components/bss-report-card";
+import { BGRhReportCard } from "@/components/bgrh-report-card";
 
 // Helper function to get qualitative options for a test
 function getQualitativeOptions(
@@ -157,6 +158,7 @@ export default function NewReportPage() {
   const [reportDate, setReportDate] = useState(
     new Date().toISOString().split("T")[0]
   );
+  const [bgrhValues, setBgrhValues] = useState<any>(null);
 
   const hasUFRTest = useDirectTestSelection
     ? selectedTests.includes("UFR")
@@ -181,6 +183,11 @@ export default function NewReportPage() {
   const hasBSSTest = useDirectTestSelection
     ? selectedTests.includes("BSS")
     : selectedInvoice?.lineItems.some((item) => item.testCode === "BSS") ||
+      false;
+
+  const hasBGRhTest = useDirectTestSelection
+    ? selectedTests.includes("BGRh")
+    : selectedInvoice?.lineItems.some((item) => item.testCode === "BGRh") ||
       false;
 
   useEffect(() => {
@@ -234,6 +241,7 @@ export default function NewReportPage() {
     setPpbsValues(null);
     setBssValues([]);
     setPatientSearchTerm("");
+    setBgrhValues(null);
   };
 
   const handleInvoiceChange = async (invoiceId: string) => {
@@ -245,6 +253,7 @@ export default function NewReportPage() {
     setOgttValues(null);
     setPpbsValues(null);
     setBssValues([]);
+    setBgrhValues(null);
 
     if (invoice) {
       // Initialize results from invoice line items
@@ -257,14 +266,15 @@ export default function NewReportPage() {
         const test = testCatalog.find((t) => t.code === item.testCode);
         const referenceRanges = test?.referenceRange || {};
 
-        // Handle FBC, LIPID, UFR, OGTT, PPBS, BSS specially - don't create individual result entries
+        // Handle FBC, LIPID, UFR, OGTT, PPBS, BSS, BGRh specially - don't create individual result entries
         if (
           item.testCode === "FBC" ||
           item.testCode === "LIPID" ||
           item.testCode === "UFR" ||
           item.testCode === "OGTT" ||
           item.testCode === "PPBS" ||
-          item.testCode === "BSS"
+          item.testCode === "BSS" ||
+          item.testCode === "BGRh"
         ) {
           return;
         }
@@ -384,14 +394,15 @@ export default function NewReportPage() {
       const test = testCatalog.find((t) => t.code === testCode);
       const referenceRanges = test?.referenceRange || {};
 
-      // Handle FBC, LIPID, UFR, OGTT, PPBS, BSS specially - don't create individual result entries
+      // Handle FBC, LIPID, UFR, OGTT, PPBS, BSS, BGRh specially - don't create individual result entries
       if (
         testCode === "FBC" ||
         testCode === "LIPID" ||
         testCode === "UFR" ||
         testCode === "OGTT" ||
         testCode === "PPBS" ||
-        testCode === "BSS"
+        testCode === "BSS" ||
+        testCode === "BGRh"
       ) {
         return;
       }
@@ -476,6 +487,11 @@ export default function NewReportPage() {
       const hasFBC = useDirectTestSelection
         ? selectedTests.includes("FBC")
         : selectedInvoice?.lineItems.some((item) => item.testCode === "FBC");
+
+      // Add similar check for BGRh
+      const hasBGRh = useDirectTestSelection
+        ? selectedTests.includes("BGRh")
+        : selectedInvoice?.lineItems.some((item) => item.testCode === "BGRh");
 
       // Add FBC results if available
       if (fbcValues && hasFBC) {
@@ -937,6 +953,28 @@ export default function NewReportPage() {
         console.log("BSS results added to allResults");
       }
 
+      // Add BGRh results if available
+      if (
+        bgrhValues &&
+        hasBGRhTest &&
+        bgrhValues.bloodGroup &&
+        bgrhValues.rhesus
+      ) {
+        console.log("=== SAVING BGRh DATA ===");
+        console.log("bgrhValues:", bgrhValues);
+
+        allResults.push({
+          testCode: "BGRh",
+          testName: "Blood Grouping & Rh",
+          value: bgrhValues.bloodGroup,
+          unit: "",
+          referenceRange: "",
+          comments: bgrhValues.rhesus,
+        });
+
+        console.log("BGRh result added to allResults");
+      }
+
       if (allResults.length === 0) {
         console.error("No results to save!");
         setSaving(false);
@@ -977,6 +1015,9 @@ export default function NewReportPage() {
     bssValues.length > 0 &&
     bssValues.some((entry) => entry.value && entry.value.trim() !== "");
 
+  const hasBGRhResults =
+    bgrhValues && hasBGRhTest && bgrhValues.bloodGroup && bgrhValues.rhesus;
+
   const isFormValid = () => {
     const hasRegularResults = results.some((r) => r.value.trim() !== "");
     const hasFBC = useDirectTestSelection
@@ -1010,7 +1051,8 @@ export default function NewReportPage() {
         hasUFRResults ||
         hasOGTTResults ||
         hasPPBSResults ||
-        hasBSSResults) &&
+        hasBSSResults ||
+        hasBGRhResults) &&
       reviewedBy.trim() !== ""
     );
   };
@@ -1231,7 +1273,8 @@ export default function NewReportPage() {
           hasUFRTest ||
           hasOGTTTest ||
           hasPPBSTest ||
-          hasBSSTest) && (
+          hasBSSTest ||
+          hasBGRhTest) && (
           <div className="space-y-6">
             {/* FBC Test - Special Component */}
             {hasFBCTest && (
@@ -1320,6 +1363,8 @@ export default function NewReportPage() {
             {hasPPBSTest && <PPBSReportCard onValuesChange={setPpbsValues} />}
 
             {hasBSSTest && <BSSReportCard onValuesChange={setBssValues} />}
+
+            {hasBGRhTest && <BGRhReportCard onValuesChange={setBgrhValues} />}
 
             {/* Other Tests */}
             {results.length > 0 && (
@@ -1536,7 +1581,8 @@ export default function NewReportPage() {
           hasUFRTest ||
           hasOGTTTest ||
           hasPPBSTest ||
-          hasBSSTest) && (
+          hasBSSTest ||
+          hasBGRhTest) && (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
