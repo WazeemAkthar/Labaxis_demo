@@ -27,16 +27,16 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                 <table className="w-full text-sm">
                   <thead>
                     <tr>
-                      <th className="p-2 text-left font-black underline ">
+                      <th className="px-2 text-left font-black underline ">
                         CHEMISTRY
                       </th>
-                      <th className="p-2 text-center font-black underline">
+                      <th className="px-2 text-center font-black underline">
                         DESIRABLE LEVELS
                       </th>
-                      <th className="p-2 text-center font-black underline">
+                      <th className="px-2 text-center font-black underline">
                         BORDERLINE LEVELS
                       </th>
-                      <th className="p-2 text-center font-black underline">
+                      <th className="px-2 text-center font-black underline">
                         HIGH LEVELS
                       </th>
                     </tr>
@@ -319,47 +319,47 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                 <table className="w-full border-collapse border border-gray-300 text-sm">
                   <thead>
                     <tr className="bg-gray-50">
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Parameter
                       </th>
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Clinical Significance
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="border border-gray-300 p-2 font-medium">
+                      <td className="border border-gray-300 px-2 font-medium">
                         ALT (SGPT)
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Most specific for liver cell damage. Elevated in
                         hepatitis, fatty liver
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2 font-medium">
+                      <td className="border border-gray-300 px-2 font-medium">
                         AST (SGOT)
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Found in liver, heart, muscle. Elevated in liver damage,
                         heart attack
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2 font-medium">
+                      <td className="border border-gray-300 px-2 font-medium">
                         ALP
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Elevated in bile duct obstruction, liver disease, bone
                         disease
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2 font-medium">
+                      <td className="border border-gray-300 px-2 font-medium">
                         Bilirubin (Total)
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Elevated in liver dysfunction, bile duct obstruction,
                         hemolysis
                       </td>
@@ -413,20 +413,20 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                 <table className="w-full border-collapse border border-gray-300 text-sm">
                   <tbody>
                     <tr>
-                      <td className="border border-gray-300 p-2">60 - 115</td>
-                      <td className="border border-gray-300 p-2 font-medium">
+                      <td className="border border-gray-300 px-2">60 - 115</td>
+                      <td className="border border-gray-300 px-2 font-medium">
                         Normal
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">115 - 125</td>
-                      <td className="border border-gray-300 p-2 font-medium">
+                      <td className="border border-gray-300 px-2">115 - 125</td>
+                      <td className="border border-gray-300 px-2 font-medium">
                         Impaired
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">=&gt;125</td>
-                      <td className="border border-gray-300 p-2 font-medium">
+                      <td className="border border-gray-300 px-2">=&gt;125</td>
+                      <td className="border border-gray-300 px-2 font-medium">
                         High
                       </td>
                     </tr>
@@ -457,60 +457,60 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                 <table className="w-full border-collapse border border-gray-300 text-sm">
                   <thead>
                     <tr className="bg-gray-50">
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Level (ng/mL)
                       </th>
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Status
                       </th>
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Clinical Action
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="border border-gray-300 p-2">&lt;10</td>
-                      <td className="border border-gray-300 p-2 font-medium text-red-600">
+                      <td className="border border-gray-300 px-2">&lt;10</td>
+                      <td className="border border-gray-300 px-2 font-medium text-red-600">
                         Severe Deficiency
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         High-dose supplementation required
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">10-20</td>
-                      <td className="border border-gray-300 p-2 font-medium text-orange-600">
+                      <td className="border border-gray-300 px-2">10-20</td>
+                      <td className="border border-gray-300 px-2 font-medium text-orange-600">
                         Deficiency
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Supplementation recommended
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">20-30</td>
-                      <td className="border border-gray-300 p-2 font-medium text-yellow-600">
+                      <td className="border border-gray-300 px-2">20-30</td>
+                      <td className="border border-gray-300 px-2 font-medium text-yellow-600">
                         Insufficiency
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Consider supplementation
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">30-100</td>
-                      <td className="border border-gray-300 p-2 font-medium text-green-600">
+                      <td className="border border-gray-300 px-2">30-100</td>
+                      <td className="border border-gray-300 px-2 font-medium text-green-600">
                         Sufficient
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Maintain current intake
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">&gt;100</td>
-                      <td className="border border-gray-300 p-2 font-medium text-red-600">
+                      <td className="border border-gray-300 px-2">&gt;100</td>
+                      <td className="border border-gray-300 px-2 font-medium text-red-600">
                         Toxicity Risk
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Reduce supplementation
                       </td>
                     </tr>
@@ -540,36 +540,36 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                 <table className="w-full border-collapse border border-gray-300 text-sm">
                   <thead>
                     <tr className="bg-gray-50">
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Level (pg/mL)
                       </th>
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Status
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="border border-gray-300 p-2">&lt;200</td>
-                      <td className="border border-gray-300 p-2 font-medium text-red-600">
+                      <td className="border border-gray-300 px-2">&lt;200</td>
+                      <td className="border border-gray-300 px-2 font-medium text-red-600">
                         Deficiency
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">200-300</td>
-                      <td className="border border-gray-300 p-2 font-medium text-yellow-600">
+                      <td className="border border-gray-300 px-2">200-300</td>
+                      <td className="border border-gray-300 px-2 font-medium text-yellow-600">
                         Borderline Low
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">300-900</td>
-                      <td className="border border-gray-300 p-2 font-medium text-green-600">
+                      <td className="border border-gray-300 px-2">300-900</td>
+                      <td className="border border-gray-300 px-2 font-medium text-green-600">
                         Normal
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">&gt;900</td>
-                      <td className="border border-gray-300 p-2 font-medium">
+                      <td className="border border-gray-300 px-2">&gt;900</td>
+                      <td className="border border-gray-300 px-2 font-medium">
                         High
                       </td>
                     </tr>
@@ -620,51 +620,51 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                 <table className="w-full border-collapse border border-gray-300 text-sm">
                   <thead>
                     <tr className="bg-gray-50">
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         RF Level (IU/ml)
                       </th>
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Result
                       </th>
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Clinical Significance
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="border border-gray-300 p-2">&lt; 8</td>
-                      <td className="border border-gray-300 p-2 font-medium text-green-600">
+                      <td className="border border-gray-300 px-2">&lt; 8</td>
+                      <td className="border border-gray-300 px-2 font-medium text-green-600">
                         NEGATIVE
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Normal - Low probability of RA
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">8-20</td>
-                      <td className="border border-gray-300 p-2 font-medium text-yellow-600">
+                      <td className="border border-gray-300 px-2">8-20</td>
+                      <td className="border border-gray-300 px-2 font-medium text-yellow-600">
                         WEAK POSITIVE
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         May indicate early RA or other conditions
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">20-60</td>
-                      <td className="border border-gray-300 p-2 font-medium text-orange-600">
+                      <td className="border border-gray-300 px-2">20-60</td>
+                      <td className="border border-gray-300 px-2 font-medium text-orange-600">
                         POSITIVE
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Significant for RA diagnosis
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">&gt; 60</td>
-                      <td className="border border-gray-300 p-2 font-medium text-red-600">
+                      <td className="border border-gray-300 px-2">&gt; 60</td>
+                      <td className="border border-gray-300 px-2 font-medium text-red-600">
                         STRONGLY POSITIVE
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         High probability of RA, severe disease
                       </td>
                     </tr>
@@ -696,51 +696,51 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                 <table className="w-full border-collapse border border-gray-300 text-sm">
                   <thead>
                     <tr className="bg-gray-50">
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         ASOT Level (IU/l)
                       </th>
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Result
                       </th>
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Clinical Significance
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="border border-gray-300 p-2">&lt; 200</td>
-                      <td className="border border-gray-300 p-2 font-medium text-green-600">
+                      <td className="border border-gray-300 px-2">&lt; 200</td>
+                      <td className="border border-gray-300 px-2 font-medium text-green-600">
                         NEGATIVE
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         No recent streptococcal infection
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">200-400</td>
-                      <td className="border border-gray-300 p-2 font-medium text-yellow-600">
+                      <td className="border border-gray-300 px-2">200-400</td>
+                      <td className="border border-gray-300 px-2 font-medium text-yellow-600">
                         BORDERLINE
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         May indicate recent infection
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">400-800</td>
-                      <td className="border border-gray-300 p-2 font-medium text-orange-600">
+                      <td className="border border-gray-300 px-2">400-800</td>
+                      <td className="border border-gray-300 px-2 font-medium text-orange-600">
                         POSITIVE
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Recent streptococcal infection likely
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">&gt; 800</td>
-                      <td className="border border-gray-300 p-2 font-medium text-red-600">
+                      <td className="border border-gray-300 px-2">&gt; 800</td>
+                      <td className="border border-gray-300 px-2 font-medium text-red-600">
                         STRONGLY POSITIVE
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Recent infection or complications
                       </td>
                     </tr>
@@ -761,48 +761,48 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                 <table className="w-full border-collapse border border-gray-300 text-sm">
                   <thead>
                     <tr className="bg-gray-50">
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Parameter
                       </th>
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Normal Range
                       </th>
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Clinical Significance
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Serum Sodium
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         135.0-155.0 mEq/l
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Outside range may indicate dehydration or hyponatremia
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Serum Potassium
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         3.5-5.5 mEq/l
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Abnormal levels may suggest hypokalemia or hyperkalemia
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Serum Chloride
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         95.0-110.0 mEq/l
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Deviations may indicate acid-base imbalances
                       </td>
                     </tr>
@@ -830,59 +830,59 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                 <table className="w-full border-collapse border border-gray-300 text-sm">
                   <thead>
                     <tr className="bg-gray-50">
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Uric Acid Level (mg/dL)
                       </th>
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Result
                       </th>
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Clinical Significance
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         3.5-7.2 (Male)
                       </td>
-                      <td className="border border-gray-300 p-2 font-medium text-green-600">
+                      <td className="border border-gray-300 px-2 font-medium text-green-600">
                         NORMAL
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         No evidence of hyperuricemia
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         2.6-6.0 (Female)
                       </td>
-                      <td className="border border-gray-300 p-2 font-medium text-green-600">
+                      <td className="border border-gray-300 px-2 font-medium text-green-600">
                         NORMAL
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         No evidence of hyperuricemia
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         &gt; 7.2 (Male)
                       </td>
-                      <td className="border border-gray-300 p-2 font-medium text-red-600">
+                      <td className="border border-gray-300 px-2 font-medium text-red-600">
                         HIGH
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Risk of gout or kidney stones
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         &gt; 6.0 (Female)
                       </td>
-                      <td className="border border-gray-300 p-2 font-medium text-red-600">
+                      <td className="border border-gray-300 px-2 font-medium text-red-600">
                         HIGH
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Risk of gout or kidney stones
                       </td>
                     </tr>
@@ -917,51 +917,51 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                 <table className="w-full border-collapse border border-gray-300 text-sm">
                   <thead>
                     <tr className="bg-gray-50">
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Parameter
                       </th>
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Normal Range
                       </th>
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Clinical Significance
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="border border-gray-300 p-2">Volume</td>
-                      <td className="border border-gray-300 p-2">1.5-5.0 mL</td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">Volume</td>
+                      <td className="border border-gray-300 px-2">1.5-5.0 mL</td>
+                      <td className="border border-gray-300 px-2">
                         Low volume may indicate obstruction
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Concentration
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         15-200 million/mL
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Below range suggests oligospermia
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Total Motility
                       </td>
-                      <td className="border border-gray-300 p-2">≥40%</td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">≥40%</td>
+                      <td className="border border-gray-300 px-2">
                         Reduced motility may affect fertility
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">Morphology</td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">Morphology</td>
+                      <td className="border border-gray-300 px-2">
                         ≥4% normal forms
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Abnormal forms may indicate infertility
                       </td>
                     </tr>
@@ -989,62 +989,62 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                 <table className="w-full border-collapse border border-gray-300 text-sm">
                   <thead>
                     <tr className="bg-gray-50">
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Demographic
                       </th>
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Ferritin Level (ng/mL)
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="border border-gray-300 p-2">Adult Male</td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">Adult Male</td>
+                      <td className="border border-gray-300 px-2">
                         20 - 400 ng/mL
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Adult Female (&lt;50 Years)
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         8 - 140 ng/mL
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Adult Female (≥50 Years)
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         20 - 400 ng/mL
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">Newborn</td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">Newborn</td>
+                      <td className="border border-gray-300 px-2">
                         25 - 200 ng/mL
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">1 Month</td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">1 Month</td>
+                      <td className="border border-gray-300 px-2">
                         200 - 600 ng/mL
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         2 - 5 Months
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         50 - 200 ng/mL
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         6 - 15 Months
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         7 - 140 ng/mL
                       </td>
                     </tr>
@@ -1160,38 +1160,38 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
       //           <table className="w-full border-collapse border border-gray-300 text-sm">
       //             <thead>
       //               <tr className="bg-gray-50">
-      //                 <th className="border border-gray-300 p-2 text-left font-semibold">
+      //                 <th className="border border-gray-300 px-2 text-left font-semibold">
       //                   Demographic
       //                 </th>
-      //                 <th className="border border-gray-300 p-2 text-left font-semibold">
+      //                 <th className="border border-gray-300 px-2 text-left font-semibold">
       //                   Expected Values (mIU/mL)
       //                 </th>
       //               </tr>
       //             </thead>
       //             <tbody>
       //               <tr>
-      //                 <td className="border border-gray-300 p-2">Non-Pregnant Female</td>
-      //                 <td className="border border-gray-300 p-2">&lt; 5.0</td>
+      //                 <td className="border border-gray-300 px-2">Non-Pregnant Female</td>
+      //                 <td className="border border-gray-300 px-2">&lt; 5.0</td>
       //               </tr>
       //               <tr>
-      //                 <td className="border border-gray-300 p-2">Postmenopausal Female</td>
-      //                 <td className="border border-gray-300 p-2">&lt; 9.0</td>
+      //                 <td className="border border-gray-300 px-2">Postmenopausal Female</td>
+      //                 <td className="border border-gray-300 px-2">&lt; 9.0</td>
       //               </tr>
       //               <tr>
-      //                 <td className="border border-gray-300 p-2">Male</td>
-      //                 <td className="border border-gray-300 p-2">&lt; 2.0</td>
+      //                 <td className="border border-gray-300 px-2">Male</td>
+      //                 <td className="border border-gray-300 px-2">&lt; 2.0</td>
       //               </tr>
       //               <tr>
-      //                 <td className="border border-gray-300 p-2">Pregnancy (3-4 weeks)</td>
-      //                 <td className="border border-gray-300 p-2">5 - 426</td>
+      //                 <td className="border border-gray-300 px-2">Pregnancy (3-4 weeks)</td>
+      //                 <td className="border border-gray-300 px-2">5 - 426</td>
       //               </tr>
       //               <tr>
-      //                 <td className="border border-gray-300 p-2">Pregnancy (5-6 weeks)</td>
-      //                 <td className="border border-gray-300 p-2">18 - 7,340</td>
+      //                 <td className="border border-gray-300 px-2">Pregnancy (5-6 weeks)</td>
+      //                 <td className="border border-gray-300 px-2">18 - 7,340</td>
       //               </tr>
       //               <tr>
-      //                 <td className="border border-gray-300 p-2">Pregnancy (7-12 weeks)</td>
-      //                 <td className="border border-gray-300 p-2">1,200 - 90,000</td>
+      //                 <td className="border border-gray-300 px-2">Pregnancy (7-12 weeks)</td>
+      //                 <td className="border border-gray-300 px-2">1,200 - 90,000</td>
       //               </tr>
       //             </tbody>
       //           </table>
@@ -1300,38 +1300,38 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                 <table className="w-full border-collapse border border-gray-300 text-sm">
                   <thead>
                     <tr className="bg-gray-50">
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Demographic
                       </th>
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Reference Range (mg/dL)
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Adults (18 – 60 Years)
                       </td>
-                      <td className="border border-gray-300 p-2">6 – 20</td>
+                      <td className="border border-gray-300 px-2">6 – 20</td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Adults (60 – 90 Years)
                       </td>
-                      <td className="border border-gray-300 p-2">8 – 23</td>
+                      <td className="border border-gray-300 px-2">8 – 23</td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Infants (&lt;1 Year)
                       </td>
-                      <td className="border border-gray-300 p-2">4 – 19</td>
+                      <td className="border border-gray-300 px-2">4 – 19</td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Infants / Children
                       </td>
-                      <td className="border border-gray-300 p-2">5 – 18</td>
+                      <td className="border border-gray-300 px-2">5 – 18</td>
                     </tr>
                   </tbody>
                 </table>
@@ -1362,38 +1362,38 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                 <table className="w-full border-collapse border border-gray-300 text-sm">
                   <thead>
                     <tr className="bg-gray-50">
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         CRP Level (mg/L)
                       </th>
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Clinical Significance
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="border border-gray-300 p-2">&lt; 3</td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">&lt; 3</td>
+                      <td className="border border-gray-300 px-2">
                         Normal - No significant inflammation
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">3 - 10</td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">3 - 10</td>
+                      <td className="border border-gray-300 px-2">
                         Mild inflammation - Possible minor infection or chronic
                         condition
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">10 - 100</td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">10 - 100</td>
+                      <td className="border border-gray-300 px-2">
                         Moderate inflammation - Suggests active infection or
                         inflammatory disease
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">&gt; 100</td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">&gt; 100</td>
+                      <td className="border border-gray-300 px-2">
                         Severe inflammation - Indicates serious infection or
                         trauma
                       </td>
@@ -1424,6 +1424,8 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
           ),
         };
 
+
+
       case "uacr":
       case "urine albumin with creatinine ratio":
         return {
@@ -1441,34 +1443,34 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                 <table className="w-full border-collapse border border-gray-300 text-sm">
                   <thead>
                     <tr className="bg-gray-50">
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Category
                       </th>
-                      <th className="border border-gray-300 p-2 text-left font-semibold">
+                      <th className="border border-gray-300 px-2 text-left font-semibold">
                         Reference Range (mg of Alb/g of Cre)
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="border border-gray-300 p-2">Normal</td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">Normal</td>
+                      <td className="border border-gray-300 px-2">
                         &lt; 30 mg of Alb/g of Cre
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Microalbuminuria
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         30 – 300 mg of Alb/g of Cre
                       </td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         Albuminuria
                       </td>
-                      <td className="border border-gray-300 p-2">
+                      <td className="border border-gray-300 px-2">
                         &gt; 300 mg of Alb/g of Cre
                       </td>
                     </tr>
@@ -1478,6 +1480,181 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
             </div>
           ),
         };
+
+case "hcg_serum":
+case "serum hcg":
+  return {
+    title: "Serum HCG – Expected Values & Clinical Interpretation",
+    content: (
+      <div className="space-y-4">
+        <p className="text-sm leading-relaxed">
+          Serum HCG levels vary based on physiological states such as pregnancy
+          and menopausal status. The values below represent typical expected
+          ranges.
+        </p>
+
+        <div className="overflow-x-auto flex justify-center">
+          <table
+            className="border-collapse border border-gray-300 text-sm"
+            style={{ width: "90%" }}
+          >
+            <thead>
+              <tr className="bg-gray-50">
+                <th className="border border-gray-300 px-2 font-semibold text-left">
+                  Category
+                </th>
+                <th className="border border-gray-300 px-2 font-semibold text-left">
+                  Values (mIU/mL)
+                </th>
+                <th className="border border-gray-300 px-2 font-semibold text-left">
+                  Percentile (5th–95th)
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {/* Non-Pregnant */}
+              <tr>
+                <td className="border border-gray-300 px-2">
+                  Non-Pregnant Premenopausal Women
+                </td>
+                <td className="border border-gray-300 px-2">&lt; 5.3</td>
+                <td className="border border-gray-300 px-2">—</td>
+              </tr>
+
+              <tr>
+                <td className="border border-gray-300 px-2">
+                  Postmenopausal Women
+                </td>
+                <td className="border border-gray-300 px-2">&lt; 8.3</td>
+                <td className="border border-gray-300 px-2">—</td>
+              </tr>
+
+              <tr>
+                <td className="border border-gray-300 px-2">Men</td>
+                <td className="border border-gray-300 px-2">&lt; 2.6</td>
+                <td className="border border-gray-300 px-2">—</td>
+              </tr>
+
+              {/* Pregnancy Header */}
+              <tr className="bg-gray-50">
+                <td
+                  className="border border-gray-300 px-2 font-semibold"
+                  colSpan={3}
+                >
+                  Pregnancy – Serum HCG Levels by Gestational Age
+                </td>
+              </tr>
+
+              {/* Table header for pregnancy rows */}
+              <tr>
+                <th className="border border-gray-300 px-2 text-left font-semibold">
+                  Weeks of Gestation
+                </th>
+                <th className="border border-gray-300 px-2 text-left font-semibold">
+                  Median (mIU/mL)
+                </th>
+                <th className="border border-gray-300 px-2 text-left font-semibold">
+                  Percentile (mIU/mL)
+                </th>
+              </tr>
+
+              {/* Weeks Data */}
+              <tr>
+                <td className="border border-gray-300 px-2">3 Weeks</td>
+                <td className="border border-gray-300 px-2">17.5</td>
+                <td className="border border-gray-300 px-2">5.8 – 71.2</td>
+              </tr>
+
+              <tr>
+                <td className="border border-gray-300 px-2">4 Weeks</td>
+                <td className="border border-gray-300 px-2">141.0</td>
+                <td className="border border-gray-300 px-2">9.5 – 750.0</td>
+              </tr>
+
+              <tr>
+                <td className="border border-gray-300 px-2">5 Weeks</td>
+                <td className="border border-gray-300 px-2">1398</td>
+                <td className="border border-gray-300 px-2">217 – 7138</td>
+              </tr>
+
+              <tr>
+                <td className="border border-gray-300 px-2">6 Weeks</td>
+                <td className="border border-gray-300 px-2">3339</td>
+                <td className="border border-gray-300 px-2">158 – 31795</td>
+              </tr>
+
+              <tr>
+                <td className="border border-gray-300 px-2">7 Weeks</td>
+                <td className="border border-gray-300 px-2">39759</td>
+                <td className="border border-gray-300 px-2">3697 – 163563</td>
+              </tr>
+
+              <tr>
+                <td className="border border-gray-300 px-2">8 Weeks</td>
+                <td className="border border-gray-300 px-2">90084</td>
+                <td className="border border-gray-300 px-2">32065 – 149571</td>
+              </tr>
+
+              <tr>
+                <td className="border border-gray-300 px-2">9 Weeks</td>
+                <td className="border border-gray-300 px-2">106257</td>
+                <td className="border border-gray-300 px-2">63803 – 151410</td>
+              </tr>
+
+              <tr>
+                <td className="border border-gray-300 px-2">10 Weeks</td>
+                <td className="border border-gray-300 px-2">85172</td>
+                <td className="border border-gray-300 px-2">46509 – 186977</td>
+              </tr>
+
+              <tr>
+                <td className="border border-gray-300 px-2">12 Weeks</td>
+                <td className="border border-gray-300 px-2">66676</td>
+                <td className="border border-gray-300 px-2">27832 – 210612</td>
+              </tr>
+
+              <tr>
+                <td className="border border-gray-300 px-2">14 Weeks</td>
+                <td className="border border-gray-300 px-2">34440</td>
+                <td className="border border-gray-300 px-2">13950 – 62530</td>
+              </tr>
+
+              <tr>
+                <td className="border border-gray-300 px-2">15 Weeks</td>
+                <td className="border border-gray-300 px-2">28962</td>
+                <td className="border border-gray-300 px-2">12039 – 70971</td>
+              </tr>
+
+              <tr>
+                <td className="border border-gray-300 px-2">16 Weeks</td>
+                <td className="border border-gray-300 px-2">23930</td>
+                <td className="border border-gray-300 px-2">9040 – 56451</td>
+              </tr>
+
+              <tr>
+                <td className="border border-gray-300 px-2">17 Weeks</td>
+                <td className="border border-gray-300 px-2">20860</td>
+                <td className="border border-gray-300 px-2">8175 – 55868</td>
+              </tr>
+
+              <tr>
+                <td className="border border-gray-300 px-2">18 Weeks</td>
+                <td className="border border-gray-300 px-2">19817</td>
+                <td className="border border-gray-300 px-2">8099 – 58176</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p className="text-xs text-gray-600 mt-2">
+          <strong>Method:</strong> Electrochemiluminescence Immunoassay (ECLIA)
+        </p>
+      </div>
+    ),
+  };
+
+
       default:
         return null;
     }
