@@ -778,7 +778,7 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                         Serum Sodium
                       </td>
                       <td className="border border-gray-300 px-2">
-                        135.0-155.0 mEq/l
+                        135.0 - 145.0 mEq/l
                       </td>
                       <td className="border border-gray-300 px-2">
                         Outside range may indicate dehydration or hyponatremia
