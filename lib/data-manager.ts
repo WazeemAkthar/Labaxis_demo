@@ -916,7 +916,24 @@ export class DataManager {
   },
   category: "Cardiac Markers",
   isQualitative: true
+},
+{
+  code: "HCG_SERUM",
+  name: "Human Chorionic Gonadotropin - Serum (Beta HCG)",
+  category: "Hormone Assays",
+  defaultPrice: 0,
+  estimatedCost: 0,
+  isQualitative: false,
+  unit: "mIU/ml",
+  referenceRange: {
+    nonPregnantFemale: "<5 mIU/ml",
+    pregnant_0_1_week: "5 – 50 mIU/ml",
+    pregnant_1_2_weeks: "50 – 500 mIU/ml",
+    pregnant_2_3_weeks: "100 – 5000 mIU/ml",
+    pregnant_3_4_weeks: "500 – 10000 mIU/ml"
+  }
 }
+
 
     ];
   }

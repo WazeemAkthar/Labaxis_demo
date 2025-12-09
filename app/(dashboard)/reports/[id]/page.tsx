@@ -586,6 +586,7 @@ export default function ReportDetailsPage() {
     const isWIDAL = testCode === "WIDAL";
     const isUACR = testCode === "UACR";
     const isLIPID = testCode === "LIPID";
+    const isHCG_SERUM = testCode === "HCG_SERUM";
     const hideReferenceRange =
       isESR ||
       isTSH ||
@@ -603,7 +604,8 @@ export default function ReportDetailsPage() {
       isDNS1 ||
       isWIDAL ||
       isUACR ||
-      isLIPID;
+      isLIPID ||
+      isHCG_SERUM ;
     const hideunits =
       isHIV ||
       isHCG ||
