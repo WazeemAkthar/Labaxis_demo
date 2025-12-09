@@ -206,7 +206,7 @@ export default function ReportDetailsPage() {
           <Badge variant="outline" className="text-lg px-3 py-1">
             OGTT
           </Badge>
-          <div className="font-semibold text-lg ogtt-title-text">
+          <div className="font-semibold text-lg ogtt-title-text uppercase">
             Oral Glucose Tolerance Test
           </div>
         </div>
@@ -214,7 +214,7 @@ export default function ReportDetailsPage() {
         <div className="overflow-x-auto mb-6">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-collapse border-t-2 border-b-[2px] border-gray-900">
+              <tr className="border-collapse border-t-2 border-b-[2px] border-gray-900 uppercase">
                 <th className="text-left font-semibold">Test</th>
                 <th className="text-right font-semibold">Result</th>
                 <th className="text-right font-semibold">Units</th>
@@ -272,16 +272,16 @@ export default function ReportDetailsPage() {
         className="border rounded-lg p-6"
         style={{ fontFamily: "'Courier New', Courier, monospace" }}
       >
-        <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
+        <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2 uppercase">
           Post Prandial Blood Sugar
         </h1>
         <table className="w-full border-collapse">
           <thead>
-            <tr className="border-b">
-              <th className="text-left p-4">Description</th>
-              <th className="text-left p-4">Result</th>
-              <th className="text-left p-4">Units</th>
-              <th className="text-left p-4">Reference Range</th>
+            <tr className="border-b uppercase">
+              <th className="text-left p-4 uppercase">Description</th>
+              <th className="text-left p-4 uppercase">Result</th>
+              <th className="text-left p-4 uppercase">Units</th>
+              <th className="text-left p-4 uppercase">Reference Range</th>
             </tr>
           </thead>
           <tbody>
@@ -319,12 +319,12 @@ export default function ReportDetailsPage() {
         className="border rounded-lg p-6"
         style={{ fontFamily: "'Courier New', Courier, monospace" }}
       >
-        <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2">
+        <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2 uppercase">
           Blood for BSS
         </h1>
         <table className="w-full border-collapse">
           <thead>
-            <tr className="border-b">
+            <tr className="border-b uppercase">
               <th className=" px-4">Description</th>
               <th className=" px-4">Result</th>
               <th className=" px-4">Units</th>
@@ -402,14 +402,14 @@ export default function ReportDetailsPage() {
         style={{ fontFamily: "'Courier New', Courier, monospace" }}
       >
         {title && (
-          <h4 className="font-semibold text-xl text-left text-muted-foreground mb-3 underline">
+          <h4 className="font-semibold text-xl text-left text-muted-foreground mb-3 underline uppercase">
             {title}
           </h4>
         )}
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className=" border-collapse border-t-2 border-b-2 border-gray-900">
+              <tr className=" border-collapse border-t-2 border-b-2 border-gray-900 uppercase">
                 <th className="text-left font-semibold">Parameter</th>
                 <th className="text-right font-semibold">Result</th>
                 <th className="text-right font-semibold">Units</th>
@@ -476,7 +476,7 @@ export default function ReportDetailsPage() {
           <Badge variant="outline" className="text-lg px-3 py-1">
             FBC
           </Badge>
-          <span className="font-semibold text-lg">Full Blood Count</span>
+          <span className="font-semibold text-lg uppercase">Full Blood Count</span>
         </div>
 
         {mainParams.length > 0 && renderTable(mainParams)}
@@ -527,14 +527,14 @@ export default function ReportDetailsPage() {
         style={{ fontFamily: "'Courier New', Courier, monospace" }}
       >
         {title && (
-          <h4 className="font-semibold text-xl text-left text-muted-foreground mb-3 underline">
+          <h4 className="font-semibold text-xl text-left text-muted-foreground mb-3 underline uppercase">
             {title}
           </h4>
         )}
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-collapse border-t-2 border-b-2 border-gray-900">
+              <tr className="border-collapse border-t-2 border-b-2 border-gray-900 uppercase">
                 <th className="text-left font-semibold">Description</th>
                 <th className="text-right font-semibold">Results</th>
                 <th className="text-right font-semibold">Units</th>
@@ -570,7 +570,7 @@ export default function ReportDetailsPage() {
           <Badge variant="outline" className="text-lg px-3 py-1">
             UFR
           </Badge>
-          <span className="font-semibold text-lg">Urine Full Report</span>
+          <span className="font-semibold text-lg uppercase">Urine Full Report</span>
         </div>
 
         {physicalChemical.length > 0 && renderTable(physicalChemical)}
@@ -679,12 +679,12 @@ export default function ReportDetailsPage() {
         key={testCode}
         style={{ fontFamily: "'Courier New', Courier, monospace" }}
       >
-        <h1 className="text-lg text-center mb-3 font-bold border-black border-b">
+        <h1 className="text-lg text-center mb-3 font-bold border-black border-b uppercase">
           {testName}
         </h1>
         <table className="w-full border-collapse">
           <thead>
-            <tr className="border-b">
+            <tr className="border-b uppercase">
               <th className="text-left p-1">Test</th>
               <th className="text-left p-1">Value</th>
               {!hideunits && <th className="text-left p-1">Units</th>}

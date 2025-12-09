@@ -1,10 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { TestTube } from "lucide-react";
 
 interface PPBSReportCardProps {
@@ -22,6 +34,15 @@ export function PPBSReportCard({ onValuesChange }: PPBSReportCardProps) {
     const newValues = { ...values, [field]: value };
     setValues(newValues);
     onValuesChange(newValues);
+  };
+
+  const getValueColorClass = (value: string, hourType: string) => {
+    if (!value) return "";
+    const numValue = parseFloat(value);
+    const threshold = hourType === "After 1 Hour" ? 160 : 140;
+    return numValue < threshold
+      ? "border-green-500 bg-green-50 dark:bg-green-950"
+      : "border-red-500 bg-red-50 dark:bg-red-950";
   };
 
   return (
@@ -78,6 +99,7 @@ export function PPBSReportCard({ onValuesChange }: PPBSReportCardProps) {
               value={values.value}
               onChange={(e) => handleChange("value", e.target.value)}
               placeholder="Enter value"
+              className={getValueColorClass(values.value, values.hourType)}
             />
           </div>
         </div>

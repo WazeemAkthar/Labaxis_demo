@@ -31,6 +31,7 @@ export interface TestCatalogItem {
   hasGraph?: boolean;
   hasMealOptions?: boolean;
   hasMultipleMealOptions?: boolean;
+  componentOrder?: string[];
 }
 
 

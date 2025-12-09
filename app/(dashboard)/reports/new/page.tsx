@@ -40,6 +40,48 @@ import { PPBSReportCard } from "@/components/ppbs-report-card";
 import { BSSReportCard } from "@/components/bss-report-card";
 import { BGRhReportCard } from "@/components/bgrh-report-card";
 
+// Helper function to check if a value is within reference range
+function isValueInRange(value: string, referenceRange: string): boolean | null {
+  if (!value || !referenceRange || value.trim() === "") return null;
+
+  const numValue = parseFloat(value);
+  if (isNaN(numValue)) return null; // Can't determine for non-numeric values
+
+  // Handle ranges like "4.0-11.0" or "4.0 - 11.0"
+  const rangeMatch = referenceRange.match(/(\d+\.?\d*)\s*-\s*(\d+\.?\d*)/);
+  if (rangeMatch) {
+    const min = parseFloat(rangeMatch[1]);
+    const max = parseFloat(rangeMatch[2]);
+    return numValue >= min && numValue <= max;
+  }
+
+  // Handle "< X" ranges
+  const lessThanMatch = referenceRange.match(/[<]\s*(\d+\.?\d*)/);
+  if (lessThanMatch) {
+    const max = parseFloat(lessThanMatch[1]);
+    return numValue < max;
+  }
+
+  // Handle "> X" ranges
+  const greaterThanMatch = referenceRange.match(/[>]\s*(\d+\.?\d*)/);
+  if (greaterThanMatch) {
+    const min = parseFloat(greaterThanMatch[1]);
+    return numValue > min;
+  }
+
+  // Can't determine
+  return null;
+}
+
+// Helper function to get indicator color classes
+function getValueIndicatorClass(value: string, referenceRange: string): string {
+  const inRange = isValueInRange(value, referenceRange);
+
+  if (inRange === null) return ""; // No indicator for non-numeric or indeterminate
+  if (inRange) return "border-l-4 border-l-green-500 bg-green-50"; // In range - green
+  return "border-l-4 border-l-red-500 bg-red-50"; // Out of range - red
+}
+
 // Helper function to get qualitative options for a test
 function getQualitativeOptions(
   testCode: string
@@ -281,13 +323,25 @@ export default function NewReportPage() {
 
         // For multi-component tests, create separate result entries for each component
         if (Object.keys(referenceRanges).length > 1) {
-          Object.entries(referenceRanges).forEach(([component, range]) => {
+          // ✅ NEW: Use componentOrder if available, otherwise use Object.entries
+          // Replace the componentsToIterate section with proper typing
+          const componentsToIterate: [string, any][] = test?.componentOrder
+            ? test.componentOrder.map(
+                (componentName: string) =>
+                  [componentName, referenceRanges[componentName]] as [
+                    string,
+                    any
+                  ]
+              )
+            : Object.entries(referenceRanges);
+
+          componentsToIterate.forEach(([component, range]: [string, any]) => {
             const componentUnit =
               test?.unitPerTest?.[component] || test?.unit || "";
 
             initialResults.push({
               testCode: item.testCode,
-              testName: component, // ✅ USE ONLY THE COMPONENT NAME
+              testName: component,
               value: "",
               unit: componentUnit,
               referenceRange: String(range),
@@ -302,7 +356,7 @@ export default function NewReportPage() {
 
           initialResults.push({
             testCode: item.testCode,
-            testName: componentName, // ✅ USE THE REFERENCE RANGE KEY
+            testName: componentName,
             value: "",
             unit: test?.unit || "",
             referenceRange: firstRange ? String(firstRange[1]) : "",
@@ -409,13 +463,22 @@ export default function NewReportPage() {
 
       // For multi-component tests, create separate result entries for each component
       if (Object.keys(referenceRanges).length > 1) {
-        Object.entries(referenceRanges).forEach(([component, range]) => {
+        // ✅ NEW: Use componentOrder if available, otherwise use Object.entries
+        // Replace the componentsToIterate section with proper typing
+        const componentsToIterate: [string, any][] = test?.componentOrder
+          ? test.componentOrder.map(
+              (componentName: string) =>
+                [componentName, referenceRanges[componentName]] as [string, any]
+            )
+          : Object.entries(referenceRanges);
+
+        componentsToIterate.forEach(([component, range]: [string, any]) => {
           const componentUnit =
             test?.unitPerTest?.[component] || test?.unit || "";
 
           initialResults.push({
             testCode: testCode,
-            testName: component, // ✅ USE ONLY THE COMPONENT NAME
+            testName: component,
             value: "",
             unit: componentUnit,
             referenceRange: String(range),
@@ -442,7 +505,7 @@ export default function NewReportPage() {
         }
 
         initialResults.push({
-          testCode: testCode, // ✅ Changed from item.testCode to testCode
+          testCode: testCode,
           testName: componentName,
           value: "",
           unit: test?.unit || "",
@@ -1375,7 +1438,8 @@ export default function NewReportPage() {
                     Enter Test Results
                   </CardTitle>
                   <CardDescription>
-                    Input the results for each test
+                    Input the results for each test. Values outside reference
+                    range will be highlighted.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -1386,10 +1450,19 @@ export default function NewReportPage() {
                     );
                     const isQualitative = testDetails?.isQualitative || false;
 
+                    // Get indicator class based on value and range
+                    const indicatorClass =
+                      !isQualitative && result.value
+                        ? getValueIndicatorClass(
+                            result.value,
+                            result.referenceRange
+                          )
+                        : "";
+
                     return (
                       <div
                         key={`${result.testCode}-${result.testName}-${index}`}
-                        className="p-4 border rounded-lg space-y-4"
+                        className={`p-4 border rounded-lg space-y-4 transition-colors ${indicatorClass}`}
                       >
                         <div className="flex items-center gap-2 mb-3">
                           <Badge variant="outline">{result.testCode}</Badge>
@@ -1398,6 +1471,29 @@ export default function NewReportPage() {
                             <Badge variant="secondary" className="ml-2">
                               Qualitative
                             </Badge>
+                          )}
+                          {!isQualitative && result.value && (
+                            <>
+                              {isValueInRange(
+                                result.value,
+                                result.referenceRange
+                              ) === true && (
+                                <Badge
+                                  variant="default"
+                                  className="ml-2 bg-green-600"
+                                >
+                                  Normal
+                                </Badge>
+                              )}
+                              {isValueInRange(
+                                result.value,
+                                result.referenceRange
+                              ) === false && (
+                                <Badge variant="destructive" className="ml-2">
+                                  Out of Range
+                                </Badge>
+                              )}
+                            </>
                           )}
                         </div>
 
@@ -1419,6 +1515,21 @@ export default function NewReportPage() {
                                 )
                               }
                               placeholder="Enter result value"
+                              className={
+                                !isQualitative && result.value
+                                  ? isValueInRange(
+                                      result.value,
+                                      result.referenceRange
+                                    ) === false
+                                    ? "border-red-500 focus:ring-red-500"
+                                    : isValueInRange(
+                                        result.value,
+                                        result.referenceRange
+                                      ) === true
+                                    ? "border-green-500 focus:ring-green-500"
+                                    : ""
+                                  : ""
+                              }
                             />
                           </div>
 

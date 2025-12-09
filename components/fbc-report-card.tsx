@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { isValueInRange, getValueIndicatorClass } from "@/lib/range-utils"
 
 interface FBCValues {
   hemoglobin: string
@@ -56,38 +57,35 @@ export function FBCReportCard({ onValuesChange }: FBCReportCardProps) {
     basophilsAbs: "",
   })
 
-const updateValue = (field: keyof FBCValues, value: string) => {
-  const newValues = { ...values, [field]: value }
-  setValues(newValues)
-  
-  // Calculate derived values based on the new values
-  const hb = field === 'hemoglobin' ? parseFloat(value) : parseFloat(newValues.hemoglobin)
-  const rbc = field === 'rbc' ? parseFloat(value) : parseFloat(newValues.rbc)
-  const pcv = field === 'pcv' ? parseFloat(value) : parseFloat(newValues.pcv)
-  const wbc = field === 'wbc' ? parseFloat(value) : parseFloat(newValues.wbc)
+  const updateValue = (field: keyof FBCValues, value: string) => {
+    const newValues = { ...values, [field]: value }
+    setValues(newValues)
+    
+    const hb = field === 'hemoglobin' ? parseFloat(value) : parseFloat(newValues.hemoglobin)
+    const rbc = field === 'rbc' ? parseFloat(value) : parseFloat(newValues.rbc)
+    const pcv = field === 'pcv' ? parseFloat(value) : parseFloat(newValues.pcv)
+    const wbc = field === 'wbc' ? parseFloat(value) : parseFloat(newValues.wbc)
 
-  const updatedValues = {
-    ...newValues,
-    mcv: (pcv && rbc && !isNaN(pcv) && !isNaN(rbc) && rbc !== 0) ? ((pcv / rbc) * 10).toFixed(1) : '',
-    mch: (hb && rbc && !isNaN(hb) && !isNaN(rbc) && rbc !== 0) ? ((hb / rbc) * 10).toFixed(1) : '',
-    mchc: (hb && pcv && !isNaN(hb) && !isNaN(pcv) && pcv !== 0) ? ((hb / pcv) * 100).toFixed(1) : '',
-    neutrophilsAbs: (wbc && newValues.neutrophils && !isNaN(wbc) && !isNaN(parseFloat(newValues.neutrophils))) ? 
-      ((parseFloat(newValues.neutrophils) / 100) * wbc).toFixed(2) : '',
-    lymphocytesAbs: (wbc && newValues.lymphocytes && !isNaN(wbc) && !isNaN(parseFloat(newValues.lymphocytes))) ? 
-      ((parseFloat(newValues.lymphocytes) / 100) * wbc).toFixed(2) : '',
-    eosinophilsAbs: (wbc && newValues.eosinophils && !isNaN(wbc) && !isNaN(parseFloat(newValues.eosinophils))) ? 
-      ((parseFloat(newValues.eosinophils) / 100) * wbc).toFixed(2) : '',
-    monocytesAbs: (wbc && newValues.monocytes && !isNaN(wbc) && !isNaN(parseFloat(newValues.monocytes))) ? 
-      ((parseFloat(newValues.monocytes) / 100) * wbc).toFixed(2) : '',
-    basophilsAbs: (wbc && newValues.basophils && !isNaN(wbc) && !isNaN(parseFloat(newValues.basophils))) ? 
-      ((parseFloat(newValues.basophils) / 100) * wbc).toFixed(2) : '',
+    const updatedValues = {
+      ...newValues,
+      mcv: (pcv && rbc && !isNaN(pcv) && !isNaN(rbc) && rbc !== 0) ? ((pcv / rbc) * 10).toFixed(1) : '',
+      mch: (hb && rbc && !isNaN(hb) && !isNaN(rbc) && rbc !== 0) ? ((hb / rbc) * 10).toFixed(1) : '',
+      mchc: (hb && pcv && !isNaN(hb) && !isNaN(pcv) && pcv !== 0) ? ((hb / pcv) * 100).toFixed(1) : '',
+      neutrophilsAbs: (wbc && newValues.neutrophils && !isNaN(wbc) && !isNaN(parseFloat(newValues.neutrophils))) ? 
+        ((parseFloat(newValues.neutrophils) / 100) * wbc).toFixed(2) : '',
+      lymphocytesAbs: (wbc && newValues.lymphocytes && !isNaN(wbc) && !isNaN(parseFloat(newValues.lymphocytes))) ? 
+        ((parseFloat(newValues.lymphocytes) / 100) * wbc).toFixed(2) : '',
+      eosinophilsAbs: (wbc && newValues.eosinophils && !isNaN(wbc) && !isNaN(parseFloat(newValues.eosinophils))) ? 
+        ((parseFloat(newValues.eosinophils) / 100) * wbc).toFixed(2) : '',
+      monocytesAbs: (wbc && newValues.monocytes && !isNaN(wbc) && !isNaN(parseFloat(newValues.monocytes))) ? 
+        ((parseFloat(newValues.monocytes) / 100) * wbc).toFixed(2) : '',
+      basophilsAbs: (wbc && newValues.basophils && !isNaN(wbc) && !isNaN(parseFloat(newValues.basophils))) ? 
+        ((parseFloat(newValues.basophils) / 100) * wbc).toFixed(2) : '',
+    }
+    
+    onValuesChange(updatedValues)
   }
-  
-  // Pass calculated values to parent, but don't store them in local state
-  onValuesChange(updatedValues)
-}
 
-  // Calculate derived values for display
   const calculateDerivedValues = () => {
     const hb = parseFloat(values.hemoglobin)
     const rbc = parseFloat(values.rbc)
@@ -95,25 +93,24 @@ const updateValue = (field: keyof FBCValues, value: string) => {
     const wbc = parseFloat(values.wbc)
 
     return {
-  mcv: (pcv && rbc && !isNaN(pcv) && !isNaN(rbc) && rbc !== 0) ? ((pcv / rbc) * 10).toFixed(1) : '',
-  mch: (hb && rbc && !isNaN(hb) && !isNaN(rbc) && rbc !== 0) ? ((hb / rbc) * 10).toFixed(1) : '',
-  mchc: (hb && pcv && !isNaN(hb) && !isNaN(pcv) && pcv !== 0) ? ((hb / pcv) * 100).toFixed(1) : '',
-  neutrophilsAbs: (wbc && values.neutrophils && !isNaN(wbc) && !isNaN(parseFloat(values.neutrophils))) ? 
-    ((parseFloat(values.neutrophils) / 100) * wbc).toFixed(2) : '',
-  lymphocytesAbs: (wbc && values.lymphocytes && !isNaN(wbc) && !isNaN(parseFloat(values.lymphocytes))) ? 
-    ((parseFloat(values.lymphocytes) / 100) * wbc).toFixed(2) : '',
-  eosinophilsAbs: (wbc && values.eosinophils && !isNaN(wbc) && !isNaN(parseFloat(values.eosinophils))) ? 
-    ((parseFloat(values.eosinophils) / 100) * wbc).toFixed(2) : '',
-  monocytesAbs: (wbc && values.monocytes && !isNaN(wbc) && !isNaN(parseFloat(values.monocytes))) ? 
-    ((parseFloat(values.monocytes) / 100) * wbc).toFixed(2) : '',
-  basophilsAbs: (wbc && values.basophils && !isNaN(wbc) && !isNaN(parseFloat(values.basophils))) ? 
-    ((parseFloat(values.basophils) / 100) * wbc).toFixed(2) : '',
-}
+      mcv: (pcv && rbc && !isNaN(pcv) && !isNaN(rbc) && rbc !== 0) ? ((pcv / rbc) * 10).toFixed(1) : '',
+      mch: (hb && rbc && !isNaN(hb) && !isNaN(rbc) && rbc !== 0) ? ((hb / rbc) * 10).toFixed(1) : '',
+      mchc: (hb && pcv && !isNaN(hb) && !isNaN(pcv) && pcv !== 0) ? ((hb / pcv) * 100).toFixed(1) : '',
+      neutrophilsAbs: (wbc && values.neutrophils && !isNaN(wbc) && !isNaN(parseFloat(values.neutrophils))) ? 
+        ((parseFloat(values.neutrophils) / 100) * wbc).toFixed(2) : '',
+      lymphocytesAbs: (wbc && values.lymphocytes && !isNaN(wbc) && !isNaN(parseFloat(values.lymphocytes))) ? 
+        ((parseFloat(values.lymphocytes) / 100) * wbc).toFixed(2) : '',
+      eosinophilsAbs: (wbc && values.eosinophils && !isNaN(wbc) && !isNaN(parseFloat(values.eosinophils))) ? 
+        ((parseFloat(values.eosinophils) / 100) * wbc).toFixed(2) : '',
+      monocytesAbs: (wbc && values.monocytes && !isNaN(wbc) && !isNaN(parseFloat(values.monocytes))) ? 
+        ((parseFloat(values.monocytes) / 100) * wbc).toFixed(2) : '',
+      basophilsAbs: (wbc && values.basophils && !isNaN(wbc) && !isNaN(parseFloat(values.basophils))) ? 
+        ((parseFloat(values.basophils) / 100) * wbc).toFixed(2) : '',
+    }
   }
 
   const derivedValues = calculateDerivedValues()
 
-  // Calculate total percentage for differential count
   const totalPercentage = 
     (parseFloat(values.neutrophils) || 0) +
     (parseFloat(values.lymphocytes) || 0) +
@@ -131,7 +128,7 @@ const updateValue = (field: keyof FBCValues, value: string) => {
           Full Blood Count
         </CardTitle>
         <CardDescription>
-          Enter values below. MCV, MCH, MCHC and absolute counts will be calculated automatically.
+          Enter values below. Values outside normal range will be highlighted in red.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -148,8 +145,14 @@ const updateValue = (field: keyof FBCValues, value: string) => {
                 value={values.hemoglobin}
                 onChange={(e) => updateValue("hemoglobin", e.target.value)}
                 placeholder="12.2"
+                className={values.hemoglobin ? getValueIndicatorClass(values.hemoglobin, "11.0-16.5") : ""}
               />
-              <div className="text-xs text-muted-foreground">g/dL (11.0 - 16.5)</div>
+              <div className="text-xs text-muted-foreground">
+                g/dL (11.0 - 16.5)
+                {values.hemoglobin && isValueInRange(values.hemoglobin, "11.0-16.5") === false && (
+                  <span className="text-red-600 ml-2">⚠ Out of range</span>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -161,8 +164,14 @@ const updateValue = (field: keyof FBCValues, value: string) => {
                 value={values.rbc}
                 onChange={(e) => updateValue("rbc", e.target.value)}
                 placeholder="3.82"
+                className={values.rbc ? getValueIndicatorClass(values.rbc, "3.5-6.2") : ""}
               />
-              <div className="text-xs text-muted-foreground">x10⁶/μL (3.5 - 6.2)</div>
+              <div className="text-xs text-muted-foreground">
+                x10⁶/μL (3.5 - 6.2)
+                {values.rbc && isValueInRange(values.rbc, "3.5-6.2") === false && (
+                  <span className="text-red-600 ml-2">⚠ Out of range</span>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -174,8 +183,14 @@ const updateValue = (field: keyof FBCValues, value: string) => {
                 value={values.pcv}
                 onChange={(e) => updateValue("pcv", e.target.value)}
                 placeholder="36.7"
+                className={values.pcv ? getValueIndicatorClass(values.pcv, "36.0-54.0") : ""}
               />
-              <div className="text-xs text-muted-foreground">% (36.0 - 54.0)</div>
+              <div className="text-xs text-muted-foreground">
+                % (36.0 - 54.0)
+                {values.pcv && isValueInRange(values.pcv, "36.0-54.0") === false && (
+                  <span className="text-red-600 ml-2">⚠ Out of range</span>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -186,10 +201,15 @@ const updateValue = (field: keyof FBCValues, value: string) => {
                 step="0.1"
                 value={derivedValues.mcv}
                 placeholder="Auto-calculated"
-                className="bg-muted"
+                className={`bg-muted ${derivedValues.mcv ? getValueIndicatorClass(derivedValues.mcv, "80.0-100.0") : ""}`}
                 readOnly
               />
-              <div className="text-xs text-muted-foreground">fL (80.0 - 100.0) - PCV/RBC</div>
+              <div className="text-xs text-muted-foreground">
+                fL (80.0 - 100.0) - PCV/RBC
+                {derivedValues.mcv && isValueInRange(derivedValues.mcv, "80.0-100.0") === false && (
+                  <span className="text-red-600 ml-2">⚠ Out of range</span>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -200,10 +220,15 @@ const updateValue = (field: keyof FBCValues, value: string) => {
                 step="0.1"
                 value={derivedValues.mch}
                 placeholder="Auto-calculated"
-                className="bg-muted"
+                className={`bg-muted ${derivedValues.mch ? getValueIndicatorClass(derivedValues.mch, "27.0-34.0") : ""}`}
                 readOnly
               />
-              <div className="text-xs text-muted-foreground">pg (27.0 - 34.0) - Hb/RBC</div>
+              <div className="text-xs text-muted-foreground">
+                pg (27.0 - 34.0) - Hb/RBC
+                {derivedValues.mch && isValueInRange(derivedValues.mch, "27.0-34.0") === false && (
+                  <span className="text-red-600 ml-2">⚠ Out of range</span>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -214,10 +239,15 @@ const updateValue = (field: keyof FBCValues, value: string) => {
                 step="0.1"
                 value={derivedValues.mchc}
                 placeholder="Auto-calculated"
-                className="bg-muted"
+                className={`bg-muted ${derivedValues.mchc ? getValueIndicatorClass(derivedValues.mchc, "32.0-36.0") : ""}`}
                 readOnly
               />
-              <div className="text-xs text-muted-foreground">g/dL (32.0 - 36.0) - Hb/PCV</div>
+              <div className="text-xs text-muted-foreground">
+                g/dL (32.0 - 36.0) - Hb/PCV
+                {derivedValues.mchc && isValueInRange(derivedValues.mchc, "32.0-36.0") === false && (
+                  <span className="text-red-600 ml-2">⚠ Out of range</span>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -229,8 +259,14 @@ const updateValue = (field: keyof FBCValues, value: string) => {
                 value={values.rdwCv}
                 onChange={(e) => updateValue("rdwCv", e.target.value)}
                 placeholder="14.5"
+                className={values.rdwCv ? getValueIndicatorClass(values.rdwCv, "11.0-16.0") : ""}
               />
-              <div className="text-xs text-muted-foreground">% (11.0 - 16.0)</div>
+              <div className="text-xs text-muted-foreground">
+                % (11.0 - 16.0)
+                {values.rdwCv && isValueInRange(values.rdwCv, "11.0-16.0") === false && (
+                  <span className="text-red-600 ml-2">⚠ Out of range</span>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -241,8 +277,14 @@ const updateValue = (field: keyof FBCValues, value: string) => {
                 value={values.platelets}
                 onChange={(e) => updateValue("platelets", e.target.value)}
                 placeholder="306"
+                className={values.platelets ? getValueIndicatorClass(values.platelets, "150-450") : ""}
               />
-              <div className="text-xs text-muted-foreground">x10³/μL (150 - 450)</div>
+              <div className="text-xs text-muted-foreground">
+                x10³/μL (150 - 450)
+                {values.platelets && isValueInRange(values.platelets, "150-450") === false && (
+                  <span className="text-red-600 ml-2">⚠ Out of range</span>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -254,8 +296,14 @@ const updateValue = (field: keyof FBCValues, value: string) => {
                 value={values.wbc}
                 onChange={(e) => updateValue("wbc", e.target.value)}
                 placeholder="5.9"
+                className={values.wbc ? getValueIndicatorClass(values.wbc, "4.0-10.0") : ""}
               />
-              <div className="text-xs text-muted-foreground">x10³/μL (4.0 - 10.0)</div>
+              <div className="text-xs text-muted-foreground">
+                x10³/μL (4.0 - 10.0)
+                {values.wbc && isValueInRange(values.wbc, "4.0-10.0") === false && (
+                  <span className="text-red-600 ml-2">⚠ Out of range</span>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -280,8 +328,14 @@ const updateValue = (field: keyof FBCValues, value: string) => {
                 value={values.neutrophils}
                 onChange={(e) => updateValue("neutrophils", e.target.value)}
                 placeholder="%"
+                className={values.neutrophils ? getValueIndicatorClass(values.neutrophils, "40.0-70.0") : ""}
               />
-              <div className="text-xs text-muted-foreground">% (40.0 - 70.0)</div>
+              <div className="text-xs text-muted-foreground">
+                % (40.0 - 70.0)
+                {values.neutrophils && isValueInRange(values.neutrophils, "40.0-70.0") === false && (
+                  <span className="text-red-600 ml-2">⚠</span>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -293,8 +347,14 @@ const updateValue = (field: keyof FBCValues, value: string) => {
                 value={values.lymphocytes}
                 onChange={(e) => updateValue("lymphocytes", e.target.value)}
                 placeholder="%"
+                className={values.lymphocytes ? getValueIndicatorClass(values.lymphocytes, "20.0-40.0") : ""}
               />
-              <div className="text-xs text-muted-foreground">% (20.0 - 40.0)</div>
+              <div className="text-xs text-muted-foreground">
+                % (20.0 - 40.0)
+                {values.lymphocytes && isValueInRange(values.lymphocytes, "20.0-40.0") === false && (
+                  <span className="text-red-600 ml-2">⚠</span>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -306,8 +366,14 @@ const updateValue = (field: keyof FBCValues, value: string) => {
                 value={values.eosinophils}
                 onChange={(e) => updateValue("eosinophils", e.target.value)}
                 placeholder="%"
+                className={values.eosinophils ? getValueIndicatorClass(values.eosinophils, "1.0-5.0") : ""}
               />
-              <div className="text-xs text-muted-foreground">% (1.0 - 4.0)</div>
+              <div className="text-xs text-muted-foreground">
+                % (1.0 - 5.0)
+                {values.eosinophils && isValueInRange(values.eosinophils, "1.0-5.0") === false && (
+                  <span className="text-red-600 ml-2">⚠</span>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -319,8 +385,14 @@ const updateValue = (field: keyof FBCValues, value: string) => {
                 value={values.monocytes}
                 onChange={(e) => updateValue("monocytes", e.target.value)}
                 placeholder="%"
+                className={values.monocytes ? getValueIndicatorClass(values.monocytes, "3.0-12.0") : ""}
               />
-              <div className="text-xs text-muted-foreground">% (3.0 - 12.0)</div>
+              <div className="text-xs text-muted-foreground">
+                % (3.0 - 12.0)
+                {values.monocytes && isValueInRange(values.monocytes, "3.0-12.0") === false && (
+                  <span className="text-red-600 ml-2">⚠</span>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -332,8 +404,14 @@ const updateValue = (field: keyof FBCValues, value: string) => {
                 value={values.basophils}
                 onChange={(e) => updateValue("basophils", e.target.value)}
                 placeholder="%"
+                className={values.basophils ? getValueIndicatorClass(values.basophils, "0-1") : ""}
               />
-              <div className="text-xs text-muted-foreground">% (0-1)</div>
+              <div className="text-xs text-muted-foreground">
+                % (0-1)
+                {values.basophils && isValueInRange(values.basophils, "0-1") === false && (
+                  <span className="text-red-600 ml-2">⚠</span>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -352,10 +430,15 @@ const updateValue = (field: keyof FBCValues, value: string) => {
                 step="0.01"
                 value={derivedValues.neutrophilsAbs}
                 placeholder="Auto-calculated"
-                className="bg-muted"
+                className={`bg-muted ${derivedValues.neutrophilsAbs ? getValueIndicatorClass(derivedValues.neutrophilsAbs, "2.0-7.5") : ""}`}
                 readOnly
               />
-              <div className="text-xs text-muted-foreground">x10³/μL (2.0-7.5)</div>
+              <div className="text-xs text-muted-foreground">
+                x10³/μL (2.0-7.5)
+                {derivedValues.neutrophilsAbs && isValueInRange(derivedValues.neutrophilsAbs, "2.0-7.5") === false && (
+                  <span className="text-red-600 ml-2">⚠</span>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -366,10 +449,15 @@ const updateValue = (field: keyof FBCValues, value: string) => {
                 step="0.01"
                 value={derivedValues.lymphocytesAbs}
                 placeholder="Auto-calculated"
-                className="bg-muted"
+                className={`bg-muted ${derivedValues.lymphocytesAbs ? getValueIndicatorClass(derivedValues.lymphocytesAbs, "1.0-4.0") : ""}`}
                 readOnly
               />
-              <div className="text-xs text-muted-foreground">x10³/μL (1.0-4.0)</div>
+              <div className="text-xs text-muted-foreground">
+                x10³/μL (1.0-4.0)
+                {derivedValues.lymphocytesAbs && isValueInRange(derivedValues.lymphocytesAbs, "1.0-4.0") === false && (
+                  <span className="text-red-600 ml-2">⚠</span>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -380,10 +468,15 @@ const updateValue = (field: keyof FBCValues, value: string) => {
                 step="0.01"
                 value={derivedValues.eosinophilsAbs}
                 placeholder="Auto-calculated"
-                className="bg-muted"
+                className={`bg-muted ${derivedValues.eosinophilsAbs ? getValueIndicatorClass(derivedValues.eosinophilsAbs, "0.05-0.50") : ""}`}
                 readOnly
               />
-              <div className="text-xs text-muted-foreground">x10³/μL (0.05-0.50)</div>
+              <div className="text-xs text-muted-foreground">
+                x10³/μL (0.05-0.50)
+                {derivedValues.eosinophilsAbs && isValueInRange(derivedValues.eosinophilsAbs, "0.05-0.50") === false && (
+                  <span className="text-red-600 ml-2">⚠</span>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -394,10 +487,15 @@ const updateValue = (field: keyof FBCValues, value: string) => {
                 step="0.01"
                 value={derivedValues.monocytesAbs}
                 placeholder="Auto-calculated"
-                className="bg-muted"
+                className={`bg-muted ${derivedValues.monocytesAbs ? getValueIndicatorClass(derivedValues.monocytesAbs, "0.20-1.00") : ""}`}
                 readOnly
               />
-              <div className="text-xs text-muted-foreground">x10³/μL (0.20-1.00)</div>
+              <div className="text-xs text-muted-foreground">
+                x10³/μL (0.20-1.00)
+                {derivedValues.monocytesAbs && isValueInRange(derivedValues.monocytesAbs, "0.20-1.00") === false && (
+                  <span className="text-red-600 ml-2">⚠</span>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -408,10 +506,15 @@ const updateValue = (field: keyof FBCValues, value: string) => {
                 step="0.01"
                 value={derivedValues.basophilsAbs}
                 placeholder="Auto-calculated"
-                className="bg-muted"
+                className={`bg-muted ${derivedValues.basophilsAbs ? getValueIndicatorClass(derivedValues.basophilsAbs, "0.00-0.20") : ""}`}
                 readOnly
               />
-              <div className="text-xs text-muted-foreground">x10³/μL (0.00-0.20)</div>
+              <div className="text-xs text-muted-foreground">
+                x10³/μL (0.00-0.20)
+                {derivedValues.basophilsAbs && isValueInRange(derivedValues.basophilsAbs, "0.00-0.20") === false && (
+                  <span className="text-red-600 ml-2">⚠</span>
+                )}
+              </div>
             </div>
           </div>
         </div>
