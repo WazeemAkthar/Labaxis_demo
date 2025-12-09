@@ -31,6 +31,7 @@ export default function ReportDetailsPage() {
   const [testConfigs, setTestConfigs] = useState<
     Record<string, TestCatalogItem>
   >({});
+  const [isBoldValues, setIsBoldValues] = useState(false);
 
   useEffect(() => {
     if (authLoading) return;
@@ -228,7 +229,11 @@ export default function ReportDetailsPage() {
                     <td className="py-0 font-mono border-b border-gray-200">
                       {displayName}
                     </td>
-                    <td className="text-right py-0 font-mono border-b border-gray-200">
+                    <td
+                      className={`text-right py-0 font-mono border-b border-gray-200 ${
+                        isBoldValues ? "font-bold" : ""
+                      }`}
+                    >
                       {result.value}
                     </td>
                     <td className="text-right py-0 font-mono border-b border-gray-200">
@@ -432,7 +437,11 @@ export default function ReportDetailsPage() {
                     style={{ fontFamily: "'Courier New', Courier, monospace" }}
                   >
                     <td className="py-0 font-mono">{result.testName}</td>
-                    <td className="text-right py-0 font-mono">
+                    <td
+                      className={`text-right py-0 font-mono ${
+                        isBoldValues ? "font-bold" : ""
+                      }`}
+                    >
                       {result.value}
                     </td>
                     <td className="text-right py-0 font-mono">{result.unit}</td>
@@ -533,7 +542,13 @@ export default function ReportDetailsPage() {
               {results.map((result, index) => (
                 <tr key={index} className="border-0 font-mono p-0 table-row">
                   <td className="py-0 font-mono">{result.testName}</td>
-                  <td className="text-right py-0 font-mono">{result.value}</td>
+                  <td
+                    className={`text-right py-0 font-mono ${
+                      isBoldValues ? "font-bold" : ""
+                    }`}
+                  >
+                    {result.value}
+                  </td>
                   <td className="text-right py-0 font-mono">{result.unit}</td>
                 </tr>
               ))}
@@ -605,7 +620,7 @@ export default function ReportDetailsPage() {
       isWIDAL ||
       isUACR ||
       isLIPID ||
-      isHCG_SERUM ;
+      isHCG_SERUM;
     const hideunits =
       isHIV ||
       isHCG ||
@@ -647,7 +662,7 @@ export default function ReportDetailsPage() {
                       <span className="">{displayName}</span>
                     </div>
                   </td>
-                  <td className="p-1">
+                  <td className={`p-1 ${isBoldValues ? "font-bold" : ""}`}>
                     <div className="">
                       {isVDRL ||
                       isHIV ||
@@ -658,7 +673,6 @@ export default function ReportDetailsPage() {
                       isUKB ||
                       isDNS1 ||
                       isWIDAL ? (
-                        // For VDRL, show only the comments (Reactive/Non-Reactive)
                         <span className="font-semibold">{result.comments}</span>
                       ) : (
                         <>
@@ -980,6 +994,16 @@ export default function ReportDetailsPage() {
             font-weight: bold !important;
           }
 
+          ${isBoldValues
+            ? `
+  td:nth-child(2),
+  td:nth-child(2) div,
+  td:nth-child(2) span {
+    font-weight: bold !important;
+  }
+`
+            : ""}
+
           hr,
           .border-t,
           .border-b {
@@ -1035,7 +1059,7 @@ export default function ReportDetailsPage() {
           .font-bold,
           .font-semibold,
           .font-medium {
-            font-weight: 500 !important;
+            font-weight: 800 !important;
           }
         }
       `}</style>
@@ -1053,6 +1077,13 @@ export default function ReportDetailsPage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              variant={isBoldValues ? "default" : "outline"}
+              onClick={() => setIsBoldValues(!isBoldValues)}
+            >
+              <span className="h-4 w-4 mr-2 font-bold">B</span>
+              {isBoldValues ? "Bold On" : "Bold Off"}
+            </Button>
             <Button variant="outline" onClick={handlePrint}>
               <Print className="h-4 w-4 mr-2" />
               Print
@@ -1061,10 +1092,6 @@ export default function ReportDetailsPage() {
               <Download className="h-4 w-4 mr-2" />
               Download PDF
             </Button>
-            {/* <Button variant="outline">
-              <Edit className="h-4 w-4 mr-2" />
-              Edit
-            </Button> */}
           </div>
         </div>
 
