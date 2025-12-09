@@ -1,10 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { TestTube, Plus, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -61,6 +73,15 @@ export function BSSReportCard({ onValuesChange }: BSSReportCardProps) {
     return hourType === "After 1 Hour" ? "< 160 mg/dL" : "< 140 mg/dL";
   };
 
+  const getValueColorClass = (value: string, hourType: string) => {
+    if (!value) return "";
+    const numValue = parseFloat(value);
+    const threshold = hourType === "After 1 Hour" ? 160 : 140;
+    return numValue < threshold
+      ? "border-green-500 bg-green-50 dark:bg-green-950"
+      : "border-red-500 bg-red-50 dark:bg-red-950";
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -94,13 +115,17 @@ export function BSSReportCard({ onValuesChange }: BSSReportCardProps) {
                 <Label htmlFor={`bss-meal-${entry.id}`}>Meal Type</Label>
                 <Select
                   value={entry.mealType}
-                  onValueChange={(value) => handleChange(entry.id, "mealType", value)}
+                  onValueChange={(value) =>
+                    handleChange(entry.id, "mealType", value)
+                  }
                 >
                   <SelectTrigger id={`bss-meal-${entry.id}`}>
                     <SelectValue placeholder="Select meal" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Post Breakfast">Post Breakfast</SelectItem>
+                    <SelectItem value="Post Breakfast">
+                      Post Breakfast
+                    </SelectItem>
                     <SelectItem value="Post Lunch">Post Lunch</SelectItem>
                     <SelectItem value="Post Dinner">Post Dinner</SelectItem>
                   </SelectContent>
@@ -111,7 +136,9 @@ export function BSSReportCard({ onValuesChange }: BSSReportCardProps) {
                 <Label htmlFor={`bss-hour-${entry.id}`}>Time After Meal</Label>
                 <Select
                   value={entry.hourType}
-                  onValueChange={(value) => handleChange(entry.id, "hourType", value)}
+                  onValueChange={(value) =>
+                    handleChange(entry.id, "hourType", value)
+                  }
                 >
                   <SelectTrigger id={`bss-hour-${entry.id}`}>
                     <SelectValue placeholder="Select time" />
@@ -124,13 +151,18 @@ export function BSSReportCard({ onValuesChange }: BSSReportCardProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor={`bss-value-${entry.id}`}>Blood Sugar (mg/dL)</Label>
+                <Label htmlFor={`bss-value-${entry.id}`}>
+                  Blood Sugar (mg/dL)
+                </Label>
                 <Input
                   id={`bss-value-${entry.id}`}
                   type="number"
                   value={entry.value}
-                  onChange={(e) => handleChange(entry.id, "value", e.target.value)}
+                  onChange={(e) =>
+                    handleChange(entry.id, "value", e.target.value)
+                  }
                   placeholder="Enter value"
+                  className={getValueColorClass(entry.value, entry.hourType)}
                 />
               </div>
             </div>

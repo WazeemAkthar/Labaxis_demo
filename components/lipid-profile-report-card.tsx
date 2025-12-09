@@ -27,6 +27,13 @@ export function LipidProfileReportCard({
     ldl: "",
   });
 
+  const getColorClass = (value: number, min: number, max: number) => {
+    if (!value) return "";
+    return value >= min && value <= max
+      ? "border-green-500 bg-green-50 dark:bg-green-950"
+      : "border-red-500 bg-red-50 dark:bg-red-950";
+  };
+
   const updateValue = (field: string, value: string) => {
     const newValues = { ...values, [field]: value };
     setValues(newValues);
@@ -130,6 +137,7 @@ export function LipidProfileReportCard({
                   updateValue("totalCholesterol", e.target.value)
                 }
                 placeholder="180"
+                className={getColorClass(total, 125, 200)}
               />
               <div className="text-xs text-muted-foreground">
                 mg/dL (125-200)
@@ -145,6 +153,7 @@ export function LipidProfileReportCard({
                 value={values.hdl}
                 onChange={(e) => updateValue("hdl", e.target.value)}
                 placeholder="55"
+                className={getColorClass(hdl, 35, 80)}
               />
               <div className="text-xs text-muted-foreground">mg/dL (35-80)</div>
             </div>
@@ -158,6 +167,7 @@ export function LipidProfileReportCard({
                 value={values.triglycerides}
                 onChange={(e) => updateValue("triglycerides", e.target.value)}
                 placeholder="172"
+                className={getColorClass(tg, 25, 200)}
               />
               <div className="text-xs text-muted-foreground">
                 mg/dL (25-200)
@@ -181,7 +191,9 @@ export function LipidProfileReportCard({
                 type="text"
                 value={vldl}
                 placeholder="Auto-calculated"
-                className="bg-muted"
+                className={`bg-muted ${
+                  vldl ? getColorClass(parseFloat(vldl), 5, 40) : ""
+                }`}
                 readOnly
               />
               <div className="text-xs text-muted-foreground">mg/dL (5-40)</div>
@@ -205,7 +217,9 @@ export function LipidProfileReportCard({
                   tg >= 400 ? updateValue("ldl", e.target.value) : null
                 }
                 placeholder={tg >= 400 ? "Enter LDL value" : "Auto-calculated"}
-                className={tg >= 400 ? "" : "bg-muted"}
+                className={`${tg >= 400 ? "" : "bg-muted"} ${
+                  ldl ? getColorClass(parseFloat(ldl), 85, 130) : ""
+                }`}
                 readOnly={tg < 400}
               />
               <div className="text-xs text-muted-foreground">
@@ -220,7 +234,13 @@ export function LipidProfileReportCard({
                 type="text"
                 value={nonHdl}
                 placeholder="Auto-calculated"
-                className="bg-muted"
+                className={`bg-muted ${
+                  nonHdl
+                    ? parseFloat(nonHdl) < 130
+                      ? "border-green-500 bg-green-50 dark:bg-green-950"
+                      : "border-red-500 bg-red-50 dark:bg-red-950"
+                    : ""
+                }`}
                 readOnly
               />
               <div className="text-xs text-muted-foreground">
@@ -245,7 +265,11 @@ export function LipidProfileReportCard({
                 type="text"
                 value={ldlHdlRatio}
                 placeholder="Auto-calculated"
-                className="bg-muted"
+                className={`bg-muted ${
+                  ldlHdlRatio
+                    ? getColorClass(parseFloat(ldlHdlRatio), 1.5, 3.5)
+                    : ""
+                }`}
                 readOnly
               />
               <div className="text-xs text-muted-foreground">
@@ -260,7 +284,11 @@ export function LipidProfileReportCard({
                 type="text"
                 value={tcHdlRatio}
                 placeholder="Auto-calculated"
-                className="bg-muted"
+                className={`bg-muted ${
+                  tcHdlRatio
+                    ? getColorClass(parseFloat(tcHdlRatio), 3.5, 5.0)
+                    : ""
+                }`}
                 readOnly
               />
               <div className="text-xs text-muted-foreground">
@@ -275,7 +303,13 @@ export function LipidProfileReportCard({
                 type="text"
                 value={tgHdlRatio}
                 placeholder="Auto-calculated"
-                className="bg-muted"
+                className={`bg-muted ${
+                  tgHdlRatio
+                    ? parseFloat(tgHdlRatio) < 4.0
+                      ? "border-green-500 bg-green-50 dark:bg-green-950"
+                      : "border-red-500 bg-red-50 dark:bg-red-950"
+                    : ""
+                }`}
                 readOnly
               />
               <div className="text-xs text-muted-foreground">
