@@ -6,9 +6,9 @@ import { AuthProvider } from '@/components/auth-provider'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Azza Medical Laboratory Services',
+  title: 'LabReportHub - Medical Laboratory Services',
   description: 'Unique Place for all Diagnostic needs - Laboratory Information Management System',
-  generator: 'Azza Medical Laboratory Services',
+  generator: 'LabReportHub',
 }
 
 export default function RootLayout({

@@ -216,11 +216,11 @@ export default function InvoiceDetailsPage() {
           <CardHeader className="pb-6">
             <div className="flex items-start justify-between">
               <div>
-                <CardTitle className="text-2xl mb-2">Azza Medical Laboratory Services</CardTitle>
+                <CardTitle className="text-2xl mb-2">LabReportHub Medical Laboratory Services</CardTitle>
                 <div className="text-sm text-muted-foreground space-y-1">
                   <div>Unique Place for all Diagnostic needs</div>
-                  <div>Phone: 0752537178, 0776452417, 0753274455</div>
-                  <div>Email: azzaarafath@gmail.com</div>
+                  {/* <div>Phone: 0752537178, 0776452417, 0753274455</div> */}
+                  <div>Email: LabReportHub@gmail.com</div>
                 </div>
               </div>
               <div className="text-right">
@@ -310,8 +310,8 @@ export default function InvoiceDetailsPage() {
 
             {/* Footer */}
             <div className="pt-6 border-t text-center text-sm text-muted-foreground">
-              <p>Thank you for choosing Azza Medical Laboratory Services for your healthcare needs.</p>
-              <p className="mt-2">For questions about this invoice, please contact us at info@lablite.com</p>
+              <p>Thank you for choosing LabReportHub Medical Laboratory Services for your healthcare needs.</p>
+              <p className="mt-2">For questions about this invoice, please contact us at info@LabReportHub.com</p>
             </div>
           </CardContent>
         </Card>

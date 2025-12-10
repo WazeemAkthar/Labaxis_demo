@@ -1,5 +1,5 @@
 {
-  "name": "azza-lab-reports-system",
+  "name": "labreporthub",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -70,12 +70,12 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.9",
-    "@types/node": "^22",
-    "@types/react": "^19",
+    "@types/node": "22.19.2",
+    "@types/react": "19.2.7",
     "@types/react-dom": "^19",
     "postcss": "^8.5",
     "tailwindcss": "^4.1.9",
     "tw-animate-css": "1.3.3",
-    "typescript": "^5"
+    "typescript": "5.9.3"
   }
 }

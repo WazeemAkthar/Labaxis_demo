@@ -59,7 +59,7 @@ export default function DashboardPage() {
 
   if (loading || authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50/30 via-emerald-50/30 to-cyan-50/30">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-teal-50/30 via-emerald-50/30 to-cyan-50/30">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
       </div>
     )
@@ -67,13 +67,13 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-teal-600 to-emerald-600 rounded-xl p-6 text-white shadow-lg">
+      <div className="bg-linear-to-r from-teal-600 to-emerald-600 rounded-xl p-6 text-white shadow-lg">
         <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-teal-50">Welcome to Azza Medical Laboratory Services</p>
+        <p className="text-teal-50">Welcome to LabReportHub Medical Laboratory Services</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="border-teal-100 shadow-md hover:shadow-lg transition-shadow bg-gradient-to-br from-white to-teal-50/30">
+        <Card className="border-teal-100 shadow-md hover:shadow-lg transition-shadow bg-linear-to-br from-white to-teal-50/30">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-700">Total Patients</CardTitle>
             <div className="bg-teal-100 p-2 rounded-lg">

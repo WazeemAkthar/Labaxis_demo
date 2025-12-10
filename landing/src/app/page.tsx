@@ -25,7 +25,7 @@ export default function Home() {
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3 animate-pulse">
                 <div className="w-4 h-4 bg-white rounded-full"></div>
               </div>
-              <span className="text-xl font-bold text-gray-900">Azza Medical Services</span>
+              <span className="text-xl font-bold text-gray-900">LabReportHub Medical Services</span>
             </div>
             
             <nav className={`hidden md:flex space-x-8 transform transition-all duration-700 delay-200 ${isVisible ? 'translate-y-0 opacity-100' : '-translate-y-5 opacity-0'}`}>
@@ -112,7 +112,7 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 animate-fade-in-up">
-              Why Choose Azza Medical Services?
+              Why Choose LabReportHub Medical Services?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
               Leading medical center providing comprehensive healthcare services 
@@ -309,7 +309,7 @@ export default function Home() {
               <div className="space-y-6">
                 {[
                   { Icon: Phone, title: "Phone", info: "+1 (555) 123-4567", delay: "0.1s" },
-                  { Icon: Mail, title: "Email", info: "info@azzamedical.com", delay: "0.2s" },
+                  { Icon: Mail, title: "Email", info: "LabReportHub.com", delay: "0.2s" },
                   { Icon: MapPin, title: "Location", info: "456 Healthcare Plaza\nMedical District, MD 54321", delay: "0.3s" },
                   { Icon: Clock, title: "Hours", info: "Mon-Fri: 7:00 AM - 6:00 PM\nSat: 8:00 AM - 2:00 PM\nSun: Emergency only", delay: "0.4s" }
                 ].map((contact, index) => {
@@ -404,7 +404,7 @@ export default function Home() {
                 <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3 animate-pulse">
                   <div className="w-4 h-4 bg-white rounded-full"></div>
                 </div>
-                <span className="text-xl font-bold">Azza Medical Services</span>
+                <span className="text-xl font-bold">LabReportHub Medical Services</span>
               </div>
               <p className="text-gray-400 mb-4">
                 Comprehensive medical services with compassionate care and advanced healthcare solutions.
@@ -424,7 +424,7 @@ export default function Home() {
             {[
               { title: "Services", links: ["Clinical Chemistry", "Hematology", "Microbiology", "Immunology"] },
               { title: "Quick Links", links: ["About Us", "Medical Services", "Patient Portal", "Careers"] },
-              { title: "Contact Info", links: ["+1 (555) 123-4567", "info@azzamedical.com", "456 Healthcare Plaza", "Medical District, MD 54321"] }
+              { title: "Contact Info", links: ["+1 (555) 123-4567", "info@LabReportHub.com", "456 Healthcare Plaza", "Medical District, MD 54321"] }
             ].map((section, sectionIndex) => (
               <div key={sectionIndex} className="animate-fade-in-up" style={{ animationDelay: `${0.2 * (sectionIndex + 1)}s` }}>
                 <h3 className="font-semibold mb-4">{section.title}</h3>
@@ -440,7 +440,7 @@ export default function Home() {
           </div>
           
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 animate-fade-in-up" style={{ animationDelay: '1s' }}>
-            <p>&copy; 2024 Azza Medical Services. All rights reserved. | Privacy Policy | Terms of Service</p>
+            <p>&copy; 2024 LabReportHub Medical Services. All rights reserved. | Privacy Policy | Terms of Service</p>
           </div>
         </div>
       </footer>
