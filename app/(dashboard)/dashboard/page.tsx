@@ -209,7 +209,7 @@ export default function DashboardPage() {
       {/* Statistics Cards */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 px-5">
         <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-10" style={{ background: '#0F3D5E', transform: 'translate(25%, -25%)' }}></div>
+          {/* <div className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-10" style={{ background: '#0F3D5E', transform: 'translate(25%, -25%)' }}></div> */}
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
             <CardTitle className="text-sm font-semibold" style={{ color: '#1F2933' }}>Total Patients</CardTitle>
             <div className="p-3 rounded-xl" style={{ backgroundColor: '#0F3D5E' }}>
@@ -226,7 +226,7 @@ export default function DashboardPage() {
         </Card>
 
         <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-10" style={{ background: '#1FB6B2', transform: 'translate(25%, -25%)' }}></div>
+          {/* <div className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-10" style={{ background: '#1FB6B2', transform: 'translate(25%, -25%)' }}></div> */}
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
             <CardTitle className="text-sm font-semibold" style={{ color: '#1F2933' }}>Total Invoices</CardTitle>
             <div className="p-3 rounded-xl" style={{ backgroundColor: '#1FB6B2' }}>
@@ -243,7 +243,7 @@ export default function DashboardPage() {
         </Card>
 
         <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-10" style={{ background: '#0F3D5E', transform: 'translate(25%, -25%)' }}></div>
+          {/* <div className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-10" style={{ background: '#0F3D5E', transform: 'translate(25%, -25%)' }}></div> */}
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
             <CardTitle className="text-sm font-semibold" style={{ color: '#1F2933' }}>Monthly Revenue</CardTitle>
             <div className="p-3 rounded-xl" style={{ backgroundColor: '#0F3D5E' }}>
@@ -260,7 +260,7 @@ export default function DashboardPage() {
         </Card>
 
         <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-10" style={{ background: '#1FB6B2', transform: 'translate(25%, -25%)' }}></div>
+          {/* <div className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-10" style={{ background: '#1FB6B2', transform: 'translate(25%, -25%)' }}></div> */}
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
             <CardTitle className="text-sm font-semibold" style={{ color: '#1F2933' }}>Tests Completed</CardTitle>
             <div className="p-3 rounded-xl" style={{ backgroundColor: '#1FB6B2' }}>
@@ -418,7 +418,7 @@ export default function DashboardPage() {
           <div className="grid gap-6 md:grid-cols-3">
             <Link href="/patients/new">
               <Card className="cursor-pointer border-0 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group overflow-hidden">
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: 'linear-gradient(135deg, rgba(15, 61, 94, 0.05) 0%, rgba(31, 182, 178, 0.05) 100%)' }}></div>
+                {/* <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: 'linear-gradient(135deg, rgba(15, 61, 94, 0.05) 0%, rgba(31, 182, 178, 0.05) 100%)' }}></div> */}
                 <CardContent className="p-6 text-center relative">
                   <div className="p-4 rounded-2xl w-fit mx-auto mb-4 group-hover:scale-110 transition-transform duration-300" style={{ background: 'linear-gradient(135deg, #0F3D5E 0%, #1FB6B2 100%)' }}>
                     <Users className="h-10 w-10 text-white" />
@@ -431,7 +431,7 @@ export default function DashboardPage() {
 
             <Link href="/invoices/new">
               <Card className="cursor-pointer border-0 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group overflow-hidden">
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: 'linear-gradient(135deg, rgba(15, 61, 94, 0.05) 0%, rgba(31, 182, 178, 0.05) 100%)' }}></div>
+                {/* <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: 'linear-gradient(135deg, rgba(15, 61, 94, 0.05) 0%, rgba(31, 182, 178, 0.05) 100%)' }}></div> */}
                 <CardContent className="p-6 text-center relative">
                   <div className="p-4 rounded-2xl w-fit mx-auto mb-4 group-hover:scale-110 transition-transform duration-300" style={{ background: 'linear-gradient(135deg, #1FB6B2 0%, #0F3D5E 100%)' }}>
                     <FileText className="h-10 w-10 text-white" />
@@ -444,7 +444,7 @@ export default function DashboardPage() {
 
             <Link href="/reports/new">
               <Card className="cursor-pointer border-0 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group overflow-hidden">
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: 'linear-gradient(135deg, rgba(15, 61, 94, 0.05) 0%, rgba(31, 182, 178, 0.05) 100%)' }}></div>
+                {/* <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: 'linear-gradient(135deg, rgba(15, 61, 94, 0.05) 0%, rgba(31, 182, 178, 0.05) 100%)' }}></div> */}
                 <CardContent className="p-6 text-center relative">
                   <div className="p-4 rounded-2xl w-fit mx-auto mb-4 group-hover:scale-110 transition-transform duration-300" style={{ background: 'linear-gradient(135deg, #0F3D5E 0%, #1FB6B2 100%)' }}>
                     <Activity className="h-10 w-10 text-white" />
