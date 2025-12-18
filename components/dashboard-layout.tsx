@@ -50,16 +50,16 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50/30 via-emerald-50/30 to-cyan-50/30">
+    <div className="min-h-screen bg-[#F5F7FA]">
       {/* Mobile sidebar */}
       <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
         <SheetTrigger asChild>
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden fixed top-4 left-4 z-40 bg-white shadow-md hover:bg-teal-50"
+            className="md:hidden fixed top-4 left-4 z-40 bg-white shadow-lg hover:bg-[#1FB6B2]/10 border border-[#1FB6B2]/20"
           >
-            <Menu className="h-6 w-6 text-teal-600" />
+            <Menu className="h-6 w-6 text-[#0F3D5E]" />
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="w-64 p-0">
@@ -82,7 +82,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
       {/* Main content */}
       <div className="md:pl-64 flex flex-col min-h-screen">
-        <main className="flex-1 p-4 md:p-8">{children}</main>
+        <main className="flex-1">{children}</main>
         <Footer />
       </div>
     </div>
@@ -99,32 +99,37 @@ function SidebarContent({
   onSignOut: () => void;
 }) {
   return (
-    <div className="flex flex-col h-full bg-gradient-to-b from-white to-teal-50/30 border-r border-teal-100 shadow-lg">
-      {/* Logo */}
-      <div className="flex items-center gap-3 p-6 border-b border-teal-100 bg-white/80 backdrop-blur-sm">
-        <div className="relative">
-          <div className="absolute inset-0 bg-teal-500 rounded-full blur-md opacity-20"></div>
-          <div className="relative bg-gradient-to-br from-teal-500 to-emerald-600 p-2 rounded-full">
-            <FlaskConical className="h-6 w-6 text-white" />
+    <div className="flex flex-col h-full bg-linear-to-b from-[#0F3D5E] to-[#0A2940] shadow-2xl">
+      {/* Logo Section */}
+      <div className="p-6 border-b border-[#1FB6B2]/20">
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            {/* Glow effect */}
+            <div className="absolute inset-0 bg-[#1FB6B2] rounded-xl blur-lg opacity-40 animate-pulse"></div>
+            {/* Icon container */}
+            <div className="relative bg-linear-to-br from-[#1FB6B2] to-[#17a39f] p-3 rounded-xl shadow-lg">
+              <FlaskConical className="h-7 w-7 text-white" strokeWidth={2.5} />
+            </div>
           </div>
-        </div>
-        <div>
-          <div className="text-xs font-semibold text-pink-500 tracking-wide">
-            LabAxis
+          <div>
+            <div className="text-xs font-bold text-[#1FB6B2] tracking-wider uppercase">
+              LabAxis
+            </div>
+            <h1 className="text-sm font-bold leading-tight text-white">
+              Medical Laboratory
+            </h1>
+            <p className="text-xs text-[#1FB6B2]/80 font-medium mt-0.5">
+              Unique Place for Diagnostics
+            </p>
           </div>
-          <h1 className="text-sm font-bold leading-tight bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
-            Medical Laboratory Services
-          </h1>
-          <p className="text-xs text-teal-600 font-medium">
-            Unique Place for all Diagnostic needs
-          </p>
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2">
+      <nav className="flex-1 py-4 space-y-1.5 overflow-y-auto">
         {navigation.map((item) => {
           const Icon = item.icon;
+          const isActive = pathname === item.href;
           const handleClick = (e: React.MouseEvent) => {
             e.preventDefault();
             router.push(item.href);
@@ -134,37 +139,50 @@ function SidebarContent({
               key={item.name}
               onClick={handleClick}
               className={cn(
-                "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all text-left",
-                pathname === item.href
-                  ? "bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md"
-                  : "text-slate-600 hover:text-teal-700 hover:bg-teal-50"
+                "w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold transition-all text-left relative overflow-hidden group hover:cursor-pointer",
+                isActive
+                  ? "bg-linear-to-r from-[#1FB6B2] to-[#17a39f] text-white shadow-lg shadow-[#1FB6B2]/30"
+                  : "text-white/70 hover:text-white hover:bg-white/10"
               )}
             >
-              <Icon className="h-4 w-4" />
-              {item.name}
+              {/* Hover effect background */}
+              {!isActive && (
+                <div className="absolute inset-0 bg-linear-to-r from-[#1FB6B2]/0 to-[#1FB6B2]/10 opacity-0 group-hover:opacity-100  transition-opacity"></div>
+              )}
+              
+              {/* Active indicator */}
+              {isActive && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white"></div>
+              )}
+              
+              <Icon className={cn("h-5 w-5 relative z-10", isActive ? "text-white" : "")} />
+              <span className="relative z-10">{item.name}</span>
             </button>
           );
         })}
       </nav>
 
       {/* Contact Info */}
-      <div className="p-4 border-t border-teal-100 space-y-2 bg-gradient-to-br from-teal-50/50 to-emerald-50/50">
-        <div className="text-xs text-slate-600">
-          <p className="font-semibold text-teal-700 mb-1">Contact Us</p>
-          <p className="text-slate-600">info@labaxis.com</p>
-          {/* <p className="text-slate-600">0752537178 | 0776452417</p>
-          <p className="text-slate-600">0753274455</p> */}
+      <div className="p-4 border-t border-[#1FB6B2]/20 bg-[#0A2940]/50">
+        <div className="bg-white/5 rounded-lg p-3 backdrop-blur-sm">
+          <p className="text-xs font-bold text-[#1FB6B2] mb-2">Contact Us</p>
+          <div className="space-y-1">
+            <p className="text-xs text-white/80 flex items-center gap-2">
+              <span className="w-1 h-1 bg-[#1FB6B2] rounded-full"></span>
+              info@labaxis.com
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Sign out */}
-      <div className="p-4 border-t border-teal-100 bg-white/80">
+      <div className="p-4 border-t border-[#1FB6B2]/20">
         <Button
           variant="ghost"
           onClick={onSignOut}
-          className="w-full justify-start gap-3 text-slate-600 hover:text-teal-700 hover:bg-teal-50 transition-all"
+          className="w-full justify-start gap-3 text-white/70 hover:text-white hover:bg-white/10 transition-all rounded-xl py-3 font-semibold"
         >
-          <LogOut className="h-4 w-4" />
+          <LogOut className="h-5 w-5" />
           Sign Out
         </Button>
       </div>

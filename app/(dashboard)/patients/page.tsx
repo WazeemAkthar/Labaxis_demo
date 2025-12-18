@@ -4,20 +4,27 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   Plus,
   Search,
   Filter,
-  Calendar,
-  User,
   Trash2,
-  Mail,
-  Phone,
-  Stethoscope,
-  FileText,
   Edit,
+  Eye,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
 } from "lucide-react";
 import { DataManager, type Patient } from "@/lib/data-manager";
 import { useAuth } from "@/components/auth-provider";
@@ -30,6 +37,10 @@ export default function PatientsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
 
   const handleDeletePatient = async (patientId: string) => {
     if (
@@ -44,7 +55,6 @@ export default function PatientsPage() {
       const dataManager = DataManager.getInstance();
       await dataManager.deletePatient(patientId);
 
-      // Update local state after successful deletion
       setPatients(patients.filter((patient) => patient.id !== patientId));
       setFilteredPatients(
         filteredPatients.filter((patient) => patient.id !== patientId)
@@ -85,7 +95,20 @@ export default function PatientsPage() {
         patient.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredPatients(filtered);
+    setCurrentPage(1); // Reset to first page when search changes
   }, [searchTerm, patients]);
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredPatients.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentPatients = filteredPatients.slice(startIndex, endIndex);
+
+  // Pagination handlers
+  const goToFirstPage = () => setCurrentPage(1);
+  const goToLastPage = () => setCurrentPage(totalPages);
+  const goToNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  const goToPreviousPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
 
   if (loading || authLoading) {
     return (
@@ -104,237 +127,243 @@ export default function PatientsPage() {
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-cyan-50 to-emerald-50">
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Header Section */}
-        <div className="flex items-center justify-between bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-teal-100">
+        <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
-              Patients
-            </h1>
+            <h1 className="text-3xl font-bold text-slate-800">Patients</h1>
             <p className="text-slate-600 mt-1">
               Manage patient records and information
             </p>
           </div>
-          <Button
-            asChild
-            className="bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 shadow-lg shadow-teal-200"
-          >
-            <Link href="/patients/new">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Patient
-            </Link>
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              className="border-teal-200 hover:bg-teal-50"
+            >
+              <Filter className="h-4 w-4 mr-2" />
+              Import Patients
+            </Button>
+            <Button
+              asChild
+              className="bg-teal-600 hover:bg-teal-700"
+            >
+              <Link href="/patients/new">
+                <Plus className="h-4 w-4 mr-2" />
+                Create Patient
+              </Link>
+            </Button>
+          </div>
         </div>
 
-        {/* Search and Filters */}
-        <Card className="border-teal-100 shadow-md bg-white/90 backdrop-blur-sm">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-teal-500" />
-                <Input
-                  placeholder="Search by ID, name, phone, or email..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-11 h-12 border-teal-200 focus:border-teal-500 focus:ring-teal-500"
-                />
+        {/* Search Bar */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
+          <Input
+            placeholder="Search"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 bg-white border-slate-200"
+          />
+        </div>
+
+        {/* Table Section */}
+        <Card className="border-slate-200 shadow-sm bg-white">
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-slate-50 hover:bg-slate-50">
+                  <TableHead className="font-semibold text-slate-700">PATIENT</TableHead>
+                  <TableHead className="font-semibold text-slate-700">NAME</TableHead>
+                  <TableHead className="font-semibold text-slate-700">CODE</TableHead>
+                  <TableHead className="font-semibold text-slate-700">GENDER</TableHead>
+                  <TableHead className="font-semibold text-slate-700">PHONE</TableHead>
+                  <TableHead className="font-semibold text-slate-700">EMAIL</TableHead>
+                  <TableHead className="font-semibold text-slate-700">DOCTOR</TableHead>
+                  <TableHead className="font-semibold text-slate-700">CREATED ON</TableHead>
+                  <TableHead className="font-semibold text-slate-700 text-right">ACTION</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {currentPatients.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={9} className="text-center py-12 text-slate-500">
+                      {searchTerm
+                        ? "No patients match your search criteria."
+                        : "No patients found. Get started by adding your first patient."}
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  currentPatients.map((patient) => (
+                    <TableRow key={patient.id}>
+                      <TableCell className="font-medium text-slate-700">
+                        {patient.id}
+                      </TableCell>
+                      <TableCell className="font-medium text-slate-900">
+                        {patient.firstName} {patient.lastName}
+                      </TableCell>
+                      <TableCell>
+                        <Badge 
+                          variant="outline" 
+                          className="bg-teal-50 text-teal-700 border-teal-200 font-normal"
+                        >
+                          {patient.id.substring(0, 8)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          className={`font-normal ${
+                            patient.gender === "Male"
+                              ? "bg-blue-50 text-blue-700 border-blue-200"
+                              : patient.gender === "Female"
+                              ? "bg-pink-50 text-pink-700 border-pink-200"
+                              : "bg-purple-50 text-purple-700 border-purple-200"
+                          }`}
+                          variant="outline"
+                        >
+                          {patient.gender}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-slate-600">{patient.phone}</TableCell>
+                      <TableCell className="text-slate-600">{patient.email}</TableCell>
+                      <TableCell className="text-slate-600">Dr. {patient.doctorName}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 font-normal">
+                          {new Date(patient.createdAt).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center justify-end gap-1">
+                          <Button
+                            asChild
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-teal-600 hover:text-teal-700 hover:bg-teal-50"
+                          >
+                            <Link href={`/patients/${patient.id}`}>
+                              <Eye className="h-4 w-4" />
+                            </Link>
+                          </Button>
+                          <Button
+                            asChild
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                          >
+                            <Link href={`/patients/${patient.id}/edit`}>
+                              <Edit className="h-4 w-4" />
+                            </Link>
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDeletePatient(patient.id)}
+                            className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        {/* Pagination and Summary */}
+        {filteredPatients.length > 0 && (
+          <div className="flex items-center justify-between">
+            {/* Left side - Records info */}
+            <div className="flex items-center gap-4 text-sm text-slate-600">
+              <div className="flex items-center gap-2">
+                <span>Records per page:</span>
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) => {
+                    setItemsPerPage(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                  className="border border-slate-200 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                >
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+              </div>
+              <div>
+                <span className="font-medium">{startIndex + 1}</span>-
+                <span className="font-medium">{Math.min(endIndex, filteredPatients.length)}</span> of{" "}
+                <span className="font-medium">{filteredPatients.length}</span>
+              </div>
+            </div>
+
+            {/* Center - Statistics */}
+            <div className="flex items-center gap-4 text-sm text-slate-600">
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-slate-700">{filteredPatients.length}</span>
+                <span>Total</span>
+              </div>
+              <div className="h-4 w-px bg-slate-300"></div>
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-blue-600">{maleCount}</span>
+                <span>Male</span>
+              </div>
+              <div className="h-4 w-px bg-slate-300"></div>
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-pink-600">{femaleCount}</span>
+                <span>Female</span>
+              </div>
+            </div>
+
+            {/* Right side - Pagination controls */}
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={goToFirstPage}
+                disabled={currentPage === 1}
+                className="h-8 w-8 disabled:opacity-50"
+              >
+                <ChevronsLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={goToPreviousPage}
+                disabled={currentPage === 1}
+                className="h-8 w-8 disabled:opacity-50"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <div className="text-sm text-slate-600 px-2">
+                Page <span className="font-medium">{currentPage}</span> of{" "}
+                <span className="font-medium">{totalPages}</span>
               </div>
               <Button
                 variant="outline"
                 size="icon"
-                className="h-12 w-12 border-teal-200 hover:bg-teal-50 hover:border-teal-400"
+                onClick={goToNextPage}
+                disabled={currentPage === totalPages}
+                className="h-8 w-8 disabled:opacity-50"
               >
-                <Filter className="h-5 w-5 text-teal-600" />
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={goToLastPage}
+                disabled={currentPage === totalPages}
+                className="h-8 w-8 disabled:opacity-50"
+              >
+                <ChevronsRight className="h-4 w-4" />
               </Button>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Patients List */}
-        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-          {filteredPatients.length === 0 ? (
-            <div className="col-span-full">
-              <Card className="border-teal-100 shadow-md bg-white/90 backdrop-blur-sm">
-                <CardContent className="p-12 text-center">
-                  <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-teal-100 to-cyan-100 rounded-full flex items-center justify-center">
-                    <User className="h-10 w-10 text-teal-600" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2 text-slate-800">
-                    No patients found
-                  </h3>
-                  <p className="text-slate-600 mb-6">
-                    {searchTerm
-                      ? "No patients match your search criteria."
-                      : "Get started by adding your first patient."}
-                  </p>
-                  <Button
-                    asChild
-                    className="bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700"
-                  >
-                    <Link href="/patients/new">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Patient
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          ) : (
-            filteredPatients.map((patient) => (
-              <Card
-                key={patient.id}
-                className="border-2 border-teal-200 hover:border-teal-400 hover:shadow-lg transition-all duration-200 overflow-hidden py-0"
-              >
-                {/* Card Header */}
-                <div className="bg-gradient-to-br from-teal-500 to-cyan-600 p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3 flex-1">
-                      <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                        <User className="h-6 w-6 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-white text-lg">
-                          {patient.firstName} {patient.lastName}
-                        </h3>
-                        <p className="text-teal-50 text-sm">{patient.id}</p>
-                      </div>
-                    </div>
-                    <Badge
-                      className={`${
-                        patient.gender === "Male"
-                          ? "bg-blue-500/20 text-white border-blue-300"
-                          : patient.gender === "Female"
-                          ? "bg-pink-500/20 text-white border-pink-300"
-                          : "bg-purple-500/20 text-white border-purple-300"
-                      }`}
-                    >
-                      {patient.gender}
-                    </Badge>
-                  </div>
-                </div>
-
-                {/* Card Body */}
-                <CardContent className="p-4 space-y-3">
-                  {/* Age Info */}
-                  <div className="flex items-center gap-2 text-sm">
-                    <Calendar className="h-4 w-4 text-teal-600" />
-                    <span className="text-slate-700">
-                      <span className="font-semibold">{patient.age}</span> years
-                      {patient.ageMonths && Number(patient.ageMonths) > 0 && (
-                        <span className="text-slate-600">
-                          {" and "}
-                          {patient.ageMonths} months
-                        </span>
-                      )}
-                    </span>
-                  </div>
-
-                  {/* Contact Info */}
-                  <div className="space-y-2 pt-2 border-t border-teal-100">
-                    <div className="flex items-center gap-2 text-sm text-slate-700">
-                      <Phone className="h-4 w-4 text-teal-600" />
-                      <span>{patient.phone}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-slate-700">
-                      <Mail className="h-4 w-4 text-teal-600" />
-                      <span className="truncate">{patient.email}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-slate-700">
-                      <Stethoscope className="h-4 w-4 text-teal-600" />
-                      <span className="truncate">Dr. {patient.doctorName}</span>
-                    </div>
-                  </div>
-
-                  {/* Notes Section */}
-                  {patient.notes && (
-                    <div className="pt-2 border-t border-teal-100">
-                      <div className="flex items-start gap-2 text-sm">
-                        <FileText className="h-4 w-4 text-teal-600 mt-0.5 flex-shrink-0" />
-                        <p className="text-slate-600 line-clamp-2">
-                          {patient.notes}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Registration Date */}
-                  <div className="pt-2 border-t border-teal-100">
-                    <p className="text-xs text-slate-500">
-                      Registered:{" "}
-                      {new Date(patient.createdAt).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
-                    </p>
-                  </div>
-                </CardContent>
-
-                {/* Card Footer */}
-                <div className="p-4 bg-teal-50 border-t border-teal-100 flex items-center gap-2">
-                  <Button
-                    asChild
-                    className="flex-1 bg-teal-600 hover:bg-teal-700 text-white"
-                  >
-                    <Link href={`/patients/${patient.id}`}>View Details</Link>
-                  </Button>
-                  <Button
-                    asChild
-                    variant="outline"
-                    size="icon"
-                    className="border-2 border-amber-300 text-amber-600 hover:bg-amber-50"
-                  >
-                    <Link href={`/patients/${patient.id}/edit`}>
-                      <Edit className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => handleDeletePatient(patient.id)}
-                    className="border-2 border-red-300 text-red-600 hover:bg-red-50"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </Card>
-            ))
-          )}
-        </div>
-
-        {/* Summary Stats */}
-        {filteredPatients.length > 0 && (
-          <Card className="border-teal-100 shadow-md bg-white/90 backdrop-blur-sm">
-            <CardHeader className="border-b border-teal-100">
-              <CardTitle className="text-xl text-slate-800">Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="grid gap-6 md:grid-cols-3">
-                <div className="text-center p-4 bg-gradient-to-br from-teal-50 to-cyan-50 rounded-lg border border-teal-100">
-                  <div className="text-3xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
-                    {filteredPatients.length}
-                  </div>
-                  <div className="text-sm text-slate-600 mt-1 font-medium">
-                    {searchTerm ? "Matching Patients" : "Total Patients"}
-                  </div>
-                </div>
-                <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
-                  <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                    {maleCount}
-                  </div>
-                  <div className="text-sm text-slate-600 mt-1 font-medium">
-                    Male
-                  </div>
-                </div>
-                <div className="text-center p-4 bg-gradient-to-br from-pink-50 to-rose-50 rounded-lg border border-pink-100">
-                  <div className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
-                    {femaleCount}
-                  </div>
-                  <div className="text-sm text-slate-600 mt-1 font-medium">
-                    Female
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          </div>
         )}
       </div>
     </div>
