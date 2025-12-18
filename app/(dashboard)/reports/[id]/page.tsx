@@ -1166,12 +1166,12 @@ export default function ReportDetailsPage() {
             <div className="flex items-start justify-between">
               <div>
                 <CardTitle className="text-2xl mb-2 font-bold text-gray-800">
-                 LabReportHub Medical Laboratory Services
+                 LabAxis Medical Laboratory Services
                 </CardTitle>
                 <div className="text-sm text-muted-foreground space-y-1">
                   <div>Unique Place for all Diagnostic needs</div>
                   {/* <div>Phone: 0752537178, 0776452417, 0753274455</div> */}
-                  <div>Email: LabReportHub@gmail.com</div>
+                  <div>Email: info@labaxis.com</div>
                 </div>
               </div>
               <div className="text-right">

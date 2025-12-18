@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { logOut } from "@/lib/auth";
+import { Footer } from "@/components/footer";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
@@ -80,8 +81,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       </div>
 
       {/* Main content */}
-      <div className="md:pl-64">
-        <main className="p-4 md:p-8">{children}</main>
+      <div className="md:pl-64 flex flex-col min-h-screen">
+        <main className="flex-1 p-4 md:p-8">{children}</main>
+        <Footer />
       </div>
     </div>
   );
@@ -108,7 +110,7 @@ function SidebarContent({
         </div>
         <div>
           <div className="text-xs font-semibold text-pink-500 tracking-wide">
-            LabReportHub
+            LabAxis
           </div>
           <h1 className="text-sm font-bold leading-tight bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
             Medical Laboratory Services
@@ -149,7 +151,7 @@ function SidebarContent({
       <div className="p-4 border-t border-teal-100 space-y-2 bg-gradient-to-br from-teal-50/50 to-emerald-50/50">
         <div className="text-xs text-slate-600">
           <p className="font-semibold text-teal-700 mb-1">Contact Us</p>
-          <p className="text-slate-600">LabReportHub@gmail.com</p>
+          <p className="text-slate-600">info@labaxis.com</p>
           {/* <p className="text-slate-600">0752537178 | 0776452417</p>
           <p className="text-slate-600">0753274455</p> */}
         </div>

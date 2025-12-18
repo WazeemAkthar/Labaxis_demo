@@ -69,7 +69,7 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <div className="bg-linear-to-r from-teal-600 to-emerald-600 rounded-xl p-6 text-white shadow-lg">
         <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-teal-50">Welcome to LabReportHub Medical Laboratory Services</p>
+        <p className="text-teal-50">Welcome to LabAxis Medical Laboratory Services</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

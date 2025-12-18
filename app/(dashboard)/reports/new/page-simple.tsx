@@ -18,7 +18,7 @@ export default function NewReportPageSimple() {
   const [selectedPatientId, setSelectedPatientId] = useState("")
 
   useEffect(() => {
-    const authStatus = localStorage.getItem("lablite_auth")
+    const authStatus = localStorage.getItem("labaxis_auth")
     if (authStatus !== "authenticated") {
       router.push("/")
       return

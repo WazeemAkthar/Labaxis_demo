@@ -33,7 +33,7 @@ export default function SettingsPage() {
     }
 
     // Load current credentials
-    const storedCredentials = localStorage.getItem("lablite_credentials")
+    const storedCredentials = localStorage.getItem("labaxis_credentials")
     if (storedCredentials) {
       const credentials = JSON.parse(storedCredentials)
       setFormData((prev) => ({
@@ -59,7 +59,7 @@ export default function SettingsPage() {
 
     try {
       // Validate current credentials
-      const storedCredentials = localStorage.getItem("lablite_credentials")
+      const storedCredentials = localStorage.getItem("labaxis_credentials")
       const currentCreds = storedCredentials
         ? JSON.parse(storedCredentials)
         : { username: "admin", password: "admin123" }
@@ -83,7 +83,7 @@ export default function SettingsPage() {
         password: formData.newPassword || currentCreds.password,
       }
 
-      localStorage.setItem("lablite_credentials", JSON.stringify(newCredentials))
+      localStorage.setItem("labaxis_credentials", JSON.stringify(newCredentials))
       setMessage("Settings updated successfully!")
 
       // Clear password fields

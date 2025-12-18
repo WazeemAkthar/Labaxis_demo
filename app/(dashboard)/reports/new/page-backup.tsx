@@ -41,7 +41,7 @@ export default function NewReportPage() {
   const [reviewedBy, setReviewedBy] = useState("Dr. Lab Director")
 
   useEffect(() => {
-    const authStatus = localStorage.getItem("lablite_auth")
+    const authStatus = localStorage.getItem("labaxis_auth")
     if (authStatus !== "authenticated") {
       router.push("/")
       return

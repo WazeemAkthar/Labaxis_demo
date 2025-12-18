@@ -6,9 +6,9 @@ import { AuthProvider } from '@/components/auth-provider'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'LabReportHub - Medical Laboratory Services',
+  title: 'LabAxis - Medical Laboratory Services',
   description: 'Unique Place for all Diagnostic needs - Laboratory Information Management System',
-  generator: 'LabReportHub',
+  generator: 'LabAxis',
 }
 
 export default function RootLayout({

@@ -4,9 +4,9 @@
   "reports": [],
   "settings": {
     "taxRate": 0.08,
-    "labName": "LabLite Laboratory",
+    "labName": "LabAxis Laboratory",
     "labAddress": "123 Medical Center Drive, Healthcare City, HC 12345",
     "labPhone": "+1 (555) 123-4567",
-    "labEmail": "info@lablite.com"
+    "labEmail": "info@labaxis.com"
   }
 }

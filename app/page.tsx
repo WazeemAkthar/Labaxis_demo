@@ -66,7 +66,7 @@ export default function LoginPage() {
             </div>
           </div>
           <div>
-            <div className="text-sm font-semibold text-pink-500 mb-1 tracking-wide">LabReportHub</div>
+            <div className="text-sm font-semibold text-pink-500 mb-1 tracking-wide">LabAxis</div>
             <CardTitle className="text-2xl font-bold bg-linear-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
               Medical Laboratory Services
             </CardTitle>
@@ -82,7 +82,7 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="admin@LabReportHub.com"
+                placeholder="admin@labaxis.com"
                 value={formData.email}
                 onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
                 required

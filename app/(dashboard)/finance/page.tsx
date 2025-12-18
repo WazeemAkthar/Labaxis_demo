@@ -263,7 +263,7 @@ export default function FinancePage() {
                   Finance Dashboard
                 </h1>
                 <p className="text-teal-600 font-medium">
-                  LabReportHub Medical Laboratory Services
+                  LabAxis Medical Laboratory Services
                 </p>
               </div>
             </div>

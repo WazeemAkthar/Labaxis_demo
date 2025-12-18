@@ -273,10 +273,10 @@ const ReportPDF: React.FC<{ report: Report; patient: Patient }> = ({ report, pat
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>LabReportHub Medical Laboratory Services</Text>
+          <Text style={styles.title}>LabAxis Medical Laboratory Services</Text>
           <Text style={styles.subtitle}>Unique Place for all Diagnostic needs</Text>
           {/* <Text style={styles.subtitle}>Phone: 0752537178, 0776452417, 0753274455</Text> */}
-          <Text style={styles.subtitle}>Email: LabReportHub@gmail.com</Text>
+          <Text style={styles.subtitle}>Email: info@labaxis.com</Text>
           <View style={{ alignItems: 'flex-end', marginTop: 8 }}>
             <Text style={{ fontSize: 12, fontWeight: 'bold', backgroundColor: '#374151', color: '#ffffff', padding: 4 }}>
               Laboratory Report
@@ -414,10 +414,10 @@ const InvoicePDF: React.FC<{ invoice: Invoice; patient: Patient }> = ({ invoice,
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>LabReportHub Medical Laboratory Services</Text>
+          <Text style={styles.title}>LabAxis Medical Laboratory Services</Text>
           <Text style={styles.subtitle}>Unique Place for all Diagnostic needs</Text>
           {/* <Text style={styles.subtitle}>Phone: 0752537178, 0776452417, 0753274455</Text> */}
-          <Text style={styles.subtitle}>Email: LabReportHub@gmail.com</Text>
+          <Text style={styles.subtitle}>Email: info@labaxis.com</Text>
         </View>
 
         {/* Patient and Invoice Information */}
@@ -490,10 +490,10 @@ const InvoicePDF: React.FC<{ invoice: Invoice; patient: Patient }> = ({ invoice,
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>
-            Thank you for choosing LabReportHub Medical Laboratory Services for your healthcare needs.
+            Thank you for choosing LabAxis Medical Laboratory Services for your healthcare needs.
           </Text>
           <Text style={styles.footerText}>
-            For questions about this invoice, please contact us at info@LabReportHub.com
+            For questions about this invoice, please contact us at info@labaxis.com
           </Text>
         </View>
       </Page>
