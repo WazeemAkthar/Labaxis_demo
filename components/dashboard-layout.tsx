@@ -113,15 +113,12 @@ function SidebarContent({
             </div>
           </div>
           <div>
-            <div className="text-xs font-bold text-[#1FB6B2] tracking-wider uppercase">
-              LabAxis
-            </div>
-            <h1 className="text-sm font-bold leading-tight text-white">
-              Medical Laboratory
+            <h1 className="text-sm font-bold leading-tight  text-[#1FB6B2]">
+              Check Life
             </h1>
-            <p className="text-xs text-[#1FB6B2]/80 font-medium mt-0.5">
-              Unique Place for Diagnostics
-            </p>
+            <div className="text-[10px] font-bold text-white  tracking-wider uppercase">
+              Medical Laboratory
+            </div>
           </div>
         </div>
       </div>
@@ -150,13 +147,18 @@ function SidebarContent({
               {!isActive && (
                 <div className="absolute inset-0 bg-linear-to-r from-[#1FB6B2]/0 to-[#1FB6B2]/10 opacity-0 group-hover:opacity-100  transition-opacity"></div>
               )}
-              
+
               {/* Active indicator */}
               {isActive && (
                 <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white"></div>
               )}
-              
-              <Icon className={cn("h-5 w-5 relative z-10", isActive ? "text-white" : "")} />
+
+              <Icon
+                className={cn(
+                  "h-5 w-5 relative z-10",
+                  isActive ? "text-white" : ""
+                )}
+              />
               <span className="relative z-10">{item.name}</span>
             </button>
           );

@@ -22,7 +22,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Save, User, FileText, TestTube } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+  ArrowLeft,
+  Save,
+  User,
+  FileText,
+  TestTube,
+  CheckCircle2,
+  Circle,
+} from "lucide-react";
 import {
   DataManager,
   type Patient,
@@ -39,6 +53,7 @@ import { OGTTGraph } from "@/components/ogtt-graph";
 import { PPBSReportCard } from "@/components/ppbs-report-card";
 import { BSSReportCard } from "@/components/bss-report-card";
 import { BGRhReportCard } from "@/components/bgrh-report-card";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Helper function to check if a value is within reference range
 function isValueInRange(value: string, referenceRange: string): boolean | null {
@@ -201,36 +216,79 @@ export default function NewReportPage() {
     new Date().toISOString().split("T")[0]
   );
   const [bgrhValues, setBgrhValues] = useState<any>(null);
+  const [searchTestTerm, setSearchTestTerm] = useState("");
+  const [completedTests, setCompletedTests] = useState<string[]>([]);
+  const [testSelectionOrder, setTestSelectionOrder] = useState<string[]>([]);
 
-  const hasUFRTest = useDirectTestSelection
-    ? selectedTests.includes("UFR")
-    : selectedInvoice?.lineItems.some((item) => item.testCode === "UFR") ||
-      false;
+  // Helper function to check if a test has been filled
+  const isTestFilled = (testCode: string): boolean => {
+    switch (testCode) {
+      case "FBC":
+        return (
+          fbcValues &&
+          Object.values(fbcValues).some((v) => v && String(v).trim() !== "")
+        );
+      case "LIPID":
+        return (
+          lipidValues &&
+          Object.values(lipidValues).some((v) => v && String(v).trim() !== "")
+        );
+      case "UFR":
+        return (
+          ufrValues &&
+          Object.values(ufrValues).some((v) => v && String(v).trim() !== "")
+        );
+      case "OGTT":
+        return (
+          ogttValues &&
+          (ogttValues.fasting ||
+            ogttValues.afterOneHour ||
+            ogttValues.afterTwoHours)
+        );
+      case "PPBS":
+        return ppbsValues && ppbsValues.value && ppbsValues.value.trim() !== "";
+      case "BSS":
+        return (
+          bssValues &&
+          bssValues.length > 0 &&
+          bssValues.some((entry) => entry.value && entry.value.trim() !== "")
+        );
+      case "BGRh":
+        return bgrhValues && bgrhValues.bloodGroup && bgrhValues.rhesus;
+      default:
+        // For regular tests, check if any result value is filled
+        return results.some(
+          (r) => r.testCode === testCode && r.value.trim() !== ""
+        );
+    }
+  };
 
-  const hasLipidProfileTest = useDirectTestSelection
-    ? selectedTests.includes("LIPID")
-    : selectedInvoice?.lineItems.some((item) => item.testCode === "LIPID") ||
-      false;
+  // Auto-select test when values are entered
+  const autoSelectTest = (testCode: string) => {
+    if (!selectedTests.includes(testCode)) {
+      const newSelected = [...selectedTests, testCode];
+      setSelectedTests(newSelected);
 
-  const hasOGTTTest = useDirectTestSelection
-    ? selectedTests.includes("OGTT")
-    : selectedInvoice?.lineItems.some((item) => item.testCode === "OGTT") ||
-      false;
+      // Add to order if not already there
+      if (!testSelectionOrder.includes(testCode)) {
+        setTestSelectionOrder([...testSelectionOrder, testCode]);
+      }
+    }
+  };
 
-  const hasPPBSTest = useDirectTestSelection
-    ? selectedTests.includes("PPBS")
-    : selectedInvoice?.lineItems.some((item) => item.testCode === "PPBS") ||
-      false;
+  // Get test name from catalog
+  const getTestName = (testCode: string): string => {
+    const test = testCatalog.find((t) => t.code === testCode);
+    return test?.name || testCode;
+  };
 
-  const hasBSSTest = useDirectTestSelection
-    ? selectedTests.includes("BSS")
-    : selectedInvoice?.lineItems.some((item) => item.testCode === "BSS") ||
-      false;
-
-  const hasBGRhTest = useDirectTestSelection
-    ? selectedTests.includes("BGRh")
-    : selectedInvoice?.lineItems.some((item) => item.testCode === "BGRh") ||
-      false;
+  const hasUFRTest = selectedTests.includes("UFR");
+  const hasLipidProfileTest = selectedTests.includes("LIPID");
+  const hasOGTTTest = selectedTests.includes("OGTT");
+  const hasPPBSTest = selectedTests.includes("PPBS");
+  const hasBSSTest = selectedTests.includes("BSS");
+  const hasBGRhTest = selectedTests.includes("BGRh");
+  const hasFBCTest = selectedTests.includes("FBC");
 
   useEffect(() => {
     if (authLoading) return;
@@ -274,7 +332,9 @@ export default function NewReportPage() {
     setSelectedPatient(patient || null);
     setSelectedInvoice(null);
     setSelectedTests([]);
-    setUseDirectTestSelection(false);
+    setTestSelectionOrder([]);
+    setCompletedTests([]);
+    setUseDirectTestSelection(true);
     setResults([]);
     setFbcValues(null);
     setLipidValues(null);
@@ -284,89 +344,7 @@ export default function NewReportPage() {
     setBssValues([]);
     setPatientSearchTerm("");
     setBgrhValues(null);
-  };
-
-  const handleInvoiceChange = async (invoiceId: string) => {
-    const invoice = invoices.find((inv) => inv.id === invoiceId);
-    setSelectedInvoice(invoice || null);
-    setFbcValues(null);
-    setLipidValues(null);
-    setUfrValues(null);
-    setOgttValues(null);
-    setPpbsValues(null);
-    setBssValues([]);
-    setBgrhValues(null);
-
-    if (invoice) {
-      // Initialize results from invoice line items
-      const dataManager = DataManager.getInstance();
-      const testCatalog = await dataManager.getTestCatalog();
-
-      const initialResults: ReportResult[] = [];
-
-      invoice.lineItems.forEach((item) => {
-        const test = testCatalog.find((t) => t.code === item.testCode);
-        const referenceRanges = test?.referenceRange || {};
-
-        // Handle FBC, LIPID, UFR, OGTT, PPBS, BSS, BGRh specially - don't create individual result entries
-        if (
-          item.testCode === "FBC" ||
-          item.testCode === "LIPID" ||
-          item.testCode === "UFR" ||
-          item.testCode === "OGTT" ||
-          item.testCode === "PPBS" ||
-          item.testCode === "BSS" ||
-          item.testCode === "BGRh"
-        ) {
-          return;
-        }
-
-        // For multi-component tests, create separate result entries for each component
-        if (Object.keys(referenceRanges).length > 1) {
-          // ✅ NEW: Use componentOrder if available, otherwise use Object.entries
-          // Replace the componentsToIterate section with proper typing
-          const componentsToIterate: [string, any][] = test?.componentOrder
-            ? test.componentOrder.map(
-                (componentName: string) =>
-                  [componentName, referenceRanges[componentName]] as [
-                    string,
-                    any
-                  ]
-              )
-            : Object.entries(referenceRanges);
-
-          componentsToIterate.forEach(([component, range]: [string, any]) => {
-            const componentUnit =
-              test?.unitPerTest?.[component] || test?.unit || "";
-
-            initialResults.push({
-              testCode: item.testCode,
-              testName: component,
-              value: "",
-              unit: componentUnit,
-              referenceRange: String(range),
-              comments: "",
-              isQualitative: test?.isQualitative || false,
-            });
-          });
-        } else {
-          // For single-component tests - use the reference range key
-          const firstRange = Object.entries(referenceRanges)[0];
-          const componentName = firstRange ? firstRange[0] : item.testName;
-
-          initialResults.push({
-            testCode: item.testCode,
-            testName: componentName,
-            value: "",
-            unit: test?.unit || "",
-            referenceRange: firstRange ? String(firstRange[1]) : "",
-            comments: "",
-          });
-        }
-      });
-
-      setResults(initialResults);
-    }
+    setSearchTestTerm("");
   };
 
   const updateResult = (
@@ -377,6 +355,12 @@ export default function NewReportPage() {
     let updatedResults = results.map((result) =>
       result.testName === testName ? { ...result, [field]: value } : result
     );
+
+    // Auto-select test when value is entered
+    const result = results.find((r) => r.testName === testName);
+    if (result && value.trim() !== "") {
+      autoSelectTest(result.testCode);
+    }
 
     // Lipid Profile auto-calculations
     const getVal = (name: string) => {
@@ -422,13 +406,6 @@ export default function NewReportPage() {
     setFbcValues(values);
   };
 
-  const handleDirectTestSelection = () => {
-    setUseDirectTestSelection(true);
-    setSelectedInvoice(null);
-    setResults([]);
-    setFbcValues(null);
-  };
-
   const handleTestSelection = async (testCodes: string[]) => {
     // Prevent infinite loops by checking if the selection has actually changed
     if (
@@ -438,6 +415,17 @@ export default function NewReportPage() {
     }
 
     setSelectedTests(testCodes);
+
+    // Update selection order - keep existing order and add new ones
+    const newOrder = [...testSelectionOrder];
+    testCodes.forEach((code) => {
+      if (!newOrder.includes(code)) {
+        newOrder.push(code);
+      }
+    });
+    // Remove deselected tests from order
+    const finalOrder = newOrder.filter((code) => testCodes.includes(code));
+    setTestSelectionOrder(finalOrder);
 
     // Initialize results from selected tests
     const dataManager = DataManager.getInstance();
@@ -463,8 +451,6 @@ export default function NewReportPage() {
 
       // For multi-component tests, create separate result entries for each component
       if (Object.keys(referenceRanges).length > 1) {
-        // ✅ NEW: Use componentOrder if available, otherwise use Object.entries
-        // Replace the componentsToIterate section with proper typing
         const componentsToIterate: [string, any][] = test?.componentOrder
           ? test.componentOrder.map(
               (componentName: string) =>
@@ -528,514 +514,502 @@ export default function NewReportPage() {
     hasOGTTTest &&
     (ogttValues.fasting || ogttValues.afterOneHour || ogttValues.afterTwoHours);
 
-  // In new-report-page.tsx, find the handleSubmit function
-  // Replace the OGTT section (around line 450-480) with this corrected version:
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedPatient || (!selectedInvoice && !useDirectTestSelection))
-      return;
+    if (!selectedPatient || selectedTests.length === 0) return;
 
     setSaving(true);
 
     try {
       const dataManager = DataManager.getInstance();
 
-      // Prepare all results including FBC
-      const allResults: ReportResult[] = [
-        ...results.filter((r) => r.value.trim() !== ""),
-      ];
+      // Prepare all results - USE SELECTION ORDER
+      const allResults: ReportResult[] = [];
 
-      // Determine if FBC is included
-      const hasFBC = useDirectTestSelection
-        ? selectedTests.includes("FBC")
-        : selectedInvoice?.lineItems.some((item) => item.testCode === "FBC");
+      // Sort tests by selection order
+      const orderedTests = testSelectionOrder.filter((code) =>
+        selectedTests.includes(code)
+      );
 
-      // Add similar check for BGRh
-      const hasBGRh = useDirectTestSelection
-        ? selectedTests.includes("BGRh")
-        : selectedInvoice?.lineItems.some((item) => item.testCode === "BGRh");
-
-      // Add FBC results if available
-      if (fbcValues && hasFBC) {
-        const fbcResults = [
-          {
-            testCode: "FBC",
-            testName: "Hemoglobin",
-            value: fbcValues.hemoglobin,
-            unit: "g/dL",
-            referenceRange: "11.0 – 16.5",
-            comments: "",
-          },
-          {
-            testCode: "FBC",
-            testName: "RBC",
-            value: fbcValues.rbc,
-            unit: "x10⁶/μL",
-            referenceRange: "3.5 - 6.2",
-            comments: "",
-          },
-          {
-            testCode: "FBC",
-            testName: "PCV",
-            value: fbcValues.pcv,
-            unit: "%",
-            referenceRange: "36.0 – 54.0",
-            comments: "",
-          },
-          {
-            testCode: "FBC",
-            testName: "MCV",
-            value: fbcValues.mcv,
-            unit: "fL",
-            referenceRange: "80.0 – 100.0",
-            comments: "",
-          },
-          {
-            testCode: "FBC",
-            testName: "MCH",
-            value: fbcValues.mch,
-            unit: "pg",
-            referenceRange: "27.0 – 34.0",
-            comments: "",
-          },
-          {
-            testCode: "FBC",
-            testName: "MCHC",
-            value: fbcValues.mchc,
-            unit: "g/dL",
-            referenceRange: "32.0 – 36.0",
-            comments: "",
-          },
-          {
-            testCode: "FBC",
-            testName: "RDW-CV",
-            value: fbcValues.rdwCv,
-            unit: "%",
-            referenceRange: "11.0 – 16.0",
-            comments: "",
-          },
-          {
-            testCode: "FBC",
-            testName: "Platelets",
-            value: fbcValues.platelets,
-            unit: "x10³/μL",
-            referenceRange: "150 - 450",
-            comments: "",
-          },
-          {
-            testCode: "FBC",
-            testName: "WBC",
-            value: fbcValues.wbc,
-            unit: "x10³/μL",
-            referenceRange: "4.0 - 10.0",
-            comments: "",
-          },
-          {
-            testCode: "FBC",
-            testName: "Neutrophils",
-            value: fbcValues.neutrophils,
-            unit: "%",
-            referenceRange: "40.0 – 70.0",
-            comments: "",
-          },
-          {
-            testCode: "FBC",
-            testName: "Lymphocytes",
-            value: fbcValues.lymphocytes,
-            unit: "%",
-            referenceRange: "20.0 – 40.0",
-            comments: "",
-          },
-          {
-            testCode: "FBC",
-            testName: "Eosinophils",
-            value: fbcValues.eosinophils,
-            unit: "%",
-            referenceRange: "1.0 – 5.0",
-            comments: "",
-          },
-          {
-            testCode: "FBC",
-            testName: "Monocytes",
-            value: fbcValues.monocytes,
-            unit: "%",
-            referenceRange: "3.0 – 12.0",
-            comments: "",
-          },
-          {
-            testCode: "FBC",
-            testName: "Basophils",
-            value: fbcValues.basophils,
-            unit: "%",
-            referenceRange: "0-1",
-            comments: "",
-          },
-          {
-            testCode: "FBC",
-            testName: "Neutrophils (Abs)",
-            value: fbcValues.neutrophilsAbs,
-            unit: "x10³/μL",
-            referenceRange: "2.0-7.5",
-            comments: "",
-          },
-          {
-            testCode: "FBC",
-            testName: "Lymphocytes (Abs)",
-            value: fbcValues.lymphocytesAbs,
-            unit: "x10³/μL",
-            referenceRange: "1.0-4.0",
-            comments: "",
-          },
-          {
-            testCode: "FBC",
-            testName: "Eosinophils (Abs)",
-            value: fbcValues.eosinophilsAbs,
-            unit: "x10³/μL",
-            referenceRange: "0.05-0.50",
-            comments: "",
-          },
-          {
-            testCode: "FBC",
-            testName: "Monocytes (Abs)",
-            value: fbcValues.monocytesAbs,
-            unit: "x10³/μL",
-            referenceRange: "0.20-1.00",
-            comments: "",
-          },
-          {
-            testCode: "FBC",
-            testName: "Basophils (Abs)",
-            value: fbcValues.basophilsAbs,
-            unit: "x10³/μL",
-            referenceRange: "0.00-0.20",
-            comments: "",
-          },
-        ].filter((r) => r.value && r.value.trim() !== "");
-
-        allResults.push(...fbcResults);
-      }
-
-      // Add Lipid Profile results if available
-      if (lipidValues && hasLipidProfileTest) {
-        const lipidResults = [
-          {
-            testCode: "LIPID",
-            testName: "Total Cholesterol",
-            value: lipidValues.totalCholesterol,
-            unit: "mg/dL",
-            referenceRange: "< 200",
-            comments: "",
-          },
-          {
-            testCode: "LIPID",
-            testName: "HDL Cholesterol",
-            value: lipidValues.hdl,
-            unit: "mg/dL",
-            referenceRange: "> 40",
-            comments: "",
-          },
-          {
-            testCode: "LIPID",
-            testName: "Triglycerides",
-            value: lipidValues.triglycerides,
-            unit: "mg/dL",
-            referenceRange: "< 150",
-            comments: "",
-          },
-          {
-            testCode: "LIPID",
-            testName: "VLDL Cholesterol",
-            value: lipidValues.vldl,
-            unit: "mg/dL",
-            referenceRange: "< 40",
-            comments: "",
-          },
-          {
-            testCode: "LIPID",
-            testName: "LDL Cholesterol",
-            value: lipidValues.ldl,
-            unit: "mg/dL",
-            referenceRange: "< 150",
-            comments: "",
-          },
-          {
-            testCode: "LIPID",
-            testName: "Total Cholesterol/HDL Ratio",
-            value: lipidValues.tcHdlRatio,
-            unit: "",
-            referenceRange: "< 5.0",
-            comments: "",
-          },
-          {
-            testCode: "LIPID",
-            testName: "Non-HDL Cholesterol",
-            value: lipidValues.nonHdl,
-            unit: "mg/dL",
-            referenceRange: "< 130",
-            comments: "",
-          },
-        ].filter((r) => r.value && r.value.trim() !== "");
-
-        allResults.push(...lipidResults);
-      }
-
-      // Add UFR results if available
-      if (ufrValues && hasUFRTest) {
-        const ufrResults = [
-          {
-            testCode: "UFR",
-            testName: "Colour",
-            value: ufrValues.colour,
-            unit: "",
-            referenceRange: "",
-            comments: "",
-          },
-          {
-            testCode: "UFR",
-            testName: "Appearance",
-            value: ufrValues.appearance,
-            unit: "",
-            referenceRange: "",
-            comments: "",
-          },
-          {
-            testCode: "UFR",
-            testName: "PH",
-            value: ufrValues.ph,
-            unit: "",
-            referenceRange: "",
-            comments: "",
-          },
-          {
-            testCode: "UFR",
-            testName: "Specific Gravity",
-            value: ufrValues.specificGravity,
-            unit: "",
-            referenceRange: "1.010-1.025",
-            comments: "",
-          },
-          {
-            testCode: "UFR",
-            testName: "Protein(Albumin)",
-            value: ufrValues.protein,
-            unit: "",
-            referenceRange: "",
-            comments: "",
-          },
-          {
-            testCode: "UFR",
-            testName: "Sugar(Reducing substances)",
-            value: ufrValues.sugar,
-            unit: "",
-            referenceRange: "",
-            comments: "",
-          },
-          {
-            testCode: "UFR",
-            testName: "Urobilinogen",
-            value: ufrValues.urobilinogen,
-            unit: "",
-            referenceRange: "",
-            comments: "",
-          },
-          {
-            testCode: "UFR",
-            testName: "Bile",
-            value: ufrValues.bile,
-            unit: "",
-            referenceRange: "",
-            comments: "",
-          },
-          {
-            testCode: "UFR",
-            testName: "Acetone/KB",
-            value: ufrValues.acetone,
-            unit: "",
-            referenceRange: "",
-            comments: "",
-          },
-          {
-            testCode: "UFR",
-            testName: "Epithelial cells",
-            value: ufrValues.epithelialCells,
-            unit: "/HPF",
-            referenceRange: "",
-            comments: "",
-          },
-          {
-            testCode: "UFR",
-            testName: "Pus cells",
-            value: ufrValues.pusCells,
-            unit: "/HPF",
-            referenceRange: "",
-            comments: "",
-          },
-          {
-            testCode: "UFR",
-            testName: "Red cells",
-            value: ufrValues.redCells,
-            unit: "/HPF",
-            referenceRange: "",
-            comments: "",
-          },
-          {
-            testCode: "UFR",
-            testName: "Crystals",
-            value: ufrValues.crystals,
-            unit: "/HPF",
-            referenceRange: "",
-            comments: "",
-          },
-          {
-            testCode: "UFR",
-            testName: "Casts",
-            value: ufrValues.casts,
-            unit: "/HPF",
-            referenceRange: "",
-            comments: "",
-          },
-          {
-            testCode: "UFR",
-            testName: "Organisms",
-            value: ufrValues.organisms,
-            unit: "/HPF",
-            referenceRange: "",
-            comments: "",
-          },
-          {
-            testCode: "UFR",
-            testName: "Others",
-            value: ufrValues.others,
-            unit: "",
-            referenceRange: "",
-            comments: "",
-          },
-        ].filter((r) => r.value && r.value.trim() !== "");
-
-        allResults.push(...ufrResults);
-      }
-
-      // Add OGTT results if available
-      if (ogttValues && hasOGTTTest) {
-        console.log("=== SAVING OGTT DATA ===");
-        console.log("ogttValues:", ogttValues);
-
-        const ogttResultsArray = [];
-
-        if (ogttValues.fasting && ogttValues.fasting.trim() !== "") {
-          ogttResultsArray.push({
-            testCode: "OGTT",
-            testName: "Fasting Glucose",
-            value: ogttValues.fasting,
-            unit: "mg/dL",
-            referenceRange: "60 - 115",
-            comments: "",
-          });
-        }
-
-        if (ogttValues.afterOneHour && ogttValues.afterOneHour.trim() !== "") {
-          ogttResultsArray.push({
-            testCode: "OGTT",
-            testName: "After 1 Hour Glucose",
-            value: ogttValues.afterOneHour,
-            unit: "mg/dL",
-            referenceRange: "< 180",
-            comments: "",
-          });
-        }
-
-        if (
-          ogttValues.afterTwoHours &&
-          ogttValues.afterTwoHours.trim() !== ""
-        ) {
-          ogttResultsArray.push({
-            testCode: "OGTT",
-            testName: "After 2 Hour Glucose",
-            value: ogttValues.afterTwoHours,
-            unit: "mg/dL",
-            referenceRange: "< 140",
-            comments: "",
-          });
-        }
-
-        console.log("OGTT results to save:", ogttResultsArray);
-        allResults.push(...ogttResultsArray);
-      }
-
-      // Add PPBS results if available (MOVED OUTSIDE OF OGTT BLOCK)
-      if (
-        ppbsValues &&
-        hasPPBSTest &&
-        ppbsValues.value &&
-        ppbsValues.value.trim() !== ""
-      ) {
-        console.log("=== SAVING PPBS DATA ===");
-        console.log("ppbsValues:", ppbsValues);
-
-        const referenceRange =
-          ppbsValues.hourType === "After 1 Hour" ? "< 160" : "< 140";
-
-        allResults.push({
-          testCode: "PPBS",
-          testName: "Post Prandial Blood Sugar",
-          value: ppbsValues.value,
-          unit: "mg/dL",
-          referenceRange: referenceRange,
-          comments: "",
-          mealType: ppbsValues.mealType, // Store meal type separately
-          hourType: ppbsValues.hourType, // Store hour type separately
-        });
-
-        console.log("PPBS result added to allResults");
-      }
-
-      // Add BSS results if available (MOVED OUTSIDE OF OGTT BLOCK)
-      if (bssValues && hasBSSTest && bssValues.length > 0) {
-        console.log("=== SAVING BSS DATA ===");
-        console.log("bssValues:", bssValues);
-
-        bssValues.forEach((entry) => {
-          if (entry.value && entry.value.trim() !== "") {
-            const referenceRange =
-              entry.hourType === "After 1 Hour" ? "< 160" : "< 140";
-
-            allResults.push({
-              testCode: "BSS",
-              testName: "Post Prandial Blood Sugar",
-              value: entry.value,
-              unit: "mg/dL",
-              referenceRange: referenceRange,
+      // Process tests in the order they were selected
+      for (const testCode of orderedTests) {
+        // Add FBC results if this is FBC test
+        if (testCode === "FBC" && fbcValues) {
+          const fbcResults = [
+            {
+              testCode: "FBC",
+              testName: "Hemoglobin",
+              value: fbcValues.hemoglobin,
+              unit: "g/dL",
+              referenceRange: "11.0 – 16.5",
               comments: "",
-              mealType: entry.mealType, // Store meal type separately
-              hourType: entry.hourType, // Store hour type separately
+            },
+            {
+              testCode: "FBC",
+              testName: "RBC",
+              value: fbcValues.rbc,
+              unit: "x10⁶/μL",
+              referenceRange: "3.5 - 6.2",
+              comments: "",
+            },
+            {
+              testCode: "FBC",
+              testName: "PCV",
+              value: fbcValues.pcv,
+              unit: "%",
+              referenceRange: "36.0 – 54.0",
+              comments: "",
+            },
+            {
+              testCode: "FBC",
+              testName: "MCV",
+              value: fbcValues.mcv,
+              unit: "fL",
+              referenceRange: "80.0 – 100.0",
+              comments: "",
+            },
+            {
+              testCode: "FBC",
+              testName: "MCH",
+              value: fbcValues.mch,
+              unit: "pg",
+              referenceRange: "27.0 – 34.0",
+              comments: "",
+            },
+            {
+              testCode: "FBC",
+              testName: "MCHC",
+              value: fbcValues.mchc,
+              unit: "g/dL",
+              referenceRange: "32.0 – 36.0",
+              comments: "",
+            },
+            {
+              testCode: "FBC",
+              testName: "RDW-CV",
+              value: fbcValues.rdwCv,
+              unit: "%",
+              referenceRange: "11.0 – 16.0",
+              comments: "",
+            },
+            {
+              testCode: "FBC",
+              testName: "Platelets",
+              value: fbcValues.platelets,
+              unit: "x10³/μL",
+              referenceRange: "150 - 450",
+              comments: "",
+            },
+            {
+              testCode: "FBC",
+              testName: "WBC",
+              value: fbcValues.wbc,
+              unit: "x10³/μL",
+              referenceRange: "4.0 - 10.0",
+              comments: "",
+            },
+            {
+              testCode: "FBC",
+              testName: "Neutrophils",
+              value: fbcValues.neutrophils,
+              unit: "%",
+              referenceRange: "40.0 – 70.0",
+              comments: "",
+            },
+            {
+              testCode: "FBC",
+              testName: "Lymphocytes",
+              value: fbcValues.lymphocytes,
+              unit: "%",
+              referenceRange: "20.0 – 40.0",
+              comments: "",
+            },
+            {
+              testCode: "FBC",
+              testName: "Eosinophils",
+              value: fbcValues.eosinophils,
+              unit: "%",
+              referenceRange: "1.0 – 5.0",
+              comments: "",
+            },
+            {
+              testCode: "FBC",
+              testName: "Monocytes",
+              value: fbcValues.monocytes,
+              unit: "%",
+              referenceRange: "3.0 – 12.0",
+              comments: "",
+            },
+            {
+              testCode: "FBC",
+              testName: "Basophils",
+              value: fbcValues.basophils,
+              unit: "%",
+              referenceRange: "0-1",
+              comments: "",
+            },
+            {
+              testCode: "FBC",
+              testName: "Neutrophils (Abs)",
+              value: fbcValues.neutrophilsAbs,
+              unit: "x10³/μL",
+              referenceRange: "2.0-7.5",
+              comments: "",
+            },
+            {
+              testCode: "FBC",
+              testName: "Lymphocytes (Abs)",
+              value: fbcValues.lymphocytesAbs,
+              unit: "x10³/μL",
+              referenceRange: "1.0-4.0",
+              comments: "",
+            },
+            {
+              testCode: "FBC",
+              testName: "Eosinophils (Abs)",
+              value: fbcValues.eosinophilsAbs,
+              unit: "x10³/μL",
+              referenceRange: "0.05-0.50",
+              comments: "",
+            },
+            {
+              testCode: "FBC",
+              testName: "Monocytes (Abs)",
+              value: fbcValues.monocytesAbs,
+              unit: "x10³/μL",
+              referenceRange: "0.20-1.00",
+              comments: "",
+            },
+            {
+              testCode: "FBC",
+              testName: "Basophils (Abs)",
+              value: fbcValues.basophilsAbs,
+              unit: "x10³/μL",
+              referenceRange: "0.00-0.20",
+              comments: "",
+            },
+          ].filter((r) => r.value && r.value.trim() !== "");
+
+          allResults.push(...fbcResults);
+        }
+
+        // Add Lipid Profile results if this is LIPID test
+        if (testCode === "LIPID" && lipidValues) {
+          const lipidResults = [
+            {
+              testCode: "LIPID",
+              testName: "Total Cholesterol",
+              value: lipidValues.totalCholesterol,
+              unit: "mg/dL",
+              referenceRange: "< 200",
+              comments: "",
+            },
+            {
+              testCode: "LIPID",
+              testName: "HDL Cholesterol",
+              value: lipidValues.hdl,
+              unit: "mg/dL",
+              referenceRange: "> 40",
+              comments: "",
+            },
+            {
+              testCode: "LIPID",
+              testName: "Triglycerides",
+              value: lipidValues.triglycerides,
+              unit: "mg/dL",
+              referenceRange: "< 150",
+              comments: "",
+            },
+            {
+              testCode: "LIPID",
+              testName: "VLDL Cholesterol",
+              value: lipidValues.vldl,
+              unit: "mg/dL",
+              referenceRange: "< 40",
+              comments: "",
+            },
+            {
+              testCode: "LIPID",
+              testName: "LDL Cholesterol",
+              value: lipidValues.ldl,
+              unit: "mg/dL",
+              referenceRange: "< 150",
+              comments: "",
+            },
+            {
+              testCode: "LIPID",
+              testName: "Total Cholesterol/HDL Ratio",
+              value: lipidValues.tcHdlRatio,
+              unit: "",
+              referenceRange: "< 5.0",
+              comments: "",
+            },
+            {
+              testCode: "LIPID",
+              testName: "Non-HDL Cholesterol",
+              value: lipidValues.nonHdl,
+              unit: "mg/dL",
+              referenceRange: "< 130",
+              comments: "",
+            },
+          ].filter((r) => r.value && r.value.trim() !== "");
+
+          allResults.push(...lipidResults);
+        }
+
+        // Add UFR results if this is UFR test
+        if (testCode === "UFR" && ufrValues) {
+          const ufrResults = [
+            {
+              testCode: "UFR",
+              testName: "Colour",
+              value: ufrValues.colour,
+              unit: "",
+              referenceRange: "",
+              comments: "",
+            },
+            {
+              testCode: "UFR",
+              testName: "Appearance",
+              value: ufrValues.appearance,
+              unit: "",
+              referenceRange: "",
+              comments: "",
+            },
+            {
+              testCode: "UFR",
+              testName: "PH",
+              value: ufrValues.ph,
+              unit: "",
+              referenceRange: "",
+              comments: "",
+            },
+            {
+              testCode: "UFR",
+              testName: "Specific Gravity",
+              value: ufrValues.specificGravity,
+              unit: "",
+              referenceRange: "1.010-1.025",
+              comments: "",
+            },
+            {
+              testCode: "UFR",
+              testName: "Protein(Albumin)",
+              value: ufrValues.protein,
+              unit: "",
+              referenceRange: "",
+              comments: "",
+            },
+            {
+              testCode: "UFR",
+              testName: "Sugar(Reducing substances)",
+              value: ufrValues.sugar,
+              unit: "",
+              referenceRange: "",
+              comments: "",
+            },
+            {
+              testCode: "UFR",
+              testName: "Urobilinogen",
+              value: ufrValues.urobilinogen,
+              unit: "",
+              referenceRange: "",
+              comments: "",
+            },
+            {
+              testCode: "UFR",
+              testName: "Bile",
+              value: ufrValues.bile,
+              unit: "",
+              referenceRange: "",
+              comments: "",
+            },
+            {
+              testCode: "UFR",
+              testName: "Acetone/KB",
+              value: ufrValues.acetone,
+              unit: "",
+              referenceRange: "",
+              comments: "",
+            },
+            {
+              testCode: "UFR",
+              testName: "Epithelial cells",
+              value: ufrValues.epithelialCells,
+              unit: "/HPF",
+              referenceRange: "",
+              comments: "",
+            },
+            {
+              testCode: "UFR",
+              testName: "Pus cells",
+              value: ufrValues.pusCells,
+              unit: "/HPF",
+              referenceRange: "",
+              comments: "",
+            },
+            {
+              testCode: "UFR",
+              testName: "Red cells",
+              value: ufrValues.redCells,
+              unit: "/HPF",
+              referenceRange: "",
+              comments: "",
+            },
+            {
+              testCode: "UFR",
+              testName: "Crystals",
+              value: ufrValues.crystals,
+              unit: "/HPF",
+              referenceRange: "",
+              comments: "",
+            },
+            {
+              testCode: "UFR",
+              testName: "Casts",
+              value: ufrValues.casts,
+              unit: "/HPF",
+              referenceRange: "",
+              comments: "",
+            },
+            {
+              testCode: "UFR",
+              testName: "Organisms",
+              value: ufrValues.organisms,
+              unit: "/HPF",
+              referenceRange: "",
+              comments: "",
+            },
+            {
+              testCode: "UFR",
+              testName: "Others",
+              value: ufrValues.others,
+              unit: "",
+              referenceRange: "",
+              comments: "",
+            },
+          ].filter((r) => r.value && r.value.trim() !== "");
+
+          allResults.push(...ufrResults);
+        }
+
+        // Add OGTT results if this is OGTT test
+        if (testCode === "OGTT" && ogttValues) {
+          const ogttResultsArray = [];
+
+          if (ogttValues.fasting && ogttValues.fasting.trim() !== "") {
+            ogttResultsArray.push({
+              testCode: "OGTT",
+              testName: "Fasting Glucose",
+              value: ogttValues.fasting,
+              unit: "mg/dL",
+              referenceRange: "60 - 115",
+              comments: "",
             });
           }
-        });
 
-        console.log("BSS results added to allResults");
-      }
+          if (
+            ogttValues.afterOneHour &&
+            ogttValues.afterOneHour.trim() !== ""
+          ) {
+            ogttResultsArray.push({
+              testCode: "OGTT",
+              testName: "After 1 Hour Glucose",
+              value: ogttValues.afterOneHour,
+              unit: "mg/dL",
+              referenceRange: "< 180",
+              comments: "",
+            });
+          }
 
-      // Add BGRh results if available
-      if (
-        bgrhValues &&
-        hasBGRhTest &&
-        bgrhValues.bloodGroup &&
-        bgrhValues.rhesus
-      ) {
-        console.log("=== SAVING BGRh DATA ===");
-        console.log("bgrhValues:", bgrhValues);
+          if (
+            ogttValues.afterTwoHours &&
+            ogttValues.afterTwoHours.trim() !== ""
+          ) {
+            ogttResultsArray.push({
+              testCode: "OGTT",
+              testName: "After 2 Hour Glucose",
+              value: ogttValues.afterTwoHours,
+              unit: "mg/dL",
+              referenceRange: "< 140",
+              comments: "",
+            });
+          }
 
-        allResults.push({
-          testCode: "BGRh",
-          testName: "Blood Grouping & Rh",
-          value: bgrhValues.bloodGroup,
-          unit: "",
-          referenceRange: "",
-          comments: bgrhValues.rhesus,
-        });
+          allResults.push(...ogttResultsArray);
+        }
 
-        console.log("BGRh result added to allResults");
+        // Add PPBS results if this is PPBS test
+        if (
+          testCode === "PPBS" &&
+          ppbsValues &&
+          ppbsValues.value &&
+          ppbsValues.value.trim() !== ""
+        ) {
+          const referenceRange =
+            ppbsValues.hourType === "After 1 Hour" ? "< 160" : "< 140";
+
+          allResults.push({
+            testCode: "PPBS",
+            testName: "Post Prandial Blood Sugar",
+            value: ppbsValues.value,
+            unit: "mg/dL",
+            referenceRange: referenceRange,
+            comments: "",
+            mealType: ppbsValues.mealType,
+            hourType: ppbsValues.hourType,
+          });
+        }
+
+        // Add BSS results if this is BSS test
+        if (testCode === "BSS" && bssValues && bssValues.length > 0) {
+          bssValues.forEach((entry) => {
+            if (entry.value && entry.value.trim() !== "") {
+              const referenceRange =
+                entry.hourType === "After 1 Hour" ? "< 160" : "< 140";
+
+              allResults.push({
+                testCode: "BSS",
+                testName: "Post Prandial Blood Sugar",
+                value: entry.value,
+                unit: "mg/dL",
+                referenceRange: referenceRange,
+                comments: "",
+                mealType: entry.mealType,
+                hourType: entry.hourType,
+              });
+            }
+          });
+        }
+
+        // Add BGRh results if this is BGRh test
+        if (
+          testCode === "BGRh" &&
+          bgrhValues &&
+          bgrhValues.bloodGroup &&
+          bgrhValues.rhesus
+        ) {
+          allResults.push({
+            testCode: "BGRh",
+            testName: "Blood Grouping & Rh",
+            value: bgrhValues.bloodGroup,
+            unit: "",
+            referenceRange: "",
+            comments: bgrhValues.rhesus,
+          });
+        }
+
+        // Add regular test results
+        if (
+          !["FBC", "LIPID", "UFR", "OGTT", "PPBS", "BSS", "BGRh"].includes(
+            testCode
+          )
+        ) {
+          const regularResults = results.filter(
+            (r) => r.testCode === testCode && r.value.trim() !== ""
+          );
+          allResults.push(...regularResults);
+        }
       }
 
       if (allResults.length === 0) {
@@ -1044,7 +1018,7 @@ export default function NewReportPage() {
         return;
       }
 
-      console.log("All results to save:", allResults);
+      console.log("All results to save (in order):", allResults);
 
       const report = await dataManager.addReport({
         patientId: selectedPatient.id,
@@ -1053,7 +1027,7 @@ export default function NewReportPage() {
         results: allResults,
         doctorRemarks,
         reviewedBy,
-        reportDate: reportDate, // Add this line
+        reportDate: reportDate,
       });
 
       // Redirect to report details page
@@ -1062,6 +1036,515 @@ export default function NewReportPage() {
       console.error("Error saving report:", error);
       alert("Error saving report. Please check console for details.");
     } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCompleteIndividualTest = async (testCode: string) => {
+    if (!selectedPatient) return;
+
+    setSaving(true);
+
+    try {
+      const dataManager = DataManager.getInstance();
+      const allResults: ReportResult[] = [];
+
+      // Collect results for this specific test
+      switch (testCode) {
+        case "FBC":
+          if (fbcValues) {
+            const fbcResults = [
+              {
+                testCode: "FBC",
+                testName: "Hemoglobin",
+                value: fbcValues.hemoglobin,
+                unit: "g/dL",
+                referenceRange: "11.0 – 16.5",
+                comments: "",
+              },
+              {
+                testCode: "FBC",
+                testName: "RBC",
+                value: fbcValues.rbc,
+                unit: "x10⁶/μL",
+                referenceRange: "3.5 - 6.2",
+                comments: "",
+              },
+              {
+                testCode: "FBC",
+                testName: "PCV",
+                value: fbcValues.pcv,
+                unit: "%",
+                referenceRange: "36.0 – 54.0",
+                comments: "",
+              },
+              {
+                testCode: "FBC",
+                testName: "MCV",
+                value: fbcValues.mcv,
+                unit: "fL",
+                referenceRange: "80.0 – 100.0",
+                comments: "",
+              },
+              {
+                testCode: "FBC",
+                testName: "MCH",
+                value: fbcValues.mch,
+                unit: "pg",
+                referenceRange: "27.0 – 34.0",
+                comments: "",
+              },
+              {
+                testCode: "FBC",
+                testName: "MCHC",
+                value: fbcValues.mchc,
+                unit: "g/dL",
+                referenceRange: "32.0 – 36.0",
+                comments: "",
+              },
+              {
+                testCode: "FBC",
+                testName: "RDW-CV",
+                value: fbcValues.rdwCv,
+                unit: "%",
+                referenceRange: "11.0 – 16.0",
+                comments: "",
+              },
+              {
+                testCode: "FBC",
+                testName: "Platelets",
+                value: fbcValues.platelets,
+                unit: "x10³/μL",
+                referenceRange: "150 - 450",
+                comments: "",
+              },
+              {
+                testCode: "FBC",
+                testName: "WBC",
+                value: fbcValues.wbc,
+                unit: "x10³/μL",
+                referenceRange: "4.0 - 10.0",
+                comments: "",
+              },
+              {
+                testCode: "FBC",
+                testName: "Neutrophils",
+                value: fbcValues.neutrophils,
+                unit: "%",
+                referenceRange: "40.0 – 70.0",
+                comments: "",
+              },
+              {
+                testCode: "FBC",
+                testName: "Lymphocytes",
+                value: fbcValues.lymphocytes,
+                unit: "%",
+                referenceRange: "20.0 – 40.0",
+                comments: "",
+              },
+              {
+                testCode: "FBC",
+                testName: "Eosinophils",
+                value: fbcValues.eosinophils,
+                unit: "%",
+                referenceRange: "1.0 – 5.0",
+                comments: "",
+              },
+              {
+                testCode: "FBC",
+                testName: "Monocytes",
+                value: fbcValues.monocytes,
+                unit: "%",
+                referenceRange: "3.0 – 12.0",
+                comments: "",
+              },
+              {
+                testCode: "FBC",
+                testName: "Basophils",
+                value: fbcValues.basophils,
+                unit: "%",
+                referenceRange: "0-1",
+                comments: "",
+              },
+              {
+                testCode: "FBC",
+                testName: "Neutrophils (Abs)",
+                value: fbcValues.neutrophilsAbs,
+                unit: "x10³/μL",
+                referenceRange: "2.0-7.5",
+                comments: "",
+              },
+              {
+                testCode: "FBC",
+                testName: "Lymphocytes (Abs)",
+                value: fbcValues.lymphocytesAbs,
+                unit: "x10³/μL",
+                referenceRange: "1.0-4.0",
+                comments: "",
+              },
+              {
+                testCode: "FBC",
+                testName: "Eosinophils (Abs)",
+                value: fbcValues.eosinophilsAbs,
+                unit: "x10³/μL",
+                referenceRange: "0.05-0.50",
+                comments: "",
+              },
+              {
+                testCode: "FBC",
+                testName: "Monocytes (Abs)",
+                value: fbcValues.monocytesAbs,
+                unit: "x10³/μL",
+                referenceRange: "0.20-1.00",
+                comments: "",
+              },
+              {
+                testCode: "FBC",
+                testName: "Basophils (Abs)",
+                value: fbcValues.basophilsAbs,
+                unit: "x10³/μL",
+                referenceRange: "0.00-0.20",
+                comments: "",
+              },
+            ].filter((r) => r.value && r.value.trim() !== "");
+            allResults.push(...fbcResults);
+          }
+          break;
+
+        case "LIPID":
+          if (lipidValues) {
+            const lipidResults = [
+              {
+                testCode: "LIPID",
+                testName: "Total Cholesterol",
+                value: lipidValues.totalCholesterol,
+                unit: "mg/dL",
+                referenceRange: "< 200",
+                comments: "",
+              },
+              {
+                testCode: "LIPID",
+                testName: "HDL Cholesterol",
+                value: lipidValues.hdl,
+                unit: "mg/dL",
+                referenceRange: "> 40",
+                comments: "",
+              },
+              {
+                testCode: "LIPID",
+                testName: "Triglycerides",
+                value: lipidValues.triglycerides,
+                unit: "mg/dL",
+                referenceRange: "< 150",
+                comments: "",
+              },
+              {
+                testCode: "LIPID",
+                testName: "VLDL Cholesterol",
+                value: lipidValues.vldl,
+                unit: "mg/dL",
+                referenceRange: "< 40",
+                comments: "",
+              },
+              {
+                testCode: "LIPID",
+                testName: "LDL Cholesterol",
+                value: lipidValues.ldl,
+                unit: "mg/dL",
+                referenceRange: "< 150",
+                comments: "",
+              },
+              {
+                testCode: "LIPID",
+                testName: "Total Cholesterol/HDL Ratio",
+                value: lipidValues.tcHdlRatio,
+                unit: "",
+                referenceRange: "< 5.0",
+                comments: "",
+              },
+              {
+                testCode: "LIPID",
+                testName: "Non-HDL Cholesterol",
+                value: lipidValues.nonHdl,
+                unit: "mg/dL",
+                referenceRange: "< 130",
+                comments: "",
+              },
+            ].filter((r) => r.value && r.value.trim() !== "");
+            allResults.push(...lipidResults);
+          }
+          break;
+
+        case "UFR":
+          if (ufrValues) {
+            const ufrResults = [
+              {
+                testCode: "UFR",
+                testName: "Colour",
+                value: ufrValues.colour,
+                unit: "",
+                referenceRange: "",
+                comments: "",
+              },
+              {
+                testCode: "UFR",
+                testName: "Appearance",
+                value: ufrValues.appearance,
+                unit: "",
+                referenceRange: "",
+                comments: "",
+              },
+              {
+                testCode: "UFR",
+                testName: "PH",
+                value: ufrValues.ph,
+                unit: "",
+                referenceRange: "",
+                comments: "",
+              },
+              {
+                testCode: "UFR",
+                testName: "Specific Gravity",
+                value: ufrValues.specificGravity,
+                unit: "",
+                referenceRange: "1.010-1.025",
+                comments: "",
+              },
+              {
+                testCode: "UFR",
+                testName: "Protein(Albumin)",
+                value: ufrValues.protein,
+                unit: "",
+                referenceRange: "",
+                comments: "",
+              },
+              {
+                testCode: "UFR",
+                testName: "Sugar(Reducing substances)",
+                value: ufrValues.sugar,
+                unit: "",
+                referenceRange: "",
+                comments: "",
+              },
+              {
+                testCode: "UFR",
+                testName: "Urobilinogen",
+                value: ufrValues.urobilinogen,
+                unit: "",
+                referenceRange: "",
+                comments: "",
+              },
+              {
+                testCode: "UFR",
+                testName: "Bile",
+                value: ufrValues.bile,
+                unit: "",
+                referenceRange: "",
+                comments: "",
+              },
+              {
+                testCode: "UFR",
+                testName: "Acetone/KB",
+                value: ufrValues.acetone,
+                unit: "",
+                referenceRange: "",
+                comments: "",
+              },
+              {
+                testCode: "UFR",
+                testName: "Epithelial cells",
+                value: ufrValues.epithelialCells,
+                unit: "/HPF",
+                referenceRange: "",
+                comments: "",
+              },
+              {
+                testCode: "UFR",
+                testName: "Pus cells",
+                value: ufrValues.pusCells,
+                unit: "/HPF",
+                referenceRange: "",
+                comments: "",
+              },
+              {
+                testCode: "UFR",
+                testName: "Red cells",
+                value: ufrValues.redCells,
+                unit: "/HPF",
+                referenceRange: "",
+                comments: "",
+              },
+              {
+                testCode: "UFR",
+                testName: "Crystals",
+                value: ufrValues.crystals,
+                unit: "/HPF",
+                referenceRange: "",
+                comments: "",
+              },
+              {
+                testCode: "UFR",
+                testName: "Casts",
+                value: ufrValues.casts,
+                unit: "/HPF",
+                referenceRange: "",
+                comments: "",
+              },
+              {
+                testCode: "UFR",
+                testName: "Organisms",
+                value: ufrValues.organisms,
+                unit: "/HPF",
+                referenceRange: "",
+                comments: "",
+              },
+              {
+                testCode: "UFR",
+                testName: "Others",
+                value: ufrValues.others,
+                unit: "",
+                referenceRange: "",
+                comments: "",
+              },
+            ].filter((r) => r.value && r.value.trim() !== "");
+            allResults.push(...ufrResults);
+          }
+          break;
+
+        case "OGTT":
+          if (ogttValues) {
+            const ogttResultsArray = [];
+            if (ogttValues.fasting && ogttValues.fasting.trim() !== "") {
+              ogttResultsArray.push({
+                testCode: "OGTT",
+                testName: "Fasting Glucose",
+                value: ogttValues.fasting,
+                unit: "mg/dL",
+                referenceRange: "60 - 115",
+                comments: "",
+              });
+            }
+            if (
+              ogttValues.afterOneHour &&
+              ogttValues.afterOneHour.trim() !== ""
+            ) {
+              ogttResultsArray.push({
+                testCode: "OGTT",
+                testName: "After 1 Hour Glucose",
+                value: ogttValues.afterOneHour,
+                unit: "mg/dL",
+                referenceRange: "< 180",
+                comments: "",
+              });
+            }
+            if (
+              ogttValues.afterTwoHours &&
+              ogttValues.afterTwoHours.trim() !== ""
+            ) {
+              ogttResultsArray.push({
+                testCode: "OGTT",
+                testName: "After 2 Hour Glucose",
+                value: ogttValues.afterTwoHours,
+                unit: "mg/dL",
+                referenceRange: "< 140",
+                comments: "",
+              });
+            }
+            allResults.push(...ogttResultsArray);
+          }
+          break;
+
+        case "PPBS":
+          if (
+            ppbsValues &&
+            ppbsValues.value &&
+            ppbsValues.value.trim() !== ""
+          ) {
+            const referenceRange =
+              ppbsValues.hourType === "After 1 Hour" ? "< 160" : "< 140";
+            allResults.push({
+              testCode: "PPBS",
+              testName: "Post Prandial Blood Sugar",
+              value: ppbsValues.value,
+              unit: "mg/dL",
+              referenceRange: referenceRange,
+              comments: "",
+              mealType: ppbsValues.mealType,
+              hourType: ppbsValues.hourType,
+            });
+          }
+          break;
+
+        case "BSS":
+          if (bssValues && bssValues.length > 0) {
+            bssValues.forEach((entry) => {
+              if (entry.value && entry.value.trim() !== "") {
+                const referenceRange =
+                  entry.hourType === "After 1 Hour" ? "< 160" : "< 140";
+                allResults.push({
+                  testCode: "BSS",
+                  testName: "Post Prandial Blood Sugar",
+                  value: entry.value,
+                  unit: "mg/dL",
+                  referenceRange: referenceRange,
+                  comments: "",
+                  mealType: entry.mealType,
+                  hourType: entry.hourType,
+                });
+              }
+            });
+          }
+          break;
+
+        case "BGRh":
+          if (bgrhValues && bgrhValues.bloodGroup && bgrhValues.rhesus) {
+            allResults.push({
+              testCode: "BGRh",
+              testName: "Blood Grouping & Rh",
+              value: bgrhValues.bloodGroup,
+              unit: "",
+              referenceRange: "",
+              comments: bgrhValues.rhesus,
+            });
+          }
+          break;
+
+        default:
+          // Regular tests
+          const testResults = results.filter(
+            (r) => r.testCode === testCode && r.value.trim() !== ""
+          );
+          allResults.push(...testResults);
+          break;
+      }
+
+      if (allResults.length === 0) {
+        alert("Please enter values for this test before completing.");
+        setSaving(false);
+        return;
+      }
+
+      // Create report with single test
+      const report = await dataManager.addReport({
+        patientId: selectedPatient.id,
+        patientName: `${selectedPatient.firstName} ${selectedPatient.lastName}`,
+        invoiceId: selectedInvoice?.id || null,
+        results: allResults,
+        doctorRemarks,
+        reviewedBy,
+        reportDate: reportDate,
+      });
+
+      // Mark test as completed
+      setCompletedTests([...completedTests, testCode]);
+
+      // Open in new tab
+      window.open(`/reports/${report.id}`, "_blank");
+
+      setSaving(false);
+    } catch (error) {
+      console.error("Error saving individual test report:", error);
+      alert("Error saving report. Please check console for details.");
       setSaving(false);
     }
   };
@@ -1082,18 +1565,21 @@ export default function NewReportPage() {
     bgrhValues && hasBGRhTest && bgrhValues.bloodGroup && bgrhValues.rhesus;
 
   const isFormValid = () => {
-    const hasRegularResults = results.some((r) => r.value.trim() !== "");
-    const hasFBC = useDirectTestSelection
-      ? selectedTests.includes("FBC")
-      : selectedInvoice?.lineItems.some((item) => item.testCode === "FBC");
+    // Check if at least one test is selected (checked)
+    if (selectedTests.length === 0) return false;
+
+    const hasRegularResults = results.some(
+      (r) => selectedTests.includes(r.testCode) && r.value.trim() !== ""
+    );
+
     const hasFBCResults =
       fbcValues &&
-      hasFBC &&
+      selectedTests.includes("FBC") &&
       Object.values(fbcValues).some((v) => v && String(v).trim() !== "");
 
     const hasLipidResults =
       lipidValues &&
-      hasLipidProfileTest &&
+      selectedTests.includes("LIPID") &&
       Object.values(lipidValues).some((v) => v && String(v).trim() !== "");
 
     const hasPathologyResults =
@@ -1101,30 +1587,21 @@ export default function NewReportPage() {
       pathologyReport.report &&
       pathologyReport.report.trim() !== "";
 
-    const hasValidSelection =
-      selectedInvoice || (useDirectTestSelection && selectedTests.length > 0);
-
     return (
       selectedPatient &&
-      hasValidSelection &&
+      selectedTests.length > 0 &&
       (hasRegularResults ||
         hasFBCResults ||
         hasLipidResults ||
         hasPathologyResults ||
-        hasUFRResults ||
-        hasOGTTResults ||
-        hasPPBSResults ||
-        hasBSSResults ||
-        hasBGRhResults) &&
+        (hasUFRResults && selectedTests.includes("UFR")) ||
+        (hasOGTTResults && selectedTests.includes("OGTT")) ||
+        (hasPPBSResults && selectedTests.includes("PPBS")) ||
+        (hasBSSResults && selectedTests.includes("BSS")) ||
+        (hasBGRhResults && selectedTests.includes("BGRh"))) &&
       reviewedBy.trim() !== ""
     );
   };
-
-  // Check if FBC test is selected
-  const hasFBCTest = useDirectTestSelection
-    ? selectedTests.includes("FBC")
-    : selectedInvoice?.lineItems.some((item) => item.testCode === "FBC") ||
-      false;
 
   // Get patient invoices
   const patientInvoices = selectedPatient
@@ -1161,11 +1638,11 @@ export default function NewReportPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <User className="h-5 w-5" />
-              Select Patient & Tests
+              Select Patient
             </CardTitle>
             <CardDescription>
-              Choose the patient and either an existing invoice or select tests
-              directly
+              Search and expand any test to enter values. Tests with filled
+              values will automatically be included when you generate reports.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -1224,19 +1701,25 @@ export default function NewReportPage() {
 
             {selectedPatient && (
               <div className="space-y-4">
-                {/* Option 1: Use existing invoice */}
-                {patientInvoices.length > 0 && !useDirectTestSelection && (
+                {/* Optional: Link to existing invoice */}
+                {patientInvoices.length > 0 && (
                   <div className="space-y-2">
-                    <Label htmlFor="invoice">Select Invoice (Optional)</Label>
+                    <Label htmlFor="invoice">Link to Invoice (Optional)</Label>
                     <Select
                       key={selectedInvoice?.id || "no-invoice"}
                       value={selectedInvoice?.id || ""}
-                      onValueChange={handleInvoiceChange}
+                      onValueChange={(invoiceId) => {
+                        const invoice = invoices.find(
+                          (inv) => inv.id === invoiceId
+                        );
+                        setSelectedInvoice(invoice || null);
+                      }}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select an invoice" />
+                        <SelectValue placeholder="Select an invoice (optional)" />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="none">No Invoice</SelectItem>
                         {patientInvoices.map((invoice) => (
                           <SelectItem key={invoice.id} value={invoice.id}>
                             {invoice.id} - LKR {invoice.grandTotal.toFixed(2)} (
@@ -1248,504 +1731,808 @@ export default function NewReportPage() {
                   </div>
                 )}
 
-                {/* Option 2: Direct test selection */}
-                {!selectedInvoice && (
-                  <div className="space-y-4">
-                    {!useDirectTestSelection && (
-                      <div className="text-center p-4 border-2 border-dashed border-muted-foreground/25 rounded-lg">
-                        <p className="text-sm text-muted-foreground mb-2">
-                          No invoice selected or patient paid at hospital?
-                        </p>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={handleDirectTestSelection}
-                        >
-                          Select Tests Directly
-                        </Button>
-                      </div>
-                    )}
-
-                    {useDirectTestSelection && (
-                      <TestSelectionComponent
-                        selectedTests={selectedTests}
-                        onTestsChange={handleTestSelection}
-                      />
-                    )}
-                  </div>
-                )}
+                {/* Report Date */}
+                <div className="space-y-2">
+                  <Label htmlFor="reportDate">Report Date</Label>
+                  <Input
+                    id="reportDate"
+                    type="date"
+                    value={reportDate}
+                    onChange={(e) => setReportDate(e.target.value)}
+                    className="w-full max-w-[200px]"
+                  />
+                </div>
               </div>
             )}
 
             {/* Summary */}
-            {selectedPatient &&
-              (selectedInvoice ||
-                (useDirectTestSelection && selectedTests.length > 0)) && (
-                <div className="p-4 bg-muted/50 rounded-lg space-y-4">
-                  <div className="grid gap-2 md:grid-cols-2">
-                    <div>
-                      <span className="text-sm text-muted-foreground">
-                        Patient:
-                      </span>
-                      <div className="font-medium">
-                        {selectedPatient.firstName} {selectedPatient.lastName}
-                      </div>
-                    </div>
-                    <div>
-                      <span className="text-sm text-muted-foreground">
-                        {selectedInvoice ? "Invoice:" : "Tests:"}
-                      </span>
-                      <div className="font-medium">
-                        {selectedInvoice
-                          ? selectedInvoice.id
-                          : `${selectedTests.length} selected`}
-                      </div>
-                    </div>
-                    <div>
-                      <span className="text-sm text-muted-foreground">
-                        Test Count:
-                      </span>
-                      <div className="font-medium">
-                        {selectedInvoice
-                          ? selectedInvoice.lineItems.length
-                          : selectedTests.length}{" "}
-                        tests
-                      </div>
-                    </div>
-                    <div>
-                      <span className="text-sm text-muted-foreground">
-                        Report Date:
-                      </span>
-                      <Input
-                        type="date"
-                        value={reportDate}
-                        onChange={(e) => setReportDate(e.target.value)}
-                        className="h-8 w-full max-w-[200px] font-medium"
-                      />
+            {selectedPatient && selectedTests.length > 0 && (
+              <div className="p-4 bg-muted/50 rounded-lg space-y-4">
+                <div className="grid gap-2 md:grid-cols-2">
+                  <div>
+                    <span className="text-sm text-muted-foreground">
+                      Patient:
+                    </span>
+                    <div className="font-medium">
+                      {selectedPatient.firstName} {selectedPatient.lastName}
                     </div>
                   </div>
+                  <div>
+                    <span className="text-sm text-muted-foreground">
+                      Tests Selected:
+                    </span>
+                    <div className="font-medium">
+                      {selectedTests.length} test
+                      {selectedTests.length !== 1 ? "s" : ""}
+                    </div>
+                  </div>
+                  {selectedInvoice && (
+                    <div>
+                      <span className="text-sm text-muted-foreground">
+                        Linked Invoice:
+                      </span>
+                      <div className="font-medium">{selectedInvoice.id}</div>
+                    </div>
+                  )}
                 </div>
-              )}
+
+                {/* Show selected test names */}
+                <div>
+                  <span className="text-sm text-muted-foreground block mb-2">
+                    Selected Tests:
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedTests.map((testCode) => {
+                      const test = testCatalog.find((t) => t.code === testCode);
+                      return (
+                        <Badge key={testCode} variant="secondary">
+                          {test?.name || testCode}
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                </div>
+                {/* Show selected test names WITH ORDER */}
+                <div>
+                  <span className="text-sm text-muted-foreground block mb-2">
+                    Selected Tests (in order):
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {testSelectionOrder
+                      .filter((code) => selectedTests.includes(code))
+                      .map((testCode, index) => {
+                        const test = testCatalog.find(
+                          (t) => t.code === testCode
+                        );
+                        return (
+                          <Badge
+                            key={testCode}
+                            variant="secondary"
+                            className="flex items-center gap-2"
+                          >
+                            <span className="text-xs font-bold text-muted-foreground">
+                              {index + 1}.
+                            </span>
+                            {test?.name || testCode}
+                          </Badge>
+                        );
+                      })}
+                  </div>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
         {/* Test Results */}
-        {(results.length > 0 ||
-          hasFBCTest ||
-          hasLipidProfileTest ||
-          hasUFRTest ||
-          hasOGTTTest ||
-          hasPPBSTest ||
-          hasBSSTest ||
-          hasBGRhTest) && (
-          <div className="space-y-6">
-            {/* FBC Test - Special Component */}
-            {hasFBCTest && (
-              <FBCReportCard onValuesChange={handleFBCValuesChange} />
-            )}
-
-            {hasLipidProfileTest && (
-              <LipidProfileReportCard onValuesChange={setLipidValues} />
-            )}
-
-            {hasUFRTest && <UFRReportCard onValuesChange={setUfrValues} />}
-
-            {hasOGTTTest && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TestTube className="h-5 w-5" />
-                    OGTT - Oral Glucose Tolerance Test
-                  </CardTitle>
-                  <CardDescription>
-                    Enter fasting, 1-hour, and 2-hour glucose values
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid gap-4 md:grid-cols-3">
-                    <div className="space-y-2">
-                      <Label htmlFor="ogtt-fasting">Fasting (mg/dL)</Label>
-                      <Input
-                        id="ogtt-fasting"
-                        type="number"
-                        value={ogttValues?.fasting || ""}
-                        onChange={(e) =>
-                          setOgttValues({
-                            ...ogttValues,
-                            fasting: e.target.value,
-                          })
-                        }
-                        placeholder="70 - 100"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="ogtt-1hour">After 1 Hour (mg/dL)</Label>
-                      <Input
-                        id="ogtt-1hour"
-                        type="number"
-                        value={ogttValues?.afterOneHour || ""}
-                        onChange={(e) =>
-                          setOgttValues({
-                            ...ogttValues,
-                            afterOneHour: e.target.value,
-                          })
-                        }
-                        placeholder="< 180"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="ogtt-2hour">After 2 Hour (mg/dL)</Label>
-                      <Input
-                        id="ogtt-2hour"
-                        type="number"
-                        value={ogttValues?.afterTwoHours || ""}
-                        onChange={(e) =>
-                          setOgttValues({
-                            ...ogttValues,
-                            afterTwoHours: e.target.value,
-                          })
-                        }
-                        placeholder="< 140"
-                      />
-                    </div>
-                  </div>
-                  {ogttValues &&
-                    (ogttValues.fasting ||
-                      ogttValues.afterOneHour ||
-                      ogttValues.afterTwoHours) && (
-                      <OGTTGraph
-                        fasting={ogttValues.fasting || ""}
-                        afterOneHour={ogttValues.afterOneHour || ""}
-                        afterTwoHours={ogttValues.afterTwoHours || ""}
-                      />
-                    )}
-                </CardContent>
-              </Card>
-            )}
-
-            {hasPPBSTest && <PPBSReportCard onValuesChange={setPpbsValues} />}
-
-            {hasBSSTest && <BSSReportCard onValuesChange={setBssValues} />}
-
-            {hasBGRhTest && <BGRhReportCard onValuesChange={setBgrhValues} />}
-
-            {/* Other Tests */}
-            {results.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TestTube className="h-5 w-5" />
-                    Enter Test Results
-                  </CardTitle>
-                  <CardDescription>
-                    Input the results for each test. Values outside reference
-                    range will be highlighted.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {results.map((result, index) => {
-                    const dataManager = DataManager.getInstance();
-                    const testDetails = testCatalog.find(
-                      (t) => t.code === result.testCode
-                    );
-                    const isQualitative = testDetails?.isQualitative || false;
-
-                    // Get indicator class based on value and range
-                    const indicatorClass =
-                      !isQualitative && result.value
-                        ? getValueIndicatorClass(
-                            result.value,
-                            result.referenceRange
-                          )
-                        : "";
-
-                    return (
-                      <div
-                        key={`${result.testCode}-${result.testName}-${index}`}
-                        className={`p-4 border rounded-lg space-y-4 transition-colors ${indicatorClass}`}
-                      >
-                        <div className="flex items-center gap-2 mb-3">
-                          <Badge variant="outline">{result.testCode}</Badge>
-                          <span className="font-medium">{result.testName}</span>
-                          {isQualitative && (
-                            <Badge variant="secondary" className="ml-2">
-                              Qualitative
-                            </Badge>
-                          )}
-                          {!isQualitative && result.value && (
-                            <>
-                              {isValueInRange(
-                                result.value,
-                                result.referenceRange
-                              ) === true && (
-                                <Badge
-                                  variant="default"
-                                  className="ml-2 bg-green-600"
-                                >
-                                  Normal
-                                </Badge>
-                              )}
-                              {isValueInRange(
-                                result.value,
-                                result.referenceRange
-                              ) === false && (
-                                <Badge variant="destructive" className="ml-2">
-                                  Out of Range
-                                </Badge>
-                              )}
-                            </>
-                          )}
-                        </div>
-
-                        <div className="grid gap-4 md:grid-cols-3">
-                          <div className="space-y-2">
-                            <Label
-                              htmlFor={`value-${result.testCode}-${result.testName}-${index}`}
-                            >
-                              Result Value *
-                            </Label>
-                            <Input
-                              id={`value-${result.testCode}-${result.testName}-${index}`}
-                              value={result.value}
-                              onChange={(e) =>
-                                updateResult(
-                                  result.testName,
-                                  "value",
-                                  e.target.value
-                                )
-                              }
-                              placeholder="Enter result value"
-                              className={
-                                !isQualitative && result.value
-                                  ? isValueInRange(
-                                      result.value,
-                                      result.referenceRange
-                                    ) === false
-                                    ? "border-red-500 focus:ring-red-500"
-                                    : isValueInRange(
-                                        result.value,
-                                        result.referenceRange
-                                      ) === true
-                                    ? "border-green-500 focus:ring-green-500"
-                                    : ""
-                                  : ""
-                              }
-                            />
-                          </div>
-
-                          {isQualitative && (
-                            <div className="space-y-2">
-                              <Label
-                                htmlFor={`qualitative-${result.testCode}-${result.testName}-${index}`}
-                              >
-                                Qualitative Result *
-                              </Label>
-                              <Select
-                                value={result.comments || ""}
-                                onValueChange={(value) =>
-                                  updateResult(
-                                    result.testName,
-                                    "comments",
-                                    value
-                                  )
-                                }
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select result" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {getQualitativeOptions(result.testCode).map(
-                                    (option: {
-                                      value: string;
-                                      label: string;
-                                    }) => (
-                                      <SelectItem
-                                        key={option.value}
-                                        value={option.value}
-                                      >
-                                        {option.label}
-                                      </SelectItem>
-                                    )
-                                  )}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          )}
-                          <div className="space-y-2">
-                            <Label
-                              htmlFor={`unit-${result.testCode}-${result.testName}-${index}`}
-                            >
-                              Unit
-                            </Label>
-                            <Input
-                              id={`unit-${result.testCode}-${result.testName}-${index}`}
-                              value={result.unit}
-                              onChange={(e) =>
-                                updateResult(
-                                  result.testName,
-                                  "unit",
-                                  e.target.value
-                                )
-                              }
-                              placeholder={`e.g., ${result.unit}`}
-                            />
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label
-                              htmlFor={`range-${result.testCode}-${result.testName}-${index}`}
-                            >
-                              Reference Range
-                            </Label>
-                            <Input
-                              id={`range-${result.testCode}-${result.testName}-${index}`}
-                              value={(() => {
-                                // Format nested reference ranges for display
-                                try {
-                                  const parsed =
-                                    typeof result.referenceRange === "string"
-                                      ? JSON.parse(result.referenceRange)
-                                      : result.referenceRange;
-
-                                  if (
-                                    typeof parsed === "object" &&
-                                    parsed !== null &&
-                                    !Array.isArray(parsed)
-                                  ) {
-                                    return Object.entries(parsed)
-                                      .map(([key, value]) => `${key}: ${value}`)
-                                      .join(", ");
-                                  }
-                                  return result.referenceRange;
-                                } catch {
-                                  return result.referenceRange;
-                                }
-                              })()}
-                              onChange={(e) =>
-                                updateResult(
-                                  result.testName,
-                                  "referenceRange",
-                                  e.target.value
-                                )
-                              }
-                              placeholder={(() => {
-                                // Format nested reference ranges for placeholder
-                                try {
-                                  const parsed =
-                                    typeof result.referenceRange === "string"
-                                      ? JSON.parse(result.referenceRange)
-                                      : result.referenceRange;
-
-                                  if (
-                                    typeof parsed === "object" &&
-                                    parsed !== null &&
-                                    !Array.isArray(parsed)
-                                  ) {
-                                    return Object.entries(parsed)
-                                      .map(([key, value]) => `${key}: ${value}`)
-                                      .join(", ");
-                                  }
-                                  return `e.g. ${result.referenceRange}`;
-                                } catch {
-                                  return `e.g. ${result.referenceRange}`;
-                                }
-                              })()}
-                            />
-                          </div>
-                        </div>
-
-                        {!isQualitative && (
-                          <div className="space-y-2">
-                            <Label
-                              htmlFor={`comments-${result.testCode}-${result.testName}-${index}`}
-                            >
-                              Comments (Optional)
-                            </Label>
-                            <Textarea
-                              id={`comments-${result.testCode}-${result.testName}-${index}`}
-                              value={result.comments || ""}
-                              onChange={(e) =>
-                                updateResult(
-                                  result.testName,
-                                  "comments",
-                                  e.target.value
-                                )
-                              }
-                              placeholder="Any additional comments about this result"
-                              rows={2}
-                            />
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        )}
-
-        {/* Doctor's Remarks */}
-        {(results.length > 0 ||
-          hasFBCTest ||
-          hasLipidProfileTest ||
-          hasUFRTest ||
-          hasOGTTTest ||
-          hasPPBSTest ||
-          hasBSSTest ||
-          hasBGRhTest) && (
+        {selectedPatient && (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                Additional Information
+                <TestTube className="h-5 w-5" />
+                Available Tests - Select & Complete
               </CardTitle>
               <CardDescription>
-                Add doctor's remarks and review information
+                Search for tests, check the ones you want to include, expand to
+                enter values, and click "Complete Test" for individual reports
+                or select multiple and use "Generate Combined Report" below.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Search Tests */}
               <div className="space-y-2">
-                <Label htmlFor="doctorRemarks">
-                  Doctor's Remarks (Optional)
-                </Label>
-                <Textarea
-                  id="doctorRemarks"
-                  value={doctorRemarks}
-                  onChange={(e) => setDoctorRemarks(e.target.value)}
-                  placeholder="Enter any additional remarks or recommendations"
-                  rows={4}
+                <Label htmlFor="testSearch">Search Tests</Label>
+                <Input
+                  id="testSearch"
+                  placeholder="Search by test name, code, or category..."
+                  value={searchTestTerm}
+                  onChange={(e) => setSearchTestTerm(e.target.value)}
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="reviewedBy">Reviewed By *</Label>
-                <Input
-                  id="reviewedBy"
-                  value={reviewedBy}
-                  onChange={(e) => setReviewedBy(e.target.value)}
-                  placeholder="Enter reviewer name"
-                  required
-                />
-              </div>
+              <Accordion type="multiple" className="w-full">
+                {testCatalog
+                  .filter((test) =>
+                    searchTestTerm
+                      ? test.name
+                          .toLowerCase()
+                          .includes(searchTestTerm.toLowerCase()) ||
+                        test.code
+                          .toLowerCase()
+                          .includes(searchTestTerm.toLowerCase()) ||
+                        test.category
+                          .toLowerCase()
+                          .includes(searchTestTerm.toLowerCase())
+                      : true
+                  )
+                  .map((test) => {
+                    const isSelected = selectedTests.includes(test.code);
+                    const isFilled = isTestFilled(test.code);
+                    const isCompleted = completedTests.includes(test.code);
+
+                    return (
+                      <AccordionItem
+                        key={test.code}
+                        value={test.code}
+                        className={`border rounded-lg mb-3 ${
+                          isSelected ? "border-primary bg-primary/5" : ""
+                        }`}
+                      >
+                        <div className="relative">
+                          <AccordionTrigger
+                            className="px-4 hover:no-underline hover:bg-muted/50"
+                            onClick={() => {
+                              // Auto-select test when accordion is clicked
+                              if (!isSelected) {
+                                const newSelectedTests = [
+                                  ...selectedTests,
+                                  test.code,
+                                ];
+                                handleTestSelection(newSelectedTests);
+                                // Also update order immediately
+                                if (!testSelectionOrder.includes(test.code)) {
+                                  setTestSelectionOrder([
+                                    ...testSelectionOrder,
+                                    test.code,
+                                  ]);
+                                }
+                              }
+                            }}
+                          >
+                            <div className="flex items-center gap-3 w-full">
+                              {isFilled ? (
+                                <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
+                              ) : (
+                                <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                              )}
+                              <div className="flex-1 text-left">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <Badge variant="outline">{test.code}</Badge>
+                                  <span className="font-medium">
+                                    {test.name}
+                                  </span>
+                                  <Badge
+                                    variant="secondary"
+                                    className="text-xs"
+                                  >
+                                    {test.category}
+                                  </Badge>
+                                </div>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  LKR {test.defaultPrice.toFixed(2)}
+                                </p>
+                              </div>
+                              {isCompleted && (
+                                <Badge
+                                  variant="default"
+                                  className="bg-blue-600"
+                                >
+                                  Reported
+                                </Badge>
+                              )}
+                              {isFilled && !isCompleted && (
+                                <Badge
+                                  variant="default"
+                                  className="bg-green-600"
+                                >
+                                  Ready
+                                </Badge>
+                              )}
+                            </div>
+                          </AccordionTrigger>
+
+                          {/* Remove button positioned absolutely - OUTSIDE the button */}
+                          {isSelected && (
+                            <button
+                              type="button"
+                              className="absolute right-2 top-2 z-10 h-8 w-8 rounded-md hover:bg-destructive hover:text-destructive-foreground flex items-center justify-center transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                // Remove from selected tests
+                                const newSelectedTests = selectedTests.filter(
+                                  (code) => code !== test.code
+                                );
+                                handleTestSelection(newSelectedTests);
+                                // Remove from order
+                                setTestSelectionOrder(
+                                  testSelectionOrder.filter(
+                                    (code) => code !== test.code
+                                  )
+                                );
+                              }}
+                            >
+                              <span className="sr-only">Remove test</span>
+                              <span className="text-xl font-bold">×</span>
+                            </button>
+                          )}
+                        </div>
+
+                        <AccordionContent className="px-4 pb-4 pt-2">
+                          <div className="space-y-4">
+                            {/* FBC Test */}
+                            {test.code === "FBC" && (
+                              <FBCReportCard
+                                onValuesChange={(values) => {
+                                  handleFBCValuesChange(values);
+                                  if (
+                                    values &&
+                                    Object.values(values).some(
+                                      (v) => v && String(v).trim() !== ""
+                                    )
+                                  ) {
+                                    autoSelectTest("FBC");
+                                  }
+                                }}
+                              />
+                            )}
+
+                            {/* Lipid Profile Test */}
+                            {test.code === "LIPID" && (
+                              <LipidProfileReportCard
+                                onValuesChange={(values) => {
+                                  setLipidValues(values);
+                                  autoSelectTest("LIPID");
+                                }}
+                              />
+                            )}
+
+                            {/* UFR Test */}
+                            {test.code === "UFR" && (
+                              <UFRReportCard
+                                onValuesChange={(values) => {
+                                  setUfrValues(values);
+                                  autoSelectTest("UFR");
+                                }}
+                              />
+                            )}
+
+                            {/* PPBS Test */}
+                            {test.code === "PPBS" && (
+                              <PPBSReportCard
+                                onValuesChange={(values) => {
+                                  setPpbsValues(values);
+                                  if (
+                                    values &&
+                                    values.value &&
+                                    values.value.trim() !== ""
+                                  ) {
+                                    autoSelectTest("PPBS");
+                                  }
+                                }}
+                              />
+                            )}
+
+                            {/* BSS Test */}
+                            {test.code === "BSS" && (
+                              <BSSReportCard
+                                onValuesChange={(values) => {
+                                  setBssValues(values);
+                                  if (values && values.length > 0) {
+                                    autoSelectTest("BSS");
+                                  }
+                                }}
+                              />
+                            )}
+
+                            {/* BGRh Test */}
+                            {test.code === "BGRh" && (
+                              <BGRhReportCard
+                                onValuesChange={(values) => {
+                                  setBgrhValues(values);
+                                  autoSelectTest("BGRh");
+                                }}
+                              />
+                            )}
+
+                            {/* OGTT Test */}
+                            {test.code === "OGTT" && (
+                              <div className="space-y-4">
+                                <div className="grid gap-4 md:grid-cols-3">
+                                  <div className="space-y-2">
+                                    <Label htmlFor="ogtt-fasting">
+                                      Fasting (mg/dL)
+                                    </Label>
+                                    <Input
+                                      id="ogtt-fasting"
+                                      type="number"
+                                      value={ogttValues?.fasting || ""}
+                                      onChange={(e) => {
+                                        setOgttValues({
+                                          ...ogttValues,
+                                          fasting: e.target.value,
+                                        });
+                                        autoSelectTest("OGTT");
+                                      }}
+                                      placeholder="60 - 115"
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label htmlFor="ogtt-1hour">
+                                      After 1 Hour (mg/dL)
+                                    </Label>
+                                    <Input
+                                      id="ogtt-1hour"
+                                      type="number"
+                                      value={ogttValues?.afterOneHour || ""}
+                                      onChange={(e) => {
+                                        setOgttValues({
+                                          ...ogttValues,
+                                          afterOneHour: e.target.value,
+                                        });
+                                        autoSelectTest("OGTT");
+                                      }}
+                                      placeholder="< 180"
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label htmlFor="ogtt-2hour">
+                                      After 2 Hour (mg/dL)
+                                    </Label>
+                                    <Input
+                                      id="ogtt-2hour"
+                                      type="number"
+                                      value={ogttValues?.afterTwoHours || ""}
+                                      onChange={(e) => {
+                                        setOgttValues({
+                                          ...ogttValues,
+                                          afterTwoHours: e.target.value,
+                                        });
+                                        autoSelectTest("OGTT");
+                                      }}
+                                      placeholder="< 140"
+                                    />
+                                  </div>
+                                </div>
+                                {ogttValues &&
+                                  (ogttValues.fasting ||
+                                    ogttValues.afterOneHour ||
+                                    ogttValues.afterTwoHours) && (
+                                    <OGTTGraph
+                                      fasting={ogttValues.fasting || ""}
+                                      afterOneHour={
+                                        ogttValues.afterOneHour || ""
+                                      }
+                                      afterTwoHours={
+                                        ogttValues.afterTwoHours || ""
+                                      }
+                                    />
+                                  )}
+                              </div>
+                            )}
+
+                            {/* Regular Tests */}
+                            {![
+                              "FBC",
+                              "LIPID",
+                              "UFR",
+                              "OGTT",
+                              "PPBS",
+                              "BSS",
+                              "BGRh",
+                            ].includes(test.code) && (
+                              <div className="space-y-4">
+                                {results
+                                  .filter(
+                                    (result) => result.testCode === test.code
+                                  )
+                                  .map((result, index) => {
+                                    const testDetails = testCatalog.find(
+                                      (t) => t.code === result.testCode
+                                    );
+                                    const isQualitative =
+                                      testDetails?.isQualitative || false;
+                                    const indicatorClass =
+                                      !isQualitative && result.value
+                                        ? getValueIndicatorClass(
+                                            result.value,
+                                            result.referenceRange
+                                          )
+                                        : "";
+
+                                    return (
+                                      <div
+                                        key={`${result.testCode}-${result.testName}-${index}`}
+                                        className={`p-4 border rounded-lg space-y-4 transition-colors ${indicatorClass}`}
+                                      >
+                                        <div className="flex items-center gap-2 mb-3">
+                                          <span className="font-medium">
+                                            {result.testName}
+                                          </span>
+                                          {isQualitative && (
+                                            <Badge
+                                              variant="secondary"
+                                              className="ml-2"
+                                            >
+                                              Qualitative
+                                            </Badge>
+                                          )}
+                                          {!isQualitative && result.value && (
+                                            <>
+                                              {isValueInRange(
+                                                result.value,
+                                                result.referenceRange
+                                              ) === true && (
+                                                <Badge
+                                                  variant="default"
+                                                  className="ml-2 bg-green-600"
+                                                >
+                                                  Normal
+                                                </Badge>
+                                              )}
+                                              {isValueInRange(
+                                                result.value,
+                                                result.referenceRange
+                                              ) === false && (
+                                                <Badge
+                                                  variant="destructive"
+                                                  className="ml-2"
+                                                >
+                                                  Out of Range
+                                                </Badge>
+                                              )}
+                                            </>
+                                          )}
+                                        </div>
+
+                                        <div className="grid gap-4 md:grid-cols-3">
+                                          <div className="space-y-2">
+                                            <Label
+                                              htmlFor={`value-${result.testCode}-${result.testName}-${index}`}
+                                            >
+                                              Result Value *
+                                            </Label>
+                                            <Input
+                                              id={`value-${result.testCode}-${result.testName}-${index}`}
+                                              value={result.value}
+                                              onChange={(e) =>
+                                                updateResult(
+                                                  result.testName,
+                                                  "value",
+                                                  e.target.value
+                                                )
+                                              }
+                                              placeholder="Enter result value"
+                                              className={
+                                                !isQualitative && result.value
+                                                  ? isValueInRange(
+                                                      result.value,
+                                                      result.referenceRange
+                                                    ) === false
+                                                    ? "border-red-500 focus:ring-red-500"
+                                                    : isValueInRange(
+                                                        result.value,
+                                                        result.referenceRange
+                                                      ) === true
+                                                    ? "border-green-500 focus:ring-green-500"
+                                                    : ""
+                                                  : ""
+                                              }
+                                            />
+                                          </div>
+
+                                          {isQualitative && (
+                                            <div className="space-y-2">
+                                              <Label
+                                                htmlFor={`qualitative-${result.testCode}-${result.testName}-${index}`}
+                                              >
+                                                Qualitative Result *
+                                              </Label>
+                                              <Select
+                                                value={result.comments || ""}
+                                                onValueChange={(value) =>
+                                                  updateResult(
+                                                    result.testName,
+                                                    "comments",
+                                                    value
+                                                  )
+                                                }
+                                              >
+                                                <SelectTrigger>
+                                                  <SelectValue placeholder="Select result" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                  {getQualitativeOptions(
+                                                    result.testCode
+                                                  ).map(
+                                                    (option: {
+                                                      value: string;
+                                                      label: string;
+                                                    }) => (
+                                                      <SelectItem
+                                                        key={option.value}
+                                                        value={option.value}
+                                                      >
+                                                        {option.label}
+                                                      </SelectItem>
+                                                    )
+                                                  )}
+                                                </SelectContent>
+                                              </Select>
+                                            </div>
+                                          )}
+
+                                          <div className="space-y-2">
+                                            <Label
+                                              htmlFor={`unit-${result.testCode}-${result.testName}-${index}`}
+                                            >
+                                              Unit
+                                            </Label>
+                                            <Input
+                                              id={`unit-${result.testCode}-${result.testName}-${index}`}
+                                              value={result.unit}
+                                              onChange={(e) =>
+                                                updateResult(
+                                                  result.testName,
+                                                  "unit",
+                                                  e.target.value
+                                                )
+                                              }
+                                              placeholder={`e.g., ${result.unit}`}
+                                            />
+                                          </div>
+
+                                          <div className="space-y-2">
+                                            <Label
+                                              htmlFor={`range-${result.testCode}-${result.testName}-${index}`}
+                                            >
+                                              Reference Range
+                                            </Label>
+                                            <Input
+                                              id={`range-${result.testCode}-${result.testName}-${index}`}
+                                              value={(() => {
+                                                try {
+                                                  const parsed =
+                                                    typeof result.referenceRange ===
+                                                    "string"
+                                                      ? JSON.parse(
+                                                          result.referenceRange
+                                                        )
+                                                      : result.referenceRange;
+
+                                                  if (
+                                                    typeof parsed ===
+                                                      "object" &&
+                                                    parsed !== null &&
+                                                    !Array.isArray(parsed)
+                                                  ) {
+                                                    return Object.entries(
+                                                      parsed
+                                                    )
+                                                      .map(
+                                                        ([key, value]) =>
+                                                          `${key}: ${value}`
+                                                      )
+                                                      .join(", ");
+                                                  }
+                                                  return result.referenceRange;
+                                                } catch {
+                                                  return result.referenceRange;
+                                                }
+                                              })()}
+                                              onChange={(e) =>
+                                                updateResult(
+                                                  result.testName,
+                                                  "referenceRange",
+                                                  e.target.value
+                                                )
+                                              }
+                                              placeholder={(() => {
+                                                try {
+                                                  const parsed =
+                                                    typeof result.referenceRange ===
+                                                    "string"
+                                                      ? JSON.parse(
+                                                          result.referenceRange
+                                                        )
+                                                      : result.referenceRange;
+
+                                                  if (
+                                                    typeof parsed ===
+                                                      "object" &&
+                                                    parsed !== null &&
+                                                    !Array.isArray(parsed)
+                                                  ) {
+                                                    return Object.entries(
+                                                      parsed
+                                                    )
+                                                      .map(
+                                                        ([key, value]) =>
+                                                          `${key}: ${value}`
+                                                      )
+                                                      .join(", ");
+                                                  }
+                                                  return `e.g. ${result.referenceRange}`;
+                                                } catch {
+                                                  return `e.g. ${result.referenceRange}`;
+                                                }
+                                              })()}
+                                            />
+                                          </div>
+                                        </div>
+
+                                        {!isQualitative && (
+                                          <div className="space-y-2">
+                                            <Label
+                                              htmlFor={`comments-${result.testCode}-${result.testName}-${index}`}
+                                            >
+                                              Comments (Optional)
+                                            </Label>
+                                            <Textarea
+                                              id={`comments-${result.testCode}-${result.testName}-${index}`}
+                                              value={result.comments || ""}
+                                              onChange={(e) =>
+                                                updateResult(
+                                                  result.testName,
+                                                  "comments",
+                                                  e.target.value
+                                                )
+                                              }
+                                              placeholder="Any additional comments about this result"
+                                              rows={2}
+                                            />
+                                          </div>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+                              </div>
+                            )}
+
+                            {/* Complete Individual Test Button */}
+                            {isFilled && !isCompleted && (
+                              <div className="mt-4 pt-4 border-t">
+                                <Button
+                                  type="button"
+                                  onClick={() =>
+                                    handleCompleteIndividualTest(test.code)
+                                  }
+                                  disabled={saving}
+                                  className="w-full"
+                                >
+                                  {saving
+                                    ? "Generating..."
+                                    : "Complete Test & Preview →"}
+                                </Button>
+                                <p className="text-xs text-muted-foreground text-center mt-2">
+                                  Opens report in new tab for this test only
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    );
+                  })}
+              </Accordion>
+
+              {testCatalog.filter((test) =>
+                searchTestTerm
+                  ? test.name
+                      .toLowerCase()
+                      .includes(searchTestTerm.toLowerCase()) ||
+                    test.code
+                      .toLowerCase()
+                      .includes(searchTestTerm.toLowerCase()) ||
+                    test.category
+                      .toLowerCase()
+                      .includes(searchTestTerm.toLowerCase())
+                  : true
+              ).length === 0 && (
+                <div className="text-center py-8 text-muted-foreground">
+                  No tests found matching your search.
+                </div>
+              )}
+
+              {/* Progress Summary */}
+              {selectedTests.length > 0 && (
+                <div className="mt-6 p-4 bg-muted/50 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium">
+                        Selected Tests Progress
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {selectedTests.filter(isTestFilled).length} of{" "}
+                        {selectedTests.length} tests filled
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Badge variant="secondary">
+                        {selectedTests.filter(isTestFilled).length} Ready
+                      </Badge>
+                      <Badge variant="outline">
+                        {selectedTests.length -
+                          selectedTests.filter(isTestFilled).length}{" "}
+                        Pending
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
 
-        {/* Form Actions */}
-        <div className="flex items-center gap-4">
-          <Button
-            type="submit"
-            disabled={!isFormValid() || saving}
-            className="min-w-[120px]"
-          >
-            <Save className="h-4 w-4 mr-2" />
-            {saving ? "Generating..." : "Generate Report"}
-          </Button>
-          <Button asChild type="button" variant="outline">
-            <Link href="/reports">Cancel</Link>
-          </Button>
-        </div>
+        {/* Generate Combined Report Section */}
+        {selectedPatient && selectedTests.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Generate Combined Report</CardTitle>
+              <CardDescription>
+                Create one report with all selected tests above (Alternative:
+                Use "Complete Test" button on individual tests for separate
+                reports)
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="doctorRemarks">
+                    Doctor's Remarks (Optional)
+                  </Label>
+                  <Textarea
+                    id="doctorRemarks"
+                    value={doctorRemarks}
+                    onChange={(e) => setDoctorRemarks(e.target.value)}
+                    placeholder="Enter any additional remarks or recommendations"
+                    rows={4}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="reviewedBy">Reviewed By *</Label>
+                  <Input
+                    id="reviewedBy"
+                    value={reviewedBy}
+                    onChange={(e) => setReviewedBy(e.target.value)}
+                    placeholder="Enter reviewer name"
+                    required
+                  />
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <Button
+                    type="submit"
+                    disabled={!isFormValid() || saving}
+                    className="min-w-[200px]"
+                    size="lg"
+                  >
+                    <Save className="h-4 w-4 mr-2" />
+                    {saving ? "Generating..." : "Generate Combined Report"}
+                  </Button>
+                  <Button asChild type="button" variant="outline">
+                    <Link href="/reports">Cancel</Link>
+                  </Button>
+                </div>
+
+                <p className="text-sm text-muted-foreground">
+                  This will create ONE report containing all{" "}
+                  {selectedTests.filter(isTestFilled).length} completed test(s)
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </form>
     </div>
   );
