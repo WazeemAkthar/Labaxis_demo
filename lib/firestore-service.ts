@@ -331,12 +331,14 @@ export async function addTestToCatalog(
   await setDoc(doc(db, COLLECTIONS.TEST_CATALOG, test.code), test);
 }
 
+// Add this method to your existing firestore-service.ts file
 export async function updateTestInCatalog(
   code: string,
   updates: Partial<TestCatalogItem>
 ): Promise<void> {
   const docRef = doc(db, COLLECTIONS.TEST_CATALOG, code);
   await updateDoc(docRef, updates);
+  console.log(`✅ Test ${code} updated successfully`);
 }
 
 export async function removeTestFromCatalog(code: string): Promise<void> {

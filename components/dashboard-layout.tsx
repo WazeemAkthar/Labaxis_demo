@@ -29,6 +29,7 @@ const navigation = [
   { name: "Finance", href: "/finance", icon: DollarSign },
   { name: "Settings", href: "/settings", icon: Settings },
   { name: "Users", href: "/users", icon: Users },
+  { name: "Manage Tests", href: "/settings/tests", icon: FlaskConical },
 ];
 
 interface DashboardLayoutProps {
