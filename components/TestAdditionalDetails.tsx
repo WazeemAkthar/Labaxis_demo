@@ -12,91 +12,6 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
 }) => {
   const getAdditionalDetails = (code: string) => {
     switch (code.toLowerCase()) {
-      case "lipid":
-      case "lipidprofile":
-      case "lipid profile":
-        return {
-          title: "Recommended and High-Risk Plasma Lipid Concentrations",
-          content: (
-            <div
-              className="space-y-4 font-mono tracking-wide text-sm"
-              style={{ fontFamily: "'Courier New', Courier, monospace" }}
-            >
-              {/* Table */}
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr>
-                      <th className="px-2 text-left font-black underline ">
-                        CHEMISTRY
-                      </th>
-                      <th className="px-2 text-center font-black underline">
-                        DESIRABLE LEVELS
-                      </th>
-                      <th className="px-2 text-center font-black underline">
-                        BORDERLINE LEVELS
-                      </th>
-                      <th className="px-2 text-center font-black underline">
-                        HIGH LEVELS
-                      </th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    <tr>
-                      <td className="text-black">Total Cholesterol</td>
-                      <td className=" text-center text-black">&lt; 200 mg/dl</td>
-                      <td className=" text-center text-black">200 – 235 mg/dl</td>
-                      <td className=" text-center text-black">&gt; 235 mg/dl</td>
-                    </tr>
-
-                    <tr>
-                      <td className="text-black">HDL Cholesterol</td>
-                      <td className=" text-center text-black">≥ 45 mg/dl</td>
-                      <td className=" text-center text-black">35 – 45 mg/dl</td>
-                      <td className=" text-center text-black">&lt; 35 mg/dl</td>
-                    </tr>
-
-                    <tr>
-                      <td className="text-black">Triglycerides</td>
-                      <td className="text-center text-black">&lt; 150 mg/dl</td>
-                      <td className=" text-center text-black">150 – 200 mg/dl</td>
-                      <td className=" text-center text-black">&gt; 200 mg/dl</td>
-                    </tr>
-
-                    <tr>
-                      <td className="text-black">LDL Cholesterol</td>
-                      <td className=" text-center text-black">&lt; 150 mg/dl</td>
-                      <td className=" text-center text-black">150 – 190 mg/dl</td>
-                      <td className=" text-center text-black">&gt; 190 mg/dl</td>
-                    </tr>
-
-                    <tr>
-                      <td className="text-black">Total Cholesterol / HDL</td>
-                      <td className=" text-center text-black">&lt; 3.5</td>
-                      <td className=" text-center text-black">3.5 – 6.0</td>
-                      <td className=" text-center text-black">&gt; 6.0</td>
-                    </tr>
-
-                    <tr>
-                      <td className="text-black">Non-HDL Cholesterol</td>
-                      <td className=" text-center text-black">&lt; 130 mg/dl</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Footer Note */}
-              <div className="mt-4">
-                <p className="text-xs text-black">
-                  ❖ Fully automated Bio chemistry analyzer –{" "}
-                  <strong>SELECTRA ProM</strong>
-                </p>
-              </div>
-            </div>
-          ),
-        };
-
       case "hba1c":
       case "glycated hemoglobin":
       case "glycosylated haemoglobin":
@@ -399,43 +314,7 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
               </div>
             </div>
           ),
-        };
-
-      case "fbs":
-      case "fasting blood sugar":
-      case "glucose":
-      case "fasting glucose":
-        return {
-          title: "Fasting Blood Glucose Guidelines",
-          content: (
-            <div className="space-y-4 mt-5">
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-300 text-sm">
-                  <tbody>
-                    <tr>
-                      <td className="border border-gray-300 px-2">60 - 115</td>
-                      <td className="border border-gray-300 px-2 font-medium">
-                        Normal
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-300 px-2">115 - 125</td>
-                      <td className="border border-gray-300 px-2 font-medium">
-                        Impaired
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-300 px-2">=&gt;125</td>
-                      <td className="border border-gray-300 px-2 font-medium">
-                        High
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          ),
-        };
+        };    
 
       case "vitamin_d":
       case "vitamin d":
@@ -1140,12 +1019,7 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                   </tbody>
                 </table>
               </div>
-              <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
-                <p className="text-xs">
-                  <strong>Method:</strong> Electrochemiluminescence Immunoassay
-                  (ECLIA)
-                </p>
-              </div>
+              
             </div>
           ),
         };
@@ -1281,12 +1155,7 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                   </tbody>
                 </table>
               </div>
-              <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
-                <p className="text-xs">
-                  <strong>Method:</strong> Electrochemiluminescence Immunoassay
-                  (ECLIA)
-                </p>
-              </div>
+              
             </div>
           ),
         };
@@ -1336,11 +1205,7 @@ const TestAdditionalDetails: React.FC<TestAdditionalDetailsProps> = ({
                   </tbody>
                 </table>
               </div>
-              <div className="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400">
-                <p className="text-xs">
-                  <strong>Method:</strong> Enzymatic Urease Method
-                </p>
-              </div>
+              
             </div>
           ),
         };
@@ -1647,9 +1512,7 @@ case "serum hcg":
           </table>
         </div>
 
-        <p className="text-xs text-gray-600 mt-2">
-          <strong>Method:</strong> Electrochemiluminescence Immunoassay (ECLIA)
-        </p>
+        
       </div>
     ),
   };
@@ -1670,7 +1533,7 @@ case "serum hcg":
   const shouldHideTitle = hideTitle.includes(testCode.toLowerCase());
 
   return (
-    <div className={`mt-6 p-4 ${className}`} style={{ fontFamily: "'Courier New', Courier, monospace" }}>
+    <div className={`mt-6 p-4 ${className}`}>
       {!shouldHideTitle && (
         <h4 className="font-medium text-lg mb-4 text-gray-800 border-b border-gray-900">
           {details.title}

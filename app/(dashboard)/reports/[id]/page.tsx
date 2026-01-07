@@ -150,6 +150,12 @@ export default function ReportDetailsPage() {
           const resultsArray = testResults as any[];
           if (testCode === "FBC") {
             return <div key={testCode}>{renderFBCResults(resultsArray)}</div>;
+          } else if (testCode === "LIPID") {
+            return (
+              <div key={testCode}>
+                {renderLipidProfileResults(resultsArray)}
+              </div>
+            );
           } else if (testCode === "UFR") {
             return <div key={testCode}>{renderUFRResults(resultsArray)}</div>;
           } else if (testCode === "OGTT") {
@@ -200,7 +206,7 @@ export default function ReportDetailsPage() {
       <div
         key="OGTT"
         className="border rounded-lg p-6 ogtt-section"
-        style={{ fontFamily: "'Courier New', Courier, monospace" }}
+        
       >
         <div className="flex items-center gap-2 mb-6">
           <Badge variant="outline" className="text-lg px-3 py-1">
@@ -270,7 +276,7 @@ export default function ReportDetailsPage() {
       <div
         key="PPBS"
         className="border rounded-lg p-6"
-        style={{ fontFamily: "'Courier New', Courier, monospace" }}
+        
       >
         <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2 uppercase">
           Post Prandial Blood Sugar
@@ -317,7 +323,7 @@ export default function ReportDetailsPage() {
       <div
         key="BSS"
         className="border rounded-lg p-6"
-        style={{ fontFamily: "'Courier New', Courier, monospace" }}
+        
       >
         <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2 uppercase">
           Blood for BSS
@@ -399,7 +405,7 @@ export default function ReportDetailsPage() {
     const renderTable = (results: any[], title?: string) => (
       <div
         className="mb-6"
-        style={{ fontFamily: "'Courier New', Courier, monospace" }}
+        
       >
         {title && (
           <h4 className="font-semibold text-xl text-left text-muted-foreground mb-3 underline uppercase">
@@ -436,7 +442,7 @@ export default function ReportDetailsPage() {
                   <tr
                     key={index}
                     className="border-0 font-mono p-0 table-row"
-                    style={{ fontFamily: "'Courier New', Courier, monospace" }}
+                    
                   >
                     <td className="py-0 font-mono">{result.testName}</td>
                     <td
@@ -470,13 +476,15 @@ export default function ReportDetailsPage() {
       <div
         key="FBC"
         className="border rounded-lg p-6"
-        style={{ fontFamily: "'Courier New', Courier, monospace" }}
+        
       >
         <div className="flex items-center gap-2 mb-6">
           <Badge variant="outline" className="text-lg px-3 py-1">
             FBC
           </Badge>
-          <span className="font-semibold text-lg uppercase">Full Blood Count</span>
+          <span className="font-semibold text-lg uppercase">
+            Full Blood Count
+          </span>
         </div>
 
         {mainParams.length > 0 && renderTable(mainParams)}
@@ -524,7 +532,7 @@ export default function ReportDetailsPage() {
     const renderTable = (results: any[], title?: string) => (
       <div
         className="mb-6"
-        style={{ fontFamily: "'Courier New', Courier, monospace" }}
+        
       >
         {title && (
           <h4 className="font-semibold text-xl text-left text-muted-foreground mb-3 underline uppercase">
@@ -564,13 +572,15 @@ export default function ReportDetailsPage() {
       <div
         key="UFR"
         className="border rounded-lg p-6"
-        style={{ fontFamily: "'Courier New', Courier, monospace" }}
+        
       >
         <div className="flex items-center gap-2 mb-6">
           <Badge variant="outline" className="text-lg px-3 py-1">
             UFR
           </Badge>
-          <span className="font-semibold text-lg uppercase">Urine Full Report</span>
+          <span className="font-semibold text-lg uppercase">
+            Urine Full Report
+          </span>
         </div>
 
         {physicalChemical.length > 0 && renderTable(physicalChemical)}
@@ -591,7 +601,7 @@ export default function ReportDetailsPage() {
       <div
         key="BGRh"
         className="border rounded-lg p-6"
-        style={{ fontFamily: "'Courier New', Courier, monospace" }}
+        
       >
         <h1 className="font-semibold text-xl text-center mb-1 border-black border-b">
           BLOOD GROUPING & Rh
@@ -624,6 +634,70 @@ export default function ReportDetailsPage() {
     );
   };
 
+  const renderLipidProfileResults = (lipidResults: any[]) => {
+    // Helper function to format reference range
+    const formatReferenceRange = (range: string) => {
+      if (!range) return "";
+      // Split by \n and render each line
+      return range.split("\n").map((line, idx) => (
+        <div key={idx} className="leading-tight">
+          {line}
+        </div>
+      ));
+    };
+
+    return (
+      <div
+        key="LIPID"
+        className="border rounded-lg p-6"
+      >
+        <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2 uppercase">
+          Lipid Profile
+        </h1>
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="border-b uppercase">
+              <th className="text-left p-1">Test</th>
+              <th className="text-left p-1">Value</th>
+              <th className="text-left p-1">Units</th>
+              <th className="text-left p-1">Reference Range</th>
+            </tr>
+          </thead>
+          <tbody>
+            {lipidResults.map((result, index) => (
+              <tr key={index} className="border-b">
+                <td className="p-1 align-top text-left">
+                  <div className="">{result.testName}</div>
+                </td>
+                <td
+                  className={`p-1 text-left align-top ${
+                    isBoldValues ? "font-bold" : ""
+                  }`}
+                >
+                  <div className="">{result.value}</div>
+                </td>
+                <td className="p-1 text-left align-top">
+                  <div className="">{result.unit}</div>
+                </td>
+                <td className="p-1 align-top text-left">
+                  <div className="text-sm text-left">
+                    {formatReferenceRange(result.referenceRange)}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <div className="mt-4">
+          <p className="text-xs text-black">
+            Note:- 10-12 hours fasting sample is required.
+          </p>
+        </div>
+      </div>
+    );
+  };
+
   const renderRegularTestResults = (testCode: string, testResults: any[]) => {
     const testConfig = testConfigs[testCode];
     const testName = testConfig ? testConfig.name : testCode;
@@ -643,7 +717,6 @@ export default function ReportDetailsPage() {
     const isDNS1 = testCode === "DNS1";
     const isWIDAL = testCode === "WIDAL";
     const isUACR = testCode === "UACR";
-    const isLIPID = testCode === "LIPID";
     const isHCG_SERUM = testCode === "HCG_SERUM";
     const hideReferenceRange =
       isESR ||
@@ -662,7 +735,6 @@ export default function ReportDetailsPage() {
       isDNS1 ||
       isWIDAL ||
       isUACR ||
-      isLIPID ||
       isHCG_SERUM;
     const hideunits =
       isHIV ||
@@ -677,7 +749,7 @@ export default function ReportDetailsPage() {
     return (
       <div
         key={testCode}
-        style={{ fontFamily: "'Courier New', Courier, monospace" }}
+        
       >
         <h1 className="text-lg text-center mb-3 font-bold border-black border-b uppercase">
           {testName}
@@ -733,7 +805,7 @@ export default function ReportDetailsPage() {
                     </td>
                   )}
                   {!hideReferenceRange && (
-                    <td className="p-1">
+                    <td className="p-1 w-[15%]">
                       <div className="">
                         {(() => {
                           // Check if referenceRange is an object with nested values (like Man/Woman)
@@ -748,7 +820,6 @@ export default function ReportDetailsPage() {
                               parsed !== null &&
                               !Array.isArray(parsed)
                             ) {
-                              // Format nested reference ranges (e.g., Man: 13.0-18.0, Woman: 11.0-16.5)
                               return Object.entries(parsed)
                                 .map(([key, value]) => `${key}: ${value}`)
                                 .join(", ");
@@ -1037,15 +1108,17 @@ export default function ReportDetailsPage() {
             font-weight: bold !important;
           }
 
-          ${isBoldValues
-            ? `
+          ${
+            isBoldValues
+              ? `
   td:nth-child(2),
   td:nth-child(2) div,
   td:nth-child(2) span {
     font-weight: bold !important;
   }
 `
-            : ""}
+              : ""
+          }
 
           hr,
           .border-t,
@@ -1127,6 +1200,90 @@ export default function ReportDetailsPage() {
           [key="BGRh"] .text-2xl {
             font-size: 24px !important;
           }
+          /* Lipid Profile specific styles */
+[key="LIPID"] h1.font-semibold.text-xl.text-center.border-black.border-b-2 {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+  margin-bottom: 8px !important;
+  border-bottom: 2px solid #000 !important;
+  padding-bottom: 4px !important;
+}
+
+[key="LIPID"] table {
+  font-family: "Courier New", Courier, monospace !important;
+  width: 100% !important;
+  border-collapse: collapse !important;
+}
+
+[key="LIPID"] th {
+  text-align: left !important;
+  padding: 2px 4px !important;
+  font-size: 14px !important;
+  font-weight: bold !important;
+  border-bottom: 2px solid #000 !important;
+}
+
+[key="LIPID"] th:nth-child(1) {
+  text-align: left !important;
+}
+
+[key="LIPID"] th:nth-child(2) {
+  text-align: left !important;
+}
+
+[key="LIPID"] th:nth-child(3) {
+  text-align: left !important;
+}
+
+[key="LIPID"] th:nth-child(4) {
+  text-align: left !important;
+}
+
+[key="LIPID"] td {
+  padding: 4px !important;
+  font-size: 13px !important;
+  vertical-align: top !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  text-align: left !important;
+}
+
+[key="LIPID"] td:first-child {
+  width: 25% !important;
+  text-align: left !important;
+}
+
+[key="LIPID"] td:nth-child(2) {
+  width: 15% !important;
+  text-align: left !important;
+}
+
+[key="LIPID"] td:nth-child(3) {
+  width: 15% !important;
+  text-align: left !important;
+}
+
+[key="LIPID"] td:nth-child(4) {
+  width: 45% !important;
+  text-align: left !important;
+}
+
+[key="LIPID"] td:nth-child(4) > div {
+  line-height: 1.4 !important;
+  text-align: left !important;
+}
+
+[key="LIPID"] td:nth-child(4) > div > div {
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1.3 !important;
+  text-align: left !important;
+}
+
+[key="LIPID"] .text-xs {
+  font-size: 11px !important;
+  margin-top: 8px !important;
+}
         }
       `}</style>
       <div className="space-y-6">
@@ -1166,7 +1323,7 @@ export default function ReportDetailsPage() {
             <div className="flex items-start justify-between">
               <div>
                 <CardTitle className="text-2xl mb-2 font-bold text-gray-800">
-                 LabAxis Medical Laboratory Services
+                  LabAxis Medical Laboratory Services
                 </CardTitle>
                 <div className="text-sm text-muted-foreground space-y-1">
                   <div>Unique Place for all Diagnostic needs</div>

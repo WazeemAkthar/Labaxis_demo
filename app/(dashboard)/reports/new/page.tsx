@@ -327,6 +327,7 @@ export default function NewReportPage() {
     loadData();
   }, [user, authLoading, router, searchParams]);
 
+
   const handlePatientChange = (patientId: string) => {
     const patient = patients.find((p) => p.id === patientId);
     setSelectedPatient(patient || null);
@@ -698,10 +699,11 @@ export default function NewReportPage() {
           const lipidResults = [
             {
               testCode: "LIPID",
-              testName: "Total Cholesterol",
+              testName: "Cholesterol-Total",
               value: lipidValues.totalCholesterol,
               unit: "mg/dL",
-              referenceRange: "< 200",
+              referenceRange:
+                "Desirable <200\nBorderline High 200 - 239\nHigh >239",
               comments: "",
             },
             {
@@ -709,23 +711,7 @@ export default function NewReportPage() {
               testName: "HDL Cholesterol",
               value: lipidValues.hdl,
               unit: "mg/dL",
-              referenceRange: "> 40",
-              comments: "",
-            },
-            {
-              testCode: "LIPID",
-              testName: "Triglycerides",
-              value: lipidValues.triglycerides,
-              unit: "mg/dL",
-              referenceRange: "< 150",
-              comments: "",
-            },
-            {
-              testCode: "LIPID",
-              testName: "VLDL Cholesterol",
-              value: lipidValues.vldl,
-              unit: "mg/dL",
-              referenceRange: "< 40",
+              referenceRange: "40 - 60",
               comments: "",
             },
             {
@@ -733,23 +719,33 @@ export default function NewReportPage() {
               testName: "LDL Cholesterol",
               value: lipidValues.ldl,
               unit: "mg/dL",
-              referenceRange: "< 150",
+              referenceRange:
+                "Desirable <=129\nBorderline High 129 - 160\nHigh >160",
               comments: "",
             },
             {
               testCode: "LIPID",
-              testName: "Total Cholesterol/HDL Ratio",
+              testName: "VLDL Cholesterol",
+              value: lipidValues.vldl,
+              unit: "mg/dL",
+              referenceRange: "7 - 35",
+              comments: "",
+            },
+            {
+              testCode: "LIPID",
+              testName: "Triglycerides",
+              value: lipidValues.triglycerides,
+              unit: "mg/dL",
+              referenceRange:
+                "Normal: < 150\nHigh: 150-199\nHypertriglyceridemia 200-500\nVery High: > 500",
+              comments: "",
+            },
+            {
+              testCode: "LIPID",
+              testName: "TC/HDL Ratio",
               value: lipidValues.tcHdlRatio,
               unit: "",
-              referenceRange: "< 5.0",
-              comments: "",
-            },
-            {
-              testCode: "LIPID",
-              testName: "Non-HDL Cholesterol",
-              value: lipidValues.nonHdl,
-              unit: "mg/dL",
-              referenceRange: "< 130",
+              referenceRange: "3.0 - 5.0",
               comments: "",
             },
           ].filter((r) => r.value && r.value.trim() !== "");
@@ -1216,10 +1212,11 @@ export default function NewReportPage() {
             const lipidResults = [
               {
                 testCode: "LIPID",
-                testName: "Total Cholesterol",
+                testName: "Cholesterol-Total",
                 value: lipidValues.totalCholesterol,
                 unit: "mg/dL",
-                referenceRange: "< 200",
+                referenceRange:
+                  "Desirable <200\nBorderline High 200 - 239\nHigh >239",
                 comments: "",
               },
               {
@@ -1227,7 +1224,7 @@ export default function NewReportPage() {
                 testName: "HDL Cholesterol",
                 value: lipidValues.hdl,
                 unit: "mg/dL",
-                referenceRange: "> 40",
+                referenceRange: "40 - 60",
                 comments: "",
               },
               {
@@ -1235,7 +1232,8 @@ export default function NewReportPage() {
                 testName: "Triglycerides",
                 value: lipidValues.triglycerides,
                 unit: "mg/dL",
-                referenceRange: "< 150",
+                referenceRange:
+                  "Normal: < 150\nHigh: 150-199\nHypertriglyceridemia 200-500\nVery High: > 500",
                 comments: "",
               },
               {
@@ -1243,7 +1241,7 @@ export default function NewReportPage() {
                 testName: "VLDL Cholesterol",
                 value: lipidValues.vldl,
                 unit: "mg/dL",
-                referenceRange: "< 40",
+                referenceRange: "7 - 35",
                 comments: "",
               },
               {
@@ -1251,23 +1249,16 @@ export default function NewReportPage() {
                 testName: "LDL Cholesterol",
                 value: lipidValues.ldl,
                 unit: "mg/dL",
-                referenceRange: "< 150",
+                referenceRange:
+                  "Desirable <=129\nBorderline High 129 - 160\nHigh >160",
                 comments: "",
               },
               {
                 testCode: "LIPID",
-                testName: "Total Cholesterol/HDL Ratio",
+                testName: "TC/HDL Ratio",
                 value: lipidValues.tcHdlRatio,
                 unit: "",
-                referenceRange: "< 5.0",
-                comments: "",
-              },
-              {
-                testCode: "LIPID",
-                testName: "Non-HDL Cholesterol",
-                value: lipidValues.nonHdl,
-                unit: "mg/dL",
-                referenceRange: "< 130",
+                referenceRange: "3.0 - 5.0",
                 comments: "",
               },
             ].filter((r) => r.value && r.value.trim() !== "");
@@ -1602,6 +1593,47 @@ export default function NewReportPage() {
       reviewedBy.trim() !== ""
     );
   };
+
+  // ADD THE KEYBOARD SHORTCUT HOOK RIGHT HERE - AFTER isFormValid
+useEffect(() => {
+  const handleKeyPress = (event: KeyboardEvent) => {
+    // Check if "G" key is pressed (case insensitive)
+    // Also check if user is not typing in an input/textarea
+    const target = event.target as HTMLElement;
+    const isTyping = 
+      target.tagName === 'INPUT' || 
+      target.tagName === 'TEXTAREA' || 
+      target.isContentEditable;
+
+    if (
+      (event.key === 'g' || event.key === 'G') && 
+      !isTyping && 
+      !event.ctrlKey && 
+      !event.metaKey && 
+      !event.altKey
+    ) {
+      event.preventDefault();
+      
+      // Only trigger if form is valid and not already saving
+      if (isFormValid() && !saving && selectedPatient && selectedTests.length > 0) {
+        // Trigger form submission
+        const form = document.querySelector('form');
+        if (form) {
+          form.requestSubmit();
+        }
+      }
+    }
+  };
+
+  // Add event listener
+  window.addEventListener('keydown', handleKeyPress);
+
+  // Cleanup
+  return () => {
+    window.removeEventListener('keydown', handleKeyPress);
+  };
+}, [saving, selectedPatient, selectedTests, reviewedBy, results, fbcValues, lipidValues, pathologyReport, ufrValues, ogttValues, ppbsValues, bssValues, bgrhValues]);
+
 
   // Get patient invoices
   const patientInvoices = selectedPatient
@@ -2486,6 +2518,13 @@ export default function NewReportPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
+                {/* Keyboard shortcut hint */}
+  <div className="text-xs text-muted-foreground flex items-center gap-2">
+    <kbd className="px-2 py-1 text-xs font-semibold bg-muted border border-border rounded">
+      G
+    </kbd>
+    <span>Press "G" to generate combined report</span>
+  </div>
                 <div className="space-y-2">
                   <Label htmlFor="doctorRemarks">
                     Doctor's Remarks (Optional)
@@ -2519,6 +2558,11 @@ export default function NewReportPage() {
                   >
                     <Save className="h-4 w-4 mr-2" />
                     {saving ? "Generating..." : "Generate Combined Report"}
+                    {!saving && (
+                      <kbd className="ml-2 px-2 py-0.5 text-xs font-semibold bg-muted rounded">
+                        G
+                      </kbd>
+                    )}
                   </Button>
                   <Button asChild type="button" variant="outline">
                     <Link href="/reports">Cancel</Link>
