@@ -28,70 +28,42 @@ export default function PDFPreviewPage() {
   >({});
 
   const [letterheadBase64, setLetterheadBase64] = useState<string>("");
-  const [letterheadWithSignatureBase64, setLetterheadWithSignatureBase64] =
-    useState<string>("");
   const [letterheadLoaded, setLetterheadLoaded] = useState(false);
   const [letterheadError, setLetterheadError] = useState<string>("");
-  const [showSignature, setShowSignature] = useState(true);
 
   useEffect(() => {
-    // Load both letterhead images and convert to base64
-    const loadLetterheadsAsBase64 = async () => {
+    // Load letterhead image and convert to base64
+    const loadLetterheadAsBase64 = async () => {
       try {
-        // Load letterhead without signature
-        const response1 = await fetch("/letterhead.png");
-        if (response1.ok) {
-          const blob1 = await response1.blob();
+        const response = await fetch("/letterhead.jpg");
+        if (response.ok) {
+          const blob = await response.blob();
           await new Promise<void>((resolve, reject) => {
             const reader = new FileReader();
             reader.onloadend = () => {
               const base64data = reader.result as string;
               setLetterheadBase64(base64data);
-              console.log("✅ Letterhead (without signature) loaded");
+              console.log("✅ Letterhead loaded");
               resolve();
             };
             reader.onerror = () => reject(new Error("FileReader error"));
-            reader.readAsDataURL(blob1);
+            reader.readAsDataURL(blob);
           });
+          setLetterheadLoaded(true);
+          setLetterheadError("");
+        } else {
+          throw new Error("Failed to fetch letterhead");
         }
-
-        // Load letterhead with signature
-        const response2 = await fetch("/letterhead-with-signature.png");
-        if (response2.ok) {
-          const blob2 = await response2.blob();
-          await new Promise<void>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              const base64data = reader.result as string;
-              setLetterheadWithSignatureBase64(base64data);
-              console.log("✅ Letterhead (with signature) loaded");
-              resolve();
-            };
-            reader.onerror = () => reject(new Error("FileReader error"));
-            reader.readAsDataURL(blob2);
-          });
-        }
-
-        setLetterheadLoaded(true);
-        setLetterheadError("");
       } catch (error) {
-        console.error("❌ Could not load letterhead images:", error);
+        console.error("❌ Could not load letterhead image:", error);
         setLetterheadLoaded(false);
-        setLetterheadError(
-          "Place letterhead.png and letterhead-with-signature.png in /public folder"
-        );
+        setLetterheadError("Place letterhead.jpg in /public folder");
       }
     };
 
-    loadLetterheadsAsBase64();
+    loadLetterheadAsBase64();
   }, []);
 
-  useEffect(() => {
-    // Load signature image and convert to base64
-    const loadSignatureAsBase64 = async () => {};
-
-    loadSignatureAsBase64();
-  }, []);
 
   useEffect(() => {
     if (authLoading) return;
@@ -193,6 +165,12 @@ export default function PDFPreviewPage() {
           const resultsArray = testResults as any[];
           if (testCode === "FBC") {
             return <div key={testCode}>{renderFBCResults(resultsArray)}</div>;
+          } else if (testCode === "LIPID") {
+            return (
+              <div key={testCode}>
+                {renderLipidProfileResults(resultsArray)}
+              </div>
+            );
           } else if (testCode === "UFR") {
             return <div key={testCode}>{renderUFRResults(resultsArray)}</div>;
           } else if (testCode === "OGTT") {
@@ -610,6 +588,63 @@ export default function PDFPreviewPage() {
     );
   };
 
+  const renderLipidProfileResults = (lipidResults: any[]) => {
+    // Helper function to format reference range
+    const formatReferenceRange = (range: string) => {
+      if (!range) return "";
+      // Split by \n and render each line
+      return range.split("\n").map((line, idx) => (
+        <div key={idx} className="leading-tight">
+          {line}
+        </div>
+      ));
+    };
+
+    return (
+      <div key="LIPID" className="border rounded-lg p-6">
+        <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2 uppercase">
+          Lipid Profile
+        </h1>
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="border-b uppercase">
+              <th className="text-left p-1">Test</th>
+              <th className="text-left p-1">Value</th>
+              <th className="text-left p-1">Units</th>
+              <th className="text-left p-1">Reference Range</th>
+            </tr>
+          </thead>
+          <tbody>
+            {lipidResults.map((result, index) => (
+              <tr key={index} className="border-b">
+                <td className="p-1 align-top text-left">
+                  <div className="">{result.testName}</div>
+                </td>
+                <td className={`p-1 text-left align-top`}>
+                  <div className="">{result.value}</div>
+                </td>
+                <td className="p-1 text-left align-top">
+                  <div className="">{result.unit}</div>
+                </td>
+                <td className="p-1 align-top text-left">
+                  <div className="text-sm text-left">
+                    {formatReferenceRange(result.referenceRange)}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <div className="mt-4">
+          <p className="text-xs text-black">
+            Note:- 10-12 hours fasting sample is required.
+          </p>
+        </div>
+      </div>
+    );
+  };
+
   const renderRegularTestResults = (testCode: string, testResults: any[]) => {
     const testConfig = testConfigs[testCode];
     const testName = testConfig ? testConfig.name : testCode;
@@ -629,7 +664,6 @@ export default function PDFPreviewPage() {
     const isDNS1 = testCode === "DNS1";
     const isWIDAL = testCode === "WIDAL";
     const isUACR = testCode === "UACR";
-    const isLIPID = testCode === "LIPID";
     const hideReferenceRange =
       isESR ||
       isTSH ||
@@ -646,8 +680,7 @@ export default function PDFPreviewPage() {
       isUKB ||
       isDNS1 ||
       isWIDAL ||
-      isUACR ||
-      isLIPID;
+      isUACR;
     const hideunits =
       isHIV ||
       isHCG ||
@@ -813,11 +846,7 @@ export default function PDFPreviewPage() {
             right: 0;
             width: 100%;
             height: 100%;
-            background-image: ${letterheadLoaded
-              ? showSignature
-                ? `url('${letterheadWithSignatureBase64}')`
-                : `url('${letterheadBase64}')`
-              : "none"};
+           background-image: ${letterheadLoaded ? `url('${letterheadBase64}')` : "none"};
             background-size: 100% auto;
             background-repeat: no-repeat;
             background-position: top center;
@@ -910,11 +939,7 @@ export default function PDFPreviewPage() {
             right: 0;
             width: 100%;
             height: 100%;
-            background-image: ${letterheadLoaded
-              ? showSignature
-                ? `url('${letterheadWithSignatureBase64}')`
-                : `url('${letterheadBase64}')`
-              : "none"};
+            background-image: ${letterheadLoaded ? `url('${letterheadBase64}')` : "none"};
             background-size: 100% auto;
             background-repeat: no-repeat;
             background-position: top center;
@@ -1037,14 +1062,6 @@ export default function PDFPreviewPage() {
           <Download className="h-4 w-4 mr-2" />
           Save as PDF
         </Button>
-        {letterheadLoaded && letterheadWithSignatureBase64 && (
-          <Button
-            variant={showSignature ? "default" : "outline"}
-            onClick={() => setShowSignature(!showSignature)}
-          >
-            {showSignature ? "Hide Signature" : "Show Signature"}
-          </Button>
-        )}
         {letterheadLoaded && (
           <div className="text-green-600 text-sm bg-white px-3 py-2 rounded shadow max-w-xs">
             ✅ Letterheads loaded

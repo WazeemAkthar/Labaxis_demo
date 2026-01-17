@@ -18,6 +18,7 @@ import Link from "next/link";
 import ReportQRCode from "@/components/ReportQRCode";
 import TestAdditionalDetails from "@/components/TestAdditionalDetails";
 import { OGTTGraph } from "@/components/ogtt-graph";
+import Barcode from "react-barcode";
 
 export default function ReportDetailsPage() {
   const params = useParams();
@@ -56,7 +57,7 @@ export default function ReportDetailsPage() {
 
       // Get patient data
       const patientData = await dataManager.getPatientById(
-        reportData.patientId
+        reportData.patientId,
       );
       setPatient(patientData);
 
@@ -133,14 +134,17 @@ export default function ReportDetailsPage() {
   };
 
   const renderTestResults = (results: any[]) => {
-    const groupedResults = results.reduce((groups, result) => {
-      const testCode = result.testCode;
-      if (!groups[testCode]) {
-        groups[testCode] = [];
-      }
-      groups[testCode].push(result);
-      return groups;
-    }, {} as Record<string, any[]>);
+    const groupedResults = results.reduce(
+      (groups, result) => {
+        const testCode = result.testCode;
+        if (!groups[testCode]) {
+          groups[testCode] = [];
+        }
+        groups[testCode].push(result);
+        return groups;
+      },
+      {} as Record<string, any[]>,
+    );
 
     return (
       <div className="space-y-6">
@@ -180,13 +184,13 @@ export default function ReportDetailsPage() {
 
   const renderOGTTResults = (ogttResults: any[]) => {
     const fastingResult = ogttResults.find((r) =>
-      r.testName.includes("Fasting")
+      r.testName.includes("Fasting"),
     );
     const oneHourResult = ogttResults.find((r) =>
-      r.testName.includes("1 Hour")
+      r.testName.includes("1 Hour"),
     );
     const twoHoursResult = ogttResults.find((r) =>
-      r.testName.includes("2 Hour")
+      r.testName.includes("2 Hour"),
     );
 
     const fastingValue = fastingResult?.value || "";
@@ -199,15 +203,11 @@ export default function ReportDetailsPage() {
       "1H:",
       oneHourValue,
       "2H:",
-      twoHoursValue
+      twoHoursValue,
     );
 
     return (
-      <div
-        key="OGTT"
-        className="border rounded-lg p-6 ogtt-section"
-        
-      >
+      <div key="OGTT" className="border rounded-lg p-6 ogtt-section">
         <div className="flex items-center gap-2 mb-6">
           <Badge variant="outline" className="text-lg px-3 py-1">
             OGTT
@@ -273,11 +273,7 @@ export default function ReportDetailsPage() {
 
   const renderPPBSResults = (ppbsResults: any[]) => {
     return (
-      <div
-        key="PPBS"
-        className="border rounded-lg p-6"
-        
-      >
+      <div key="PPBS" className="border rounded-lg p-6">
         <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2 uppercase">
           Post Prandial Blood Sugar
         </h1>
@@ -320,11 +316,7 @@ export default function ReportDetailsPage() {
 
   const renderBSSResults = (bssResults: any[]) => {
     return (
-      <div
-        key="BSS"
-        className="border rounded-lg p-6"
-        
-      >
+      <div key="BSS" className="border rounded-lg p-6">
         <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2 uppercase">
           Blood for BSS
         </h1>
@@ -379,7 +371,7 @@ export default function ReportDetailsPage() {
         "RDW-CV",
         "Platelets",
         "WBC",
-      ].includes(result.testName)
+      ].includes(result.testName),
     );
 
     const differentialCount = fbcResults.filter((result) =>
@@ -389,7 +381,7 @@ export default function ReportDetailsPage() {
         "Eosinophils",
         "Monocytes",
         "Basophils",
-      ].includes(result.testName)
+      ].includes(result.testName),
     );
 
     const absoluteCount = fbcResults.filter((result) =>
@@ -399,14 +391,11 @@ export default function ReportDetailsPage() {
         "Eosinophils (Abs)",
         "Monocytes (Abs)",
         "Basophils (Abs)",
-      ].includes(result.testName)
+      ].includes(result.testName),
     );
 
     const renderTable = (results: any[], title?: string) => (
-      <div
-        className="mb-6"
-        
-      >
+      <div className="mb-6">
         {title && (
           <h4 className="font-semibold text-xl text-left text-muted-foreground mb-3 underline uppercase">
             {title}
@@ -427,7 +416,7 @@ export default function ReportDetailsPage() {
               {results.map((result, index) => {
                 const status = checkValueStatus(
                   result.value,
-                  result.referenceRange
+                  result.referenceRange,
                 );
                 const getStatusDisplay = (status: string) => {
                   if (status === "low")
@@ -439,11 +428,7 @@ export default function ReportDetailsPage() {
                 const statusDisplay = getStatusDisplay(status);
 
                 return (
-                  <tr
-                    key={index}
-                    className="border-0 font-mono p-0 table-row"
-                    
-                  >
+                  <tr key={index} className="border-0 font-mono p-0 table-row">
                     <td className="py-0 font-mono">{result.testName}</td>
                     <td
                       className={`text-right py-0 font-mono ${
@@ -473,11 +458,7 @@ export default function ReportDetailsPage() {
     );
 
     return (
-      <div
-        key="FBC"
-        className="border rounded-lg p-6"
-        
-      >
+      <div key="FBC" className="border rounded-lg p-6">
         <div className="flex items-center gap-2 mb-6">
           <Badge variant="outline" className="text-lg px-3 py-1">
             FBC
@@ -514,7 +495,7 @@ export default function ReportDetailsPage() {
         "Urobilinogen",
         "Bile",
         "Acetone/KB",
-      ].includes(result.testName)
+      ].includes(result.testName),
     );
 
     const microscopic = ufrResults.filter((result) =>
@@ -526,14 +507,11 @@ export default function ReportDetailsPage() {
         "Casts",
         "Organisms",
         "Others",
-      ].includes(result.testName)
+      ].includes(result.testName),
     );
 
     const renderTable = (results: any[], title?: string) => (
-      <div
-        className="mb-6"
-        
-      >
+      <div className="mb-6">
         {title && (
           <h4 className="font-semibold text-xl text-left text-muted-foreground mb-3 underline uppercase">
             {title}
@@ -569,11 +547,7 @@ export default function ReportDetailsPage() {
     );
 
     return (
-      <div
-        key="UFR"
-        className="border rounded-lg p-6"
-        
-      >
+      <div key="UFR" className="border rounded-lg p-6">
         <div className="flex items-center gap-2 mb-6">
           <Badge variant="outline" className="text-lg px-3 py-1">
             UFR
@@ -598,11 +572,7 @@ export default function ReportDetailsPage() {
     if (!result) return null;
 
     return (
-      <div
-        key="BGRh"
-        className="border rounded-lg p-6"
-        
-      >
+      <div key="BGRh" className="border rounded-lg p-6">
         <h1 className="font-semibold text-xl text-center mb-1 border-black border-b">
           BLOOD GROUPING & Rh
         </h1>
@@ -647,10 +617,7 @@ export default function ReportDetailsPage() {
     };
 
     return (
-      <div
-        key="LIPID"
-        className="border rounded-lg p-6"
-      >
+      <div key="LIPID" className="border rounded-lg p-6">
         <h1 className="font-semibold text-xl text-center mb-3 border-black border-b-2 uppercase">
           Lipid Profile
         </h1>
@@ -747,10 +714,7 @@ export default function ReportDetailsPage() {
       isWIDAL;
 
     return (
-      <div
-        key={testCode}
-        
-      >
+      <div key={testCode}>
         <h1 className="text-lg text-center mb-3 font-bold border-black border-b uppercase">
           {testName}
         </h1>
@@ -1087,6 +1051,15 @@ export default function ReportDetailsPage() {
             color: #374151 !important;
             border-radius: 3px !important;
           }
+            /* Barcode styles for print */
+.react-barcode-container {
+  page-break-inside: avoid !important;
+}
+
+.react-barcode-container svg {
+  max-width: 200px !important;
+  height: auto !important;
+}
 
           [class*="bg-red"],
           [class*="destructive"] {
@@ -1344,7 +1317,20 @@ export default function ReportDetailsPage() {
 
           <CardContent className="space-y-3 p-3 printingreport">
             <div className="">
-              <div className="space-y-1 border-t border-black font-mono">
+              <div className="flex justify-between">
+                {/* Barcode */}
+                <div className="">
+                  <Barcode
+                    value={report.id}
+                    width={1}
+                    height={25}
+                    fontSize={12}
+                    displayValue={false}
+                  />
+                </div>
+                <div></div>
+              </div>
+              <div className="space-y-1 border-t border-black">
                 <div className="grid grid-cols-2">
                   <div className="flex">
                     <span className="text-sm text-gray-900 w-32 shrink-0 text-left uppercase">
@@ -1416,7 +1402,7 @@ export default function ReportDetailsPage() {
                         const day = String(date.getDate()).padStart(2, "0");
                         const month = String(date.getMonth() + 1).padStart(
                           2,
-                          "0"
+                          "0",
                         );
                         const year = date.getFullYear();
                         return `${day}/${month}/${year}`;
@@ -1457,7 +1443,7 @@ export default function ReportDetailsPage() {
                 const shouldShowAdditionalDetails =
                   uniqueTestCodes.length === 1 &&
                   !["FBC", "UFR", "OGTT", "PPBS", "BSS"].includes(
-                    uniqueTestCodes[0]
+                    uniqueTestCodes[0],
                   );
 
                 return shouldShowAdditionalDetails ? (
