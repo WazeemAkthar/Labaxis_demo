@@ -233,21 +233,21 @@ export default function ReportDetailsPage() {
                   .replace("Glucose", "")
                   .trim();
                 return (
-                  <tr key={index} className="border-0 font-mono p-0 table-row">
-                    <td className="py-0 font-mono border-b border-gray-200">
+                  <tr key={index} className="border-0  p-0 table-row">
+                    <td className="py-0  border-b border-gray-200">
                       {displayName}
                     </td>
                     <td
-                      className={`text-right py-0 font-mono border-b border-gray-200 ${
+                      className={`text-right py-0  border-b border-gray-200 ${
                         isBoldValues ? "font-bold" : ""
                       }`}
                     >
                       {result.value}
                     </td>
-                    <td className="text-right py-0 font-mono border-b border-gray-200">
+                    <td className="text-right py-0  border-b border-gray-200">
                       {result.unit}
                     </td>
-                    <td className="text-right py-0 font-mono border-b border-gray-200">
+                    <td className="text-right py-0  border-b border-gray-200">
                       {result.referenceRange}
                     </td>
                   </tr>
@@ -428,20 +428,20 @@ export default function ReportDetailsPage() {
                 const statusDisplay = getStatusDisplay(status);
 
                 return (
-                  <tr key={index} className="border-0 font-mono p-0 table-row">
-                    <td className="py-0 font-mono">{result.testName}</td>
+                  <tr key={index} className="border-0  p-0 table-row">
+                    <td className="py-0 ">{result.testName}</td>
                     <td
-                      className={`text-right py-0 font-mono ${
+                      className={`text-right py-0  ${
                         isBoldValues ? "font-bold" : ""
                       }`}
                     >
                       {result.value}
                     </td>
-                    <td className="text-right py-0 font-mono">{result.unit}</td>
-                    <td className="text-right py-0 font-mono">
+                    <td className="text-right py-0 ">{result.unit}</td>
+                    <td className="text-right py-0 ">
                       {result.referenceRange}
                     </td>
-                    <td className="text-center py-0 font-mono">
+                    <td className="text-center py-0 ">
                       {statusDisplay.text && (
                         <span className="text-xs font-bold text-red-600">
                           {statusDisplay.text}
@@ -528,16 +528,16 @@ export default function ReportDetailsPage() {
             </thead>
             <tbody>
               {results.map((result, index) => (
-                <tr key={index} className="border-0 font-mono p-0 table-row">
-                  <td className="py-0 font-mono">{result.testName}</td>
+                <tr key={index} className="border-0  p-0 table-row">
+                  <td className="py-0 ">{result.testName}</td>
                   <td
-                    className={`text-right py-0 font-mono ${
+                    className={`text-right py-0  ${
                       isBoldValues ? "font-bold" : ""
                     }`}
                   >
                     {result.value}
                   </td>
-                  <td className="text-right py-0 font-mono">{result.unit}</td>
+                  <td className="text-right py-0 ">{result.unit}</td>
                 </tr>
               ))}
             </tbody>
@@ -1109,8 +1109,8 @@ export default function ReportDetailsPage() {
           }
 
           /* Patient header information with Courier New font */
-          .space-y-1.border-t.border-black.font-mono,
-          .space-y-1.border-t.border-black.font-mono * {
+          .space-y-1.border-t.border-black.,
+          .space-y-1.border-t.border-black. * {
             font-family: "Courier New", Courier, monospace !important;
             color: #000000 !important;
           }
